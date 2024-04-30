@@ -20195,8 +20195,6 @@ A binary integer decimal representation of a 128-bit decimal value, supporting 3
 987.65
 ```
 
-[Types](#group-Types)
-
 ## BigInt
 
 ##### Description
@@ -20209,7 +20207,7 @@ Defines a Long class for representing a 64-bit two’s-complement integer value.
 987
 ```
 
-[Types](#group-Types)
+
 
 ## Boolean
 
@@ -20217,7 +20215,7 @@ Defines a Long class for representing a 64-bit two’s-complement integer value.
 
 The `Boolean` scalar type represents `true` or `false`.
 
-[Types](#group-Types)
+
 
 ## Currency
 
@@ -20241,7 +20239,7 @@ Defines a currency unit for displaying pricing information, adhering to ISO 4217
 }
 ```
 
-[Types](#group-Types)
+
 
 ## Date
 
@@ -20255,7 +20253,7 @@ ISO 8601 date format. The timezone is always zero UTC offset, as denoted by the 
 "Thu Jul 13 2023 13:27:11 GMT+0200"
 ```
 
-[Types](#group-Types)
+
 
 ## Float
 
@@ -20269,7 +20267,7 @@ The `Float` scalar type represents signed double-precision fractional values as 
 123.45
 ```
 
-[Types](#group-Types)
+
 
 ## Int
 
@@ -20283,7 +20281,7 @@ The `Int` scalar type represents non-fractional signed whole numeric values. Int
 987
 ```
 
-[Types](#group-Types)
+
 
 ## JSONObject
 
@@ -20297,7 +20295,7 @@ Represent a JSON object.
 {"someProperty": "myStringValue", "otherProperty": 987}
 ```
 
-[Types](#group-Types)
+
 
 ## JSONPrimitive
 
@@ -20311,7 +20309,7 @@ Represent all supported primitive type for json object.
 "true | "myStringValue" | 987 | 987.65"
 ```
 
-[Types](#group-Types)
+
 
 ## MonetaryAmount
 
@@ -20332,7 +20330,7 @@ Encapsulates a monetary value in a specific currency, allowing for precise finan
 {"amount": 987.65, "currency": Currency}
 ```
 
-[Types](#group-Types)
+
 
 ## Pagination
 
@@ -20353,7 +20351,7 @@ Pagination applied to the result. Maximum limit allowed result per page is 25.
 {"limit": 123, "skip": 123}
 ```
 
-[Types](#group-Types)
+
 
 ## PaginationInput
 
@@ -20374,7 +20372,7 @@ Pagination filter. Used as query argument, it's optional filter. If not provided
 {"limit": 987, "skip": 987}
 ```
 
-[Types](#group-Types)
+
 
 ## StreamCursor
 
@@ -20388,7 +20386,7 @@ An opaque string used to resume a stream.
 "0"
 ```
 
-[Types](#group-Types)
+
 
 ## StreamPosition
 
@@ -20410,7 +20408,7 @@ The stream position.
 "CURSOR"
 ```
 
-[Types](#group-Types)
+
 
 ## StreamPositionStrategy
 
@@ -20431,7 +20429,7 @@ The stream position strategy.
 "EARLIEST"
 ```
 
-[Types](#group-Types)
+
 
 ## String
 
@@ -20445,7 +20443,7 @@ The `String` scalar type represents textual data, represented as UTF-8 character
 "abc123"
 ```
 
-[Types](#group-Types)
+
 
 ## Uniq
 
@@ -20485,7 +20483,7 @@ Encapsulates all pertinent details of a Uniq, including its blockchain ID, asset
 }
 ```
 
-[Types](#group-Types)
+
 
 ## UniqDynamicResource
 
@@ -20509,7 +20507,7 @@ Represents a dynamic Uniq resource capable of being refreshed to reflect changes
 }
 ```
 
-[Types](#group-Types)
+
 
 ## UniqFactory
 
@@ -20563,7 +20561,7 @@ Aggregates all relevant information about a Uniq factory, encompassing types, st
 }
 ```
 
-[Types](#group-Types)
+
 
 ## UniqFactoryActionWindow
 
@@ -20596,7 +20594,7 @@ Provides a timeframe for actions related to a Uniq factory, such as minting, tra
 }
 ```
 
-[Types](#group-Types)
+
 
 ## UniqFactoryAuthorizedMinter
 
@@ -20620,7 +20618,7 @@ Information about authorized minters for a Uniq factory, including wallet IDs an
 }
 ```
 
-[Types](#group-Types)
+
 
 ## UniqFactoryDigest
 
@@ -20658,7 +20656,7 @@ Summarizes immutable information about a Uniq Factory, capturing its identity, o
 }
 ```
 
-[Types](#group-Types)
+
 
 ## UniqFactoryFirsthandPurchase
 
@@ -20700,7 +20698,7 @@ Details firsthand purchase information for a Uniq factory, including pricing, li
 }
 ```
 
-[Types](#group-Types)
+
 
 ## UniqFactoryFirsthandPurchaseGroupRestriction
 
@@ -20721,7 +20719,7 @@ Represents group-based restrictions for firsthand purchases, allowing for inclus
 {"excludes": [987], "includes": [987]}
 ```
 
-[Types](#group-Types)
+
 
 ## UniqFactoryFirsthandPurchaseOption
 
@@ -20747,7 +20745,7 @@ Outlines firsthand purchase options, including potential restrictions and strate
 }
 ```
 
-[Types](#group-Types)
+
 
 ## UniqFactoryFirsthandPurchaseOptionFactory
 
@@ -20769,7 +20767,7 @@ Describes firsthand purchase options associated with a Uniq factory, including a
 {"count": 987, "id": 987, "strategy": "BURN"}
 ```
 
-[Types](#group-Types)
+
 
 ## UniqFactoryFirsthandPurchaseOptionFactoryStrategy
 
@@ -20792,7 +20790,7 @@ Uniq Factory.
 "BURN"
 ```
 
-[Types](#group-Types)
+
 
 ## UniqFactoryList
 
@@ -20818,7 +20816,7 @@ Provides a paginated list of Uniq factories, including data on individual factor
 }
 ```
 
-[Types](#group-Types)
+
 
 ## UniqFactoryMetadata
 
@@ -20848,7 +20846,7 @@ Encapsulates global metadata for a Uniq factory, including status, source, cache
 }
 ```
 
-[Types](#group-Types)
+
 
 ## UniqFactoryMetadataAttribute
 
@@ -20872,7 +20870,7 @@ Stores key-value pairs describing attributes for Uniqs related to a factory, pro
 }
 ```
 
-[Types](#group-Types)
+
 
 ## UniqFactoryMetadataContent
 
@@ -20906,7 +20904,7 @@ Represents content associated with Uniq factory metadata, including names, descr
 }
 ```
 
-[Types](#group-Types)
+
 
 ## UniqFactoryMintableWindow
 
@@ -20930,7 +20928,7 @@ Specifies the time window during which Uniqs can be minted from a factory, with 
 }
 ```
 
-[Types](#group-Types)
+
 
 ## UniqFactoryPurchaseWindow
 
@@ -20954,7 +20952,7 @@ Defines a purchase window for Uniq factories, indicating when Uniqs can be bough
 }
 ```
 
-[Types](#group-Types)
+
 
 ## UniqFactoryResale
 
@@ -20978,7 +20976,7 @@ Details the resale information for a Uniq factory, including minimum pricing and
 }
 ```
 
-[Types](#group-Types)
+
 
 ## UniqFactorySnapshot
 
@@ -21006,7 +21004,7 @@ Represents a momentary snapshot of a Uniq Factory's state, including its blockch
 }
 ```
 
-[Types](#group-Types)
+
 
 ## UniqFactoryStatus
 
@@ -21028,7 +21026,7 @@ Represents the operational status of a Uniq factory within the blockchain enviro
 "ACTIVE"
 ```
 
-[Types](#group-Types)
+
 
 ## UniqFactoryStock
 
@@ -21058,7 +21056,7 @@ Represents the stock information of a Uniq factory, detailing mintable quantitie
 }
 ```
 
-[Types](#group-Types)
+
 
 ## UniqFactoryTradingWindow
 
@@ -21082,7 +21080,7 @@ Specifies the time window during which Uniqs can be traded. This window is check
 }
 ```
 
-[Types](#group-Types)
+
 
 ## UniqFactoryTransferWindow
 
@@ -21106,7 +21104,7 @@ Defines the time window during which Uniqs can be transferred. This is checked d
 }
 ```
 
-[Types](#group-Types)
+
 
 ## UniqList
 
@@ -21132,7 +21130,7 @@ Organizes a collection of Uniqs into a structured list, incorporating pagination
 }
 ```
 
-[Types](#group-Types)
+
 
 ## UniqMedias
 
@@ -21160,7 +21158,7 @@ Centralizes visual representation details of tokens and factories, ensuring an e
 }
 ```
 
-[Types](#group-Types)
+
 
 ## UniqMetadata
 
@@ -21188,7 +21186,7 @@ Represents the essence of a Uniq token, encapsulating its name, description, vis
 }
 ```
 
-[Types](#group-Types)
+
 
 ## UniqMetadataAttribute
 
@@ -21214,7 +21212,7 @@ Associates key-value pairs with a Uniq, describing its attributes in a structure
 }
 ```
 
-[Types](#group-Types)
+
 
 ## UniqMetadataAttributeDescriptor
 
@@ -21242,7 +21240,7 @@ Allows the specification of structured data attributes for Uniqs, including whet
 }
 ```
 
-[Types](#group-Types)
+
 
 ## UniqMetadataAttributeType
 
@@ -21265,7 +21263,7 @@ Defines the data type of attributes associated with Uniq metadata.
 "ISODateString"
 ```
 
-[Types](#group-Types)
+
 
 ## UniqMetadataContent
 
@@ -21303,7 +21301,7 @@ Defines the comprehensive content structure of Uniq metadata according to the NF
 }
 ```
 
-[Types](#group-Types)
+
 
 ## UniqMetadataDynamicResource
 
@@ -21327,7 +21325,7 @@ Facilitates the inclusion of dynamic media or reference data within Uniq metadat
 }
 ```
 
-[Types](#group-Types)
+
 
 ## UniqMetadataResource
 
@@ -21351,7 +21349,7 @@ Enables the addition of extra media or reference data to Uniq metadata, enhancin
 }
 ```
 
-[Types](#group-Types)
+
 
 ## UniqMetadataStatus
 
@@ -21374,7 +21372,7 @@ Tracks the progress and outcome of metadata processing for Uniqs.
 "INVALID"
 ```
 
-[Types](#group-Types)
+
 
 ## UniqResale
 
@@ -21402,7 +21400,7 @@ Details a specific resale transaction for a Uniq, including the date, price, sha
 }
 ```
 
-[Types](#group-Types)
+
 
 ## UniqResource
 
@@ -21428,7 +21426,7 @@ Represents a digital resource, such as an image or video, associated with a Uniq
 }
 ```
 
-[Types](#group-Types)
+
 
 ## UniqResourceIntegrity
 
@@ -21449,7 +21447,7 @@ Details the integrity of a Uniq resource, ensuring that the resource is authenti
 {"hash": "abc123", "type": "SHA256"}
 ```
 
-[Types](#group-Types)
+
 
 ## UniqResourceIntegrityType
 
@@ -21469,7 +21467,7 @@ Specifies the cryptographic hash algorithm used for ensuring the integrity of Un
 "SHA256"
 ```
 
-[Types](#group-Types)
+
 
 ## UniqSaleShare
 
@@ -21493,7 +21491,7 @@ Describes the commission structure for secondary market sales, including the rec
 }
 ```
 
-[Types](#group-Types)
+
 
 ## UniqSerialRangeInput
 
@@ -21514,7 +21512,7 @@ Defines a range of serial numbers for Uniqs, facilitating filtering based on ser
 {"max": 987, "min": 987}
 ```
 
-[Types](#group-Types)
+
 
 ## UniqSnapshot
 
@@ -21542,7 +21540,7 @@ Enables real-time tracking of Uniq states within the ecosystem, offering a snaps
 }
 ```
 
-[Types](#group-Types)
+
 
 ## UniqState
 
@@ -21582,7 +21580,7 @@ Captures the comprehensive state of a Uniq within a streaming data model, facili
 }
 ```
 
-[Types](#group-Types)
+
 
 ## UniqStaticResource
 
@@ -21608,8 +21606,6 @@ A static representation of a Uniq resource, including a predefined hash for inte
 }
 ```
 
-[Types](#group-Types)
-
 ## UniqTradingPeriod
 
 ##### Description
@@ -21633,8 +21629,6 @@ Defines a trading period for a Uniq, specifying start and end dates, as well as 
   "startDate": "Thu Jul 13 2023 13:27:11 GMT+0200"
 }
 ```
-
-[Types](#group-Types)
 
 ## UniqTransferPeriod
 
@@ -21660,8 +21654,6 @@ Specifies a transfer period for a Uniq, outlining when the asset can be transfer
 }
 ```
 
-[Types](#group-Types)
-
 ## UniqType
 
 ##### Description
@@ -21680,8 +21672,6 @@ Categorizes the nature of a Uniq asset within the ecosystem.
 ``` js
 "COLLECTIBLE"
 ```
-
-[Types](#group-Types)
 
 ## WalletId
 
