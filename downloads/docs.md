@@ -16842,8 +16842,6 @@ query Uniq($id: BigInt!) {
 }
 ```
 
-[Queries](#group-Operations-Queries)
-
 ## `uniqFactories`
 
 ##### Description
@@ -17155,8 +17153,6 @@ query UniqFactories(
   }
 }
 ```
-
-[Queries](#group-Operations-Queries)
 
 ## `uniqFactory`
 
@@ -17470,8 +17466,6 @@ query UniqFactory($id: BigInt!) {
 }
 ```
 
-[Queries](#group-Operations-Queries)
-
 ## `uniqGlobalShares`
 
 ##### Response
@@ -17506,7 +17500,7 @@ query UniqGlobalShares {
 }
 ```
 
-[Queries](#group-Operations-Queries)
+
 
 ## `uniqsOfFactory`
 
@@ -17954,8 +17948,6 @@ query UniqsOfFactory(
   }
 }
 ```
-
-[Queries](#group-Operations-Queries)
 
 ## `uniqsOfWallet`
 
