@@ -1894,28 +1894,6 @@ cleos push action eosio.kyc updatekyc '["<OWNER>", "<PROVIDER>", "<CERTIFICATE_I
 ```
 
 ---
-title: 'KYC Policy'
-order: -99
-
----
-
-# KYC Policy
-
-## Overview
-
-KYC also known as Know Your Customer/Client is a way to bind verifiable information to a user such as an Identification Card, Driver’s License, or a Passport.
-
-For Ultra's platform, KYC is required if a user wants to access more advanced blockchain features.
-
-## Features for KYC accounts
-
-Currently no features require you to have KYC provided
-
-## KYC request for developers
-
-If you want to deploy a contract or register KYC for your account, please contact us at [developers@ultra.io](developers@ultra.io).
-
----
 title: 'KYC Tables'
 order: 1
 
@@ -2120,7 +2098,6 @@ The **setprchsreq.a**/**setprchsreq.b** action allows the _Asset Manager_ to set
 
 Multiple purchase requirements can be specified for a single factory. In addition to a simple fungible token price (UOS or USD) asset manager can specify the price for an individual purchase option using uniqs from other factories. Those uniqs can be either burnt or transferred to a specified account or simply verify their presence.
 
--   [setprchsreq.a - set purchase requirement](./nft-actions/setprchsreq.a.md)
 -   [setprchsreq.b - set purchase requirement](./nft-actions/setprchsreq.b.md)
 -   [delprchsreq.a - delete purchase requirement](./nft-actions/delprchsreq.a.md)
 -   [purchase.a - purchase a token](./nft-actions/purchase.a.md)
@@ -2180,146 +2157,6 @@ await transact(
         {
             account: 'eosio.nft.ft',
             name: 'acptfctofr.a',
-            authorization: [{ actor: 'alice', permission: 'active' }],
-            data: {
-                owner: "alice",
-                nft_id: 1,
-                offer_id: 2,
-                memo: "accept the offer"
-            },
-        },
-    ],
-    {
-        blocksBehind: 3,
-        expireSeconds: 30,
-    }
-);
-```
-
----
-title: 'acptfctofr.a'
-order: 41
-
----
-
-# acptfctofr.a
-
-Accept the offer made on the Uniq factory.
-
-## Technical Behavior
-
-Note that `acptfctofr.a` is used to accept the offer made by `mkfctofr.a` only.
-
-When the action is executed, the offer should not be expired and the Uniq should be valid (i.e., should have not been burned).
-
-The offered price will be checked again to confirm that it should be no less than `minimum_resell_price` of the factory.
-
-The Uniq will be transferred to the buyer, or the receiver if specified when the offer was made.
-
-The amount of offered price will be split in the same manner as 2nd hand resale, and part of it will be transferred to the owner.
-
-The promoter share, which was specified when `mkfctofr.a` action was called, was transferred to the promoter specified as `promoter_id` argument, or to the default promoter if it is set in `saleshrlmcfg` table.
-
-Shares will be calculated and distributed based on the [2nd Hand Sale Policy](../../../general/antelope-ultra/2nd-hand-sale.md).
-
-The offer will be removed from `fctoffer.a` table.
-
-The Uniq ID will be removed from `buyoffer.a` table and if both `nft_ids` and `factory_ids` fields becomes empty, the buyer's record itself will be removed.
-
-## Action Parameters
-
-| Property Name | C++ Type        | JavaScript Type | Description                  |
-| ------------- | --------------- | --------------- | ---------------------------- |
-| owner         | name            | String          | Account who owns the Uniq    |
-| nft_id        | uint64_t        | Number          | ID of Uniq will be accepted  |
-| offer_id      | uint64_t        | Number          | ID of the offer made on Uniq |
-| promoter_id   | optional\<name> | String/Null     | Promoter account             |
-| memo          | string          | String          | Memo                         |
-
-## CLI - cleos
-
-```bash
-cleos push action eosio.nft.ft acptfctofr.a '{"owner": "alice", "nft_id": 1, "offer_id": 2, "memo": "accept the offer"}' -p alice@active
-```
-
-## JavaScript - eosjs
-
-```js
-await transact(
-    [
-        {
-            account: 'eosio.nft.ft',
-            name: 'acptfctofr.a',
-            authorization: [{ actor: 'alice', permission: 'active' }],
-            data: {
-                owner: "alice",
-                nft_id: 1,
-                offer_id: 2,
-                memo: "accept the offer"
-            },
-        },
-    ],
-    {
-        blocksBehind: 3,
-        expireSeconds: 30,
-    }
-);
-```
-
----
-title: 'acptnftofr.a'
-order: 38
-
----
-
-# acptnftofr.a
-
-Accept the offer made on Uniq.
-
-## Technical Behavior
-
-Note that `acptnftofr.a` is used to accept the offer made by `mknftofr.a` only.
-
-When the action is executed, the offer should not be expired and the Uniq should be valid (i.e., should have not been burned).
-
-The offered price will be checked again to confirm that it should be no less than `minimum_resell_price` of the factory.
-
-The Uniq will be transferred to the buyer, or the receiver if specified when the offer was made.
-
-The amount of offered price will be split in the same manner as 2nd hand resale, and part of it will be transferred to the owner.
-
-The promoter share, which was specified when `mknftofr.a` action was called, was transferred to the promoter specified as `promoter_id` argument, or to the default promoter if it is set in `saleshrlmcfg` table.
-
-Shares will be calculated and distributed based on the [2nd Hand Sale Policy](../../../general/antelope-ultra/2nd-hand-sale.md).
-
-The offer will be removed from `nftoffer.a` table.
-
-The Uniq ID will be removed from `buyoffer.a` table and if both `nft_ids` and `factory_ids` fields becomes empty, the buyer's record itself will be removed. 
-
-## Action Parameters
-
-| Property Name | C++ Type        | JavaScript Type | Description                  |
-| ------------- | --------------- | --------------- | ---------------------------- |
-| owner         | name            | String          | Account who owns the Uniq    |
-| nft_id        | uint64_t        | Number          | ID of Uniq will be accepted  |
-| offer_id      | uint64_t        | Number          | ID of the offer made on Uniq |
-| promoter_id   | optional\<name> | String/Null     | Promoter account             |
-| memo          | string          | String          | Memo                         |
-
-## CLI - cleos
-
-```bash
-cleos push action eosio.nft.ft acptnftofr.a '{"owner": "alice", "nft_id": 1, "offer_id": 2, "memo": "accept the offer"}' -p alice@active
-```
-
-## JavaScript - eosjs
-
-```js
-await transact(
-    [
-        {
-            account: 'eosio.nft.ft',
-            name: 'acptnftofr.a',
             authorization: [{ actor: 'alice', permission: 'active' }],
             data: {
                 owner: "alice",
@@ -4172,19 +4009,17 @@ Sets/Resets the minting limit per account of a token factory
 
 -   limitmint action first verifies the parameters passed to it.
 
-        * token_factory_id - the token factory ID
+    - token_factory_id - the token factory ID
 
-        * account_minting_limit - the number of minting limit per account, or 0 to invalidate the setting
+    - account_minting_limit - the number of minting limit per account, or 0 to invalidate the setting. If not 0 and token factory has a valid max_mintable_tokens (i.e., not null), account_minting_limit should be no more than max_mintable_tokens.
 
-    if not 0 and token factory has a valid max_mintable_tokens (i.e., not null), account_minting_limit should be no more than max_mintable_tokens.
+    - memo - the memo string to accompany the transaction, should be no more than 256 bytes
 
-        * memo - the memo string to accompany the transaction, should be no more than 256 bytes
+    - The action should be called with the token factory manager(asset_manager)’s permission.
 
-        * The action should be called with the token factory manager(asset_manager)’s permission.
+- The action stores account_minting_limit parameter value to the token factory’s account_minting_limit field. If account_minting_limit of 0 is specified, the action resets the token factory’s account_minting_limit field to null.
 
-        * The action stores account_minting_limit parameter value to the token factory’s account_minting_limit field. If account_minting_limit of 0 is specified, the action resets the token factory’s account_minting_limit field to null.
-
-        * Each time when issue action is called, if the token factory has a valid account_minting_limit, minted number of tokens is recorded for each of the token receiver's account in mintstat (mintstat.a) table. If the number of minted tokens has been already reached  account_minting_limit , issue action prevents the receiver from getting any more tokens.
+- Each time when issue action is called, if the token factory has a valid account_minting_limit, minted number of tokens is recorded for each of the token receiver's account in mintstat (mintstat.a) table. If the number of minted tokens has been already reached  account_minting_limit , issue action prevents the receiver from getting any more tokens.
 
 ## RAM Usage
 
@@ -4462,159 +4297,6 @@ await transact(
 );
 ```
 
----
-title: 'mkfctofr.a'
-order: 40
-
----
-
-# mkfctofr.a
-
-Make an offer on a Uniq factory.
-
-## Technical Behavior
-
-The offer should be done at the time which is in the range of trading window of the factory.
-
-The action stores the offer to `fctoffer.a` table with the specified arguments. The new offer ID is read from `next.fctofr` table whose `value` field is then incremented.
-
-`eosio.nftram` pays RAM usage.
-
-The offered price will be transferred to `eosio.nftofr` account and will be kept until the offer is either accepted or cancelled.
-
-An account will not be able to make offers on the same factories that they already made.
-
-An account will not be able to make offers if their total offers (including Uniq and Uniq factory) is more than `max_active_offer_per_user` of `offercfg.a`, which records the global configurations.
-
-`price` should be no less than `min_price` of `offercfg.a` and also should be no less than `minimum_resell_price` of the factory.
-
-`promoter_basis_point` should be in the range between `min_promoter_share_bp` and `max_promoter_share_bp` of `saleshrlmcfg` table configurations for resale. If `saleshrlmcfg` table doesn’t exist, the default range is between 250 (2.5 %) and 1000 (10 %).
-
-`duration` should be in the range between `min_duration` and `max_duration` of `offercfg.a`. If `duration` is longer than the trading window of the factory, it will be capped by `trading_window_end`.
-
-## Action Parameters
-
-| Property Name        | C++ Type        | JavaScript Type | Description                                                                       |
-| -------------------- | --------------- | --------------- | --------------------------------------------------------------------------------- |
-| buyer                | name            | String          | Account who makes an offer                                                        |
-| receiver             | optional\<name> | String/Null     | Account who will receive the Uniq, if not specified, buyer will receive the Uniq. |
-| price                | asset           | String          | Offered price in UOS                                                              |
-| promoter_basis_point | uint16_t        | Number          | Promoter share in units of 0.01 %                                                 |
-| factory_id           | uint64_t        | Number          | ID of Uniq factory                                                                |
-| duration             | uint32_t        | Number          | Offer duration in seconds                                                         |
-| memo                 | string          | String          | Memo                                                                              |
-
-## CLI - cleos
-
-```bash
-cleos push action eosio.nft.ft mkfctofr.a '{"buyer": "alice", "receiver": null, "price": "2.00000000 UOS", "promoter_basis_point": 250, "factory_id": 1, "duration": 86400, "memo": "new offer"}' -p alice@active
-```
-
-## JavaScript - eosjs
-
-```js
-await transact(
-    [
-        {
-            account: 'eosio.nft.ft',
-            name: 'mkfctofr.a',
-            authorization: [{ actor: 'alice', permission: 'active' }],
-            data: {
-                buyer: "alice",
-                receiver: null,
-                price: "2.00000000 UOS",
-                promoter_basis_point: 250,
-                factory_id: 1,
-                duration: 86400,
-                memo: "new offer"
-            },
-        },
-    ],
-    {
-        blocksBehind: 3,
-        expireSeconds: 30,
-    }
-);
-```
-
----
-title: 'mknftofr.a'
-order: 37
-
----
-
-# mknftofr.a
-
-Make an offer on a Uniq.
-
-## Technical Behavior
-
-The offer should be done at the time which is in the range of trading window of the Uniq factory from which the Uniq was issued.
-
-The action stores the offer to `nftoffer.a` table with the specified arguments. The new offer ID is read from `next.nftofr` table whose `value` field is then incremented.
-
-`eosio.nftram` pays RAM usage.
-
-The offered price will be transferred to `eosio.nftofr` account and will be kept until the offer is either accepted or cancelled.
-
-An account will not be able to make offers on the same Uniq that they already made.
-
-An account will not be able to make offers if their total offers (including Uniq and Uniq factory) is more than `max_active_offer_per_user` of `offercfg.a`, which records the global configurations.
-
-`owner` should be neither buyer nor receiver.
-
-`price` should be no less than `min_price` of `offercfg.a` and also should be no less than `minimum_resell_price` of the factory.
-
-`promoter_basis_point` should be in the range between `min_promoter_share_bp` and `max_promoter_share_bp` of `saleshrlmcfg` table configurations for resale. If `saleshrlmcfg` table doesn’t exist, the default range is between 250 (2.5 %) and 1000 (10 %).
-
-`duration` should be in the range between `min_duration` and `max_duration` of `offercfg.a`. If duration is longer than the trading window of the factory, it will be capped by `trading_window_end`.
-
-## Action Parameters
-
-| Property Name        | C++ Type        | JavaScript Type | Description                                                                      |
-| -------------------- | --------------- | --------------- | -------------------------------------------------------------------------------- |
-| buyer                | name            | String          | Account who makes an offer                                                       |
-| receiver             | optional\<name> | String/Null     | Account who will receive the Uniq, if not specified, buyer will receive the Uniq |
-| price                | asset           | String          | Offered price in UOS                                                             |
-| promoter_basis_point | uint16_t        | Number          | Promoter share in units of 0.01 %                                                |
-| owner                | name            | String          | Account who owns the Uniq                                                         |
-| nft_id               | uint64_t        | Number          | ID of Uniq which buyer wants to make offer to                                     |
-| duration             | uint32_t        | Number          | Offer duration in seconds                                                        |
-| memo                 | string          | String          | Memo                                                                             |
-
-## CLI - cleos
-
-```bash
-cleos push action eosio.nft.ft mknftofr.a '{"buyer": "alice", "receiver": null, "price": "2.00000000 UOS", "promoter_basis_point": 250, "owner": "bob", "nft_id": 1, "duration": 86400, "memo": "new offer"}' -p alice@active
-```
-
-## JavaScript - eosjs
-
-```js
-await transact(
-    [
-        {
-            account: 'eosio.nft.ft',
-            name: 'mknftofr.a',
-            authorization: [{ actor: 'alice', permission: 'active' }],
-            data: {
-                buyer: "alice",
-                receiver: null,
-                price: "2.00000000 UOS",
-                promoter_basis_point: 250,
-                owner: "bob",
-                nft_id: 1,
-                duration: 86400,
-                memo: "new offer"
-            },
-        },
-    ],
-    {
-        blocksBehind: 3,
-        expireSeconds: 30,
-    }
-);
-```
 ---
 title: 'mknftofr.a'
 order: 37
@@ -5072,65 +4754,6 @@ await transact(
 ```
 
 ---
-title: 'rmfctofr.a'
-order: 42
-
----
-
-# rmfctofr.a
-
-Cancel the offer made on the Uniq factory.
-
-## Technical Behavior
-
-Note that `rmfctofr.a` is used to cancel the offer made by `mkfctofr.a` only.
-
-A buyer can cancel any of their offers at any time.
-
-Once the offer is expired, anyone can cancel the offer.
-
-When the offer is canceled, the offered price will be transferred from `eosio.nftofr` account back to buyer.
-
-## Action Parameters
-
-| Property Name | C++ Type | JavaScript Type | Description                  |
-| ------------- | -------- | --------------- | ---------------------------- |
-| canceler      | name     | String          | Account who cancels an offer |
-| factory_id    | uint64_t | Number          | ID of Uniq factory           |
-| offer_id      | uint64_t | Number          | ID of the offer made on Uniq |
-| memo          | string   | String          | Memo                         |
-
-## CLI - cleos
-
-```bash
-cleos push action eosio.nft.ft rmfctofr.a '{"canceler": "alice", "factory_id": 1, "offer_id": 2, "memo": "cancel the offer"}' -p alice@active
-```
-
-## JavaScript - eosjs
-
-```js
-await transact(
-    [
-        {
-            account: 'eosio.nft.ft',
-            name: 'rmfctofr.a',
-            authorization: [{ actor: 'alice', permission: 'active' }],
-            data: {
-                canceler: "alice",
-                factory_id: 1,
-                offer_id: 2,
-                memo: "new offer"
-            },
-        },
-    ],
-    {
-        blocksBehind: 3,
-        expireSeconds: 30,
-    }
-);
-```
-
----
 title: 'rmgrpfcts'
 order: 21
 
@@ -5171,65 +4794,6 @@ await transact(
             data: {
                 id: 33,
                 factories: [7, 11, 22],
-            },
-        },
-    ],
-    {
-        blocksBehind: 3,
-        expireSeconds: 30,
-    }
-);
-```
-
----
-title: 'rmnftofr.a'
-order: 39
-
----
-
-# rmnftofr.a
-
-Cancel the offer made on the Uniq
-
-## Technical Behavior
-
-Note that `rmnftofr.a` is used to cancel the offer made by `mknftofr.a` only.
-
-A buyer can cancel any of his offers at any time
-
-Once offer is expired, anyone can cancel the offer.
-
-When an offer is canceled, the offered price will be transferred from `eosio.nftofr` account back to buyer.
-
-## Action Parameters
-
-| Property Name | C++ Type | JavaScript Type | Description                  |
-| ------------- | -------- | --------------- | ---------------------------- |
-| canceler      | name     | String          | Account who cancels an offer |
-| nft_id        | uint64_t | Number          | ID of Uniq                   |
-| offer_id      | uint64_t | Number          | ID of the offer made on Uniq |
-| memo          | string   | String          | Memo                         |
-
-## CLI - cleos
-
-```bash
-cleos push action eosio.nft.ft rmnftofr.a '{"canceler": "alice", "nft_id": 1, "offer_id": 2, "memo": "cancel the offer"}' -p alice@active
-```
-
-## JavaScript - eosjs
-
-```js
-await transact(
-    [
-        {
-            account: 'eosio.nft.ft',
-            name: 'rmnftofr.a',
-            authorization: [{ actor: 'alice', permission: 'active' }],
-            data: {
-                canceler: "alice",
-                nft_id: 1,
-                offer_id: 2,
-                memo: "new offer"
             },
         },
     ],
@@ -5669,7 +5233,7 @@ The factory manager can specify purchase options for users. Note that currently 
 
 `purchase_limit` - how much users can buy via purchase action. It has to be less than factory limit setting and greater or equal to what was already minted via the action. If value provided is below the number of tokens already purchased from this option the `purchase_limit` will be set to be equal to the number of purchased tokens from this option
 
-`promoter_basis_point` is used to specify how much % of a sale a promoter will get.
+`promoter_basis_point` is used to specify how much % of a sale a promoter will get. Minimum value is `0` (0%), maximum value is `1000` (10%). Value range is controlled by `min_promoter_share_bp` and `max_promoter_share_bp` stored in `saleshrlimcfg` table under the scope of `0`.
 
 `purchase_option_with_uniqs` - optional field used to set purchase options via uniqs. user has to have `count` tokens from listed uniq factories. They will be burned, transferred or checked as per `strategy` setting.
 
@@ -5748,11 +5312,11 @@ By understanding this formalization, you can ensure a clear and standardized way
 | index                      | uint64_t                            | number          | Index of the purchase option. Multiple purchase options can be added to a single factory                                                                                                                                                             |
 | price                      | eosio::asset                        | string          | Price of the Uniqs from this purchase option either in UOS or USD. Can also set 0 price                                                                                                                                                              |
 | purchase_limit             | optional\<uint32_t>                 | number / null   | Maximum number of Uniqs that can be purchased from this purchase option. Must not exceed factory minting limit                                                                                                                                       |
-| promoter_basis_point       | uint16_t                            | number          | UOS share received by the promoter with each purchase done for this option. Specified in basis points                                                                                                                                                |
+| promoter_basis_point       | uint16_t                            | number          | UOS share received by the promoter with each purchase done for this option. Specified in basis points. Must be in the range 0-1000                                                                                                                   |
 | purchase_option_with_uniqs | std::optional\<provided_user_uniqs> | Object / null   | Optional feature that allows the purchase option to require user to own uniqs from specific factories or to pay with uniqs from specific factories. Refer to a link below for more details                                                           |
 | sale_shares                | std::vector\<sale_share>            | Array           | A vector of [account, share] pairs setting the share each account receives during the purchase                                                                                                                                                       |
 | maximum_uos_payment        | optional\<eosio::asset>             | asset / null    | Maximum amount of UOS manager allows to be take for the creation of the purchase option. Since the price is fixed in USD the equivalent UOS payment may fluctuate. Using this option will prevent the manager from paying more then he is willing to |
-| group_restriction          | optional\<uint64_t_vector>           | Array / null    | Vector of 64-bit integers specifying logical restrictions based on group membership. Follows specific logical operator rules as outlined above.                                                                                                      |
+| group_restriction          | optional\<uint64_t_vector>          | Array / null    | Vector of 64-bit integers specifying logical restrictions based on group membership. Follows specific logical operator rules as outlined above.                                                                                                      |
 | purchase_window_start      | std::optional\<time_point_sec>      | string / null   | Start time of purchase window (optional)                                                                                                                                                                                                             |
 | purchase_window_end        | std::optional\<time_point_sec>      | string / null   | End time of purchase window (optional)                                                                                                                                                                                                               |
 | memo                       | std::string                         | string          | A short operation description                                                                                                                                                                                                                        |
@@ -5928,7 +5492,7 @@ The factory manager can specify purchase options for users. Note that currently 
 
 `purchase_limit` - how much users can buy via purchase action. It has to be less than factory limit setting and greater or equal to what was already minted via the action. If value provided is below the number of tokens already purchased from this option the `purchase_limit` will be set to be equal to the number of purchased tokens from this option
 
-`promoter_basis_point` is used to specify how much % of a sale a promoter will get.
+`promoter_basis_point` is used to specify how much % of a sale a promoter will get. Minimum value is `0` (0%), maximum value is `1000` (10%). Value range is controlled by `min_promoter_share_bp` and `max_promoter_share_bp` stored in `saleshrlimcfg` table under the scope of `0`.
 
 `purchase_option_with_uniqs` - optional field used to set purchase options via uniqs. user has to have `count` tokens from listed uniq factories. They will be burned, transferred or checked as per `strategy` setting.
 
@@ -6007,11 +5571,11 @@ By understanding this formalization, you can ensure a clear and standardized way
 | index                      | uint64_t                            | number          | Index of the purchase option. Multiple purchase options can be added to a single factory                                                                                                                                                             |
 | price                      | eosio::asset                        | string          | Price of the Uniqs from this purchase option either in UOS or USD. Can also set 0 price                                                                                                                                                              |
 | purchase_limit             | optional\<uint32_t>                 | number / null   | Maximum number of Uniqs that can be purchased from this purchase option. Must not exceed factory minting limit                                                                                                                                       |
-| promoter_basis_point       | uint16_t                            | number          | UOS share received by the promoter with each purchase done for this option. Specified in basis points                                                                                                                                                |
+| promoter_basis_point       | uint16_t                            | number          | UOS share received by the promoter with each purchase done for this option. Specified in basis points. Must be in the range 0-1000                                                                                                                   |
 | purchase_option_with_uniqs | std::optional\<provided_user_uniqs> | Object / null   | Optional feature that allows the purchase option to require user to own uniqs from specific factories or to pay with uniqs from specific factories. Refer to a link below for more details                                                           |
 | sale_shares                | std::vector\<sale_share>            | Array           | A vector of [account, share] pairs setting the share each account receives during the purchase                                                                                                                                                       |
 | maximum_uos_payment        | optional\<eosio::asset>             | asset / null    | Maximum amount of UOS manager allows to be take for the creation of the purchase option. Since the price is fixed in USD the equivalent UOS payment may fluctuate. Using this option will prevent the manager from paying more then he is willing to |
-| group_restriction          | string                              | string          | String representation specifying logical restrictions based on group membership, which will be converted to a vector of 64-bit integers that follows specific logical operator rules as outlined above. Empty string means no restrictions                     |
+| group_restriction          | string                              | string          | String representation specifying logical restrictions based on group membership, which will be converted to a vector of 64-bit integers that follows specific logical operator rules as outlined above. Empty string means no restrictions           |
 | purchase_window_start      | std::optional\<time_point_sec>      | string / null   | Start time of purchase window (optional)                                                                                                                                                                                                             |
 | purchase_window_end        | std::optional\<time_point_sec>      | string / null   | End time of purchase window (optional)                                                                                                                                                                                                               |
 | memo                       | std::string                         | string          | A short operation description                                                                                                                                                                                                                        |
@@ -6620,77 +6184,6 @@ await transact(
 ```
 
 ---
-title: 'stofrcfg.a'
-order: 36
-
----
-
-# stofrcfg.a
-
-Set global Uniq offer configuration
-
-## Behavior
-
-Set global configurations for all Uniq offers that will be made on either a Uniq or a Uniq factory.
-
-## Technical Behavior
-
-Only `ultra.nft.ft` account can set Uniq offer configurations.
-
-The action stores the configurations to `offercfg.a` singleton table with the specified arguments.
-
-All fields are optional, the action will only update the specified arguments and leave the rest the same as existing entry or as the default value if there’s no existing entry.
-
-The action even accepts the same values as the ones currently stored in `offercfg.a`.
-
-`eosio.nft.ft` pays RAM usage.
-
-`min_price` must be positive, and only supports UOS and USD.
-
-Both `min_duration` and `max_duration` must be positive, with `max_duration` must be greater than `min_duration`.
-
-`max_active_offer_per_user` must also be positive.
-
-## Action Parameters
-
-| Property Name             | C++ Type            | JavaScript Type    | Description                                                           |
-| ------------------------- | ------------------- | ------------------ | --------------------------------------------------------------------- |
-| min_price                 | optional\<asset>    | String/Null        | Minimum offer price                                                   |
-| min_duration              | optional\<uint32_t> | Number/String/Null | Minimum offer duration                                                |
-| max_duration              | optional\<uint32_t> | Number/String/Null | Maximum offer duration                                                |
-| max_active_offer_per_user | optional\<uint32_t> | Number/String/Null | Maximum number of offers, which includes both Uniq and factory offers |
-
-## CLI - cleos
-
-```bash
-cleos push action eosio.nft.ft stofrcfg.a '{"min_price": "1.00000000 UOS", "min_duration": 86400, "max_duration": 15552000, "max_active_offer_per_user": 20}' -p ultra.nft.ft@active
-```
-
-## JavaScript - eosjs
-
-```js
-await transact(
-    [
-        {
-            account: 'eosio.nft.ft',
-            name: 'stofrcfg.a',
-            authorization: [{ actor: 'ultra.nft.ft', permission: 'active' }],
-            data: {
-                min_price: "1.00000000 UOS",
-                min_duration: 86400,
-                max_duration: 15552000,
-                max_active_offer_per_user: 20
-            },
-        },
-    ],
-    {
-        blocksBehind: 3,
-        expireSeconds: 30,
-    }
-);
-```
-
----
 title: 'transfer'
 order: 29
 
@@ -6862,1454 +6355,6 @@ This also corresponds with the factories that belong to this group.
 -   [addgrpfcts](./nft-actions/addgrpfcts.md)
 -   [rmgrpfcts](./nft-actions/rmgrpfcts.md)
 
----
-title: 'NFT Tables'
-order: 1
-
----
-
-# NFT Tables
-
-## factory.b
-
--   Table: `factory.b`
--   Code: `eosio.nft.ft`
--   Scope: `eosio.nft.ft`
--   Key: `id`
-
-The table contains Uniq factories' settings and the operational info.
-
-| Fields                  | Type                              | Description                                                                                                                            |
-| ----------------------- | --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| id                      | uint64_t                          | (primary key) The Uniq factory ID                                                                                                      |
-| asset_manager           | eosio::name                       | Account that manages the Uniq lifecycle - issuing, burning, reselling etc.                                                             |
-| asset_creator           | eosio::name                       | Account that ceates the Uniq factory.                                                                                                  |
-| minimum_resell_price    | eosio::asset                      | A minimum price when resell on marketplaces.                                                                                           |
-| resale_shares           | std::vector\<eosio::resale_share> | A vector of [account, share] pairs setting the share each account receives during the Uniq resale.                                     |
-| mintable_window_start   | std::optional\<uint32_t>          | The beginning of the time window when Uniqs can be minted.                                                                             |
-| mintable_window_end     | std::optional\<uint32_t>          | The end of the time window when Uniqs can be minted.                                                                                   |
-| trading_window_start    | std::optional\<uint32_t>          | The beginning of the time window when Uniqs can be traded.                                                                             |
-| trading_window_end      | std::optional\<uint32_t>          | The end of the time window when Uniqs can be traded.                                                                                   |
-| recall_window_start     | std::optional\<uint32_t>          | *Disabled*. The beginning of the time window when Uniqs can be recalled.                                                               |
-| recall_window_end       | std::optional\<uint32_t>          | *Disabled*. The beginning of the time window when Uniqs can be recalled.                                                               |
-| lockup_time             | std::optional\<uint32_t>          | *Disabled*. The time window since Uniq minting in which the Uniq cannot be transferred                                                 |
-| conditionless_receivers | std::vector\<eosio::name>         | A set of Uniq receiver account Uniqs can be transferred to without any restrictions - like trading windows, minimum resell price, etc. |
-| stat                    | uint8_t                           | The Uniq factory status:0 = active - fully functional1 = inactive - cannot mint2 = shutdown - cannot mint or set active                |
-| factory_uri             | std::string                       | The Uniq factory metadata URI vector.                                                                                                  |
-| factory_hash            | eosio::checksum256                | The Uniq factory metadata hash.                                                                                                        |
-| max_mintable_tokens     | std::optional\<uint32_t>          | The maximal number of Uniqs that can be minted with the factory.                                                                       |
-| minted_tokens_no        | uint32_t                          | The number of minted Uniqs.                                                                                                            |
-| existing_tokens_no      | uint32_t                          | The number of minted minus number of burnt Uniqs.                                                                                      |
-| authorized_tokens_no    | std::optional\<uint32_t>          | The current quantity of Uniqs that authorized minters can issue                                                                        |
-| account_minting_limit   | std::optional\<uint32_t>          | The limit of Uniqs that can be minted to each individual account                                                                       |
-| transfer_window_start   | std::optional\<uint32_t>          | The beginning fo the time window when Uniqs can be transferred                                                                         |
-| transfer_window_end     | std::optional\<uint32_t>          | The end of the time window when Uniqs can be transferred                                                                               |
-| default_token_uri       | std::string                       | The default Uniq metadata URI for Uniqs without dedicated URI                                                                          |
-| default_token_hash      | std::optional\<checksum256>       | The default Uniq metadata hash                                                                                                         |
-| lock_hash               | bool                              | Controls whether metadata of the factory, Uniqs or default Uniqs could be changed                                                      |
-
-Most relevant actions: **create.b, issue.b, settknmeta, setdflttkn, setcondrecv, setmeta.b, setstatus**
-
-## factory.a
-
--   Table: `factory.a`
--   Code: `eosio.nft.ft`
--   Scope: `eosio.nft.ft`
--   Key: `id`
-
-The table contains uniq factories settings and the operational info.
-
-::: warning
-Deprecated. Refer to `factory.b` instead
-:::
-
-| Fields                          | Type                              | Description                                                                                                                            |
-| ------------------------------- | --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| id                              | uint64_t                          | (primary key) The Uniq factory ID                                                                                                      |
-| asset_manager                   | eosio::name                       | Account that manages the Uniq lifecycle - issuing, burning, reselling etc.                                                             |
-| asset_creator                   | eosio::name                       | Account that creates the Uniq factory.                                                                                                 |
-| conversion_rate_oracle_contract | eosio::name                       | *Deprecated*. Please do not use.                                                                                                       |
-| chosen_rate                     | std::vector\<eosio::asset>        | *Deprecated*. Please do not use.                                                                                                       |
-| minimum_resell_price            | eosio::asset                      | A minimum price when resell on marketplaces.                                                                                           |
-| resale_shares                   | std::vector\<eosio::resale_share> | A vector of [account, share] pairs setting the share each account receives during the Uniq resale.                                     |
-| mintable_window_start           | std::optional\<uint32_t>          | The beginning of the time window when Uniqs can be minted.                                                                             |
-| mintable_window_end             | std::optional\<uint32_t>          | The end of the time window when Uniqs can be minted.                                                                                   |
-| trading_window_start            | std::optional\<uint32_t>          | The beginning of the time window when Uniqs can be traded.                                                                             |
-| trading_window_end              | std::optional\<uint32_t>          | The end of the time window when Uniqs can be traded.                                                                                   |
-| recall_window_start             | std::optional\<uint32_t>          | The beginning of the time window when Uniqs can be recalled.                                                                           |
-| recall_window_end               | std::optional\<uint32_t>          | The beginning of the time window when Uniqs can be recalled.                                                                           |
-| lockup_time                     | std::optional\<uint32_t>          | The time window since Uniq minting in which the Uniq cannot be transferred                                                             |
-| conditionless_receivers         | std::vector\<eosio::name>         | A set of Uniq receiver account Uniqs can be transferred to without any restrictions - like trading windows, minimum resell price, etc. |
-| stat                            | uint8_t                           | The Uniq factory status:0 = active - fully functional1 = inactive - cannot mint2 = shutdown - cannot mint or set active                |
-| meta_uris                       | std::vector\<std::string>         | The Uniq factory metadata URI vector.                                                                                                  |
-| meta_hash                       | eosio::checksum256                | The Uniq factory metadata hash.                                                                                                        |
-| max_mintable_tokens             | std::optional\<uint32_t>          | The maximal number of Uniqs that can be minted with the factory.                                                                       |
-| minted_tokens_no                | uint32_t                          | The number of minted Uniqs.                                                                                                            |
-| existing_tokens_no              | uint32_t                          | The number of minted minus number of burnt Uniqs.                                                                                      |
-
-Most relevant actions: **create, issue, setcondrecv, setmeta, setstatus**
-
--   `cleos` Query Example
-
-```sh
-cleos get table eosio.nft.ft eosio.nft.ft factory.a
-```
-
--   `curl` query example
-
-```sh
-curl <NODEOS_API_IP>/v1/chain/get_table_rows -X POST -d '{"scope":"eosio.nft.ft", "code":"eosio.nft.ft", "table":"factory.a", "json": true}'
-```
-
----
-
-## token.b
-
--   Table: `token.b`
--   Code: `eosio.nft.ft`
--   Scope: `account`
--   Key: `id`
-
-The table stores the Uniqs owned by a user.
-
-| Fields           | Type                               | Description                                             |
-| ---------------- | ---------------------------------- | ------------------------------------------------------- |
-| id               | uint64_t                           | (primary key) Global Uniq ID                            |
-| token_factory_id | uint64_t                           | The Uniq factory ID the Uniq was issued with.           |
-| mint_date        | eosio::time_point_sec              | The Uniq mint date.                                     |
-| serial_number    | uint32_t                           | The ordinal number of the Uniq assigned during issuance |
-| uri              | std::optional\<string>             | URI pointing to the metadata of this Uniq               |
-| hash             | std::optional\<eosio::checksum256> | hash of the metadata for this Uniq                      |
-
-Most relevant actions: **buy**, **burn**, **issue.b**, **resell**.
-
--   `cleos` Query Example
-
-```sh
-cleos get table eosio.nft.ft <ACCOUNT> token.b
-```
-
--   `curl` query example
-
-```sh
-curl <NODEOS_API_IP>/v1/chain/get_table_rows -X POST -d '{"scope":"<ACCOUNT>", "code":"eosio.nft.ft", "table":"token.b", "json": true}'
-```
-
----
-
-## token.a
-
--   Table: `token.a`
--   Code: `eosio.nft.ft`
--   Scope: `account`
--   Key: `id`
-
-The table stores the Uniqs owned by a user.
-
-::: warning
-Deprecated. Refer to `token.b` instead
-:::
-
-| Fields           | Type                  | Description                                             |
-| ---------------- | --------------------- | ------------------------------------------------------- |
-| id               | uint64_t              | (primary key) Global Uniq ID                            |
-| token_factory_id | uint64_t              | The Uniq factory ID the Uniq was issued with.           |
-| mint_date        | eosio::time_point_sec | The Uniq mint date.                                     |
-| serial_number    | uint32_t              | The ordinal number of the Uniq assigned during issuance |
-
-Most relevant actions: **buy, burn**, **issue, resell**.
-
--   `cleos` Query Example
-
-```sh
-cleos get table eosio.nft.ft <ACCOUNT> token.a
-```
-
--   `curl` query example
-
-```sh
-curl <NODEOS_API_IP>/v1/chain/get_table_rows -X POST -d '{"scope":"<ACCOUNT>", "code":"eosio.nft.ft", "table":"token.a", "json": true}'
-```
-
----
-
-## resale.a
-
--   Table: `resale.a`
--   Code: `eosio.nft.ft`
--   Scope: `eosio.nft.ft`
--   Key: `token_id`
-
-The table stores Uniqs for resale.
-
-| Fields               | Type         | Description                            |
-| -------------------- | ------------ | -------------------------------------- |
-| token_id             | uint64_t     | (primary key) Global Uniq ID           |
-| owner                | eosio::name  | The Uniq owner account.                |
-| price                | eosio::asset | The Uniq resale price.                 |
-| promoter_basis_point | uint16_t     | The Uniq resale advertiser commission. |
-
-Most relevant actions: **resell, cancellresell**
-
--   `cleos` Query Example
-
-```sh
-cleos get table eosio.nft.ft eosio.nft.ft resale.a
-```
-
--   `curl` query example
-
-```sh
-curl <NODEOS_API_IP>/v1/chain/get_table_rows -X POST -d '{"scope":"eosio.nft.ft", "code":"eosio.nft.ft", "table":"resale.a", "json": true}'
-```
-
----
-
-## authmintrs.a
-
--   Table: `authmintrs.a`
--   Code: `eosio.nft.ft`
--   Scope: `Uniq factory ID`
--   Key: `authorized_minter`
-
-The table stores information about Uniq minters permitted by uniq factories asset managers or other authorized minters to issue Uniqs.
-
-| Fields            | Type        | Description                                         |
-| ----------------- | ----------- | --------------------------------------------------- |
-| authorized_minter | eosio::name | (primary key) The authorized minter account.        |
-| quantity          | uint32_t    | The number of Uniqs the authorized minter can mint. |
-
-Most relevant actions: **authminter, issue**
-
--   `cleos` Query Example
-
-```sh
-cleos get table eosio.nft.ft <UNIQ FACTORY ID> authmintrs.a
-```
-
--   `curl` query example
-
-```sh
-curl <NODEOS_API_IP>/v1/chain/get_table_rows -X POST -d '{"scope":"<UNIQ FACTORY ID>", "code":"eosio.nft.ft", "table":"authmintrs.a", "json": true}'
-```
-
-## global.share
-
--   Table: `global.share`
--   Code: `eosio.nft.ft`
--   Scope: `eosio.nft.ft` (for second hand), `0` (for first hand)
--   Key: N/A
-
-The table stores information about global share of each first hand purchase or second hand Uniq sale: which account and how many basis points it receives (each basis point = 0.01%)
-
-| Fields      | Type        | Description                                     |
-| ----------- | ----------- | ----------------------------------------------- |
-| receiver    | eosio::name | Receiver of the global sale share               |
-| basis_point | uint16_t    | Share of the sale specified in the basis points |
-
-Most relevant actions: `buy`, `resell`, `globalshare`, `fhglobalshr`, `purchase.a`
-
--   `cleos` Query Example
-
-```sh
-cleos get table eosio.nft.ft eosio.nft.ft global.share
-```
-
--   `curl` query example
-
-```sh
-curl <NODEOS_API_IP>/v1/chain/get_table_rows -X POST -d '{"scope":"eosio.nft.ft", "code":"eosio.nft.ft", "table":"global.share", "json": true}'
-```
-
-## migration
-
--   Table: `migration`
--   Code: `eosio.nft.ft`
--   Scope: `eosio.nft.ft`
--   Key: N/A
-
-The table stores information about current active Uniq standard version and flags used to indicate the status of the migration
-
-| Fields                | Type     | Description                                                                                                                                                         |
-| --------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| active_nft_version    | uint64_t | Version of the current active Uniq standard                                                                                                                         |
-| table_migration_stats | uint16_t | Bitmask storing information about the status of the migration. `factory_a_migration_done = 0x0000'0000'0000'0001`, `token_a_migration_done = 0x0000'0000'0000'0002` |
-
-Most relevant actions: `migration`, `mgrfactories`, `mgrnfts`, `setnftmgrflg`
-
--   `cleos` Query Example
-
-```sh
-cleos get table eosio.nft.ft eosio.nft.ft migration
-```
-
--   `curl` query example
-
-```sh
-curl <NODEOS_API_IP>/v1/chain/get_table_rows -X POST -d '{"scope":"eosio.nft.ft", "code":"eosio.nft.ft", "table":"migration", "json": true}'
-```
-
-## next.factory
-
--   Table: `next.factory`
--   Code: `eosio.nft.ft`
--   Scope: `0`
--   Key: N/A
-
-The table stores information about the ID of the next created Uniq factory
-
-| Fields | Type     | Description                                        |
-| ------ | -------- | -------------------------------------------------- |
-| value  | uint64_t | ID that the next created Uniq factory will receive |
-
-Most relevant actions: `create`, `create.b`
-
--   `cleos` Query Example
-
-```sh
-cleos get table eosio.nft.ft 0 next.factory
-```
-
--   `curl` query example
-
-```sh
-curl <NODEOS_API_IP>/v1/chain/get_table_rows -X POST -d '{"scope":"0", "code":"eosio.nft.ft", "table":"next.factory", "json": true}'
-```
-
-## next.token
-
--   Table: `next.token`
--   Code: `eosio.nft.ft`
--   Scope: `0`
--   Key: N/A
-
-The table stores information about the ID of the next issued Uniq
-
-| Fields | Type     | Description                               |
-| ------ | -------- | ----------------------------------------- |
-| value  | uint64_t | ID that the next issued Uniq will receive |
-
-Most relevant actions: `issue`, `issue.b`
-
--   `cleos` Query Example
-
-```sh
-cleos get table eosio.nft.ft 0 next.token
-```
-
--   `curl` query example
-
-```sh
-curl <NODEOS_API_IP>/v1/chain/get_table_rows -X POST -d '{"scope":"0", "code":"eosio.nft.ft", "table":"next.token", "json": true}'
-```
-
-## next.fct.grp
-
--   Table: `next.fct.grp`
--   Code: `eosio.nft.ft`
--   Scope: `0`
--   Key: N/A
-
-The table stores information about the ID of the next created factory group
-
-| Fields | Type     | Description                                        |
-| ------ | -------- | -------------------------------------------------- |
-| value  | uint64_t | ID that the next created Uniq factory will receive |
-
-Most relevant actions: `creategrp`
-
--   `cleos` Query Example
-
-```sh
-cleos get table eosio.nft.ft 0 next.fct.grp
-```
-
--   `curl` query example
-
-```sh
-curl <NODEOS_API_IP>/v1/chain/get_table_rows -X POST -d '{"scope":"0", "code":"eosio.nft.ft", "table":"next.fct.grp", "json": true}'
-```
-
-## tfcreateflag
-
--   Table: `tfcreateflag`
--   Code: `eosio.nft.ft`
--   Scope: `eosio.nft.ft`
--   Key: N/A
-
-The table stores information about whether the creation of uniq factories by accounts other than Ultra is allowed
-
-| Fields        | Type | Description                                                                      |
-| ------------- | ---- | -------------------------------------------------------------------------------- |
-| require_ultra | bool | Whether Ultra permission is required to create a Uniq factory. Default is `true` |
-
-Most relevant actions: `create.b`
-
--   `cleos` Query Example
-
-```sh
-cleos get table eosio.nft.ft eosio.nft.ft tfcreateflag
-```
-
--   `curl` query example
-
-```sh
-curl <NODEOS_API_IP>/v1/chain/get_table_rows -X POST -d '{"scope":"eosio.nft.ft", "code":"eosio.nft.ft", "table":"tfcreateflag", "json": true}'
-```
-
-## mintstat.a
-
--   Table: `mintstat.a`
--   Code: `eosio.nft.ft`
--   Scope: `Uniq factory ID`
--   Key: `user`
-
-The table stores information about how many Uniqs were minted to the specific user account. Utilized to check against minting limit within the Uniq factory
-
-| Fields | Type     | Description                                                          |
-| ------ | -------- | -------------------------------------------------------------------- |
-| user   | name     | Account name of the user                                             |
-| minted | uint32_t | Number of Uniqs that were minted to this user from this Uniq factory |
-
-Most relevant actions: `issue`, `issue.b`
-
--   `cleos` Query Example
-
-```sh
-cleos get table eosio.nft.ft 15 mintstat.a
-```
-
--   `curl` query example
-
-```sh
-curl <NODEOS_API_IP>/v1/chain/get_table_rows -X POST -d '{"scope":"15", "code":"eosio.nft.ft", "table":"mintstat.a", "json": true}'
-```
-
-## ramvault.a
-
--   Table: `ramvault.a`
--   Code: `eosio.nft.ft`
--   Scope: `eosio.nft.ft`
--   Key: `owner`
-
-The table stores information about the utilization of RAM vault per account with usage and UOS payment done
-
-| Fields  | Type    | Description                         |
-| ------- | ------- | ----------------------------------- |
-| owner   | name    | Owner of this RAM vault entry       |
-| usage   | int64_t | Current RAM usage of the vault RAM  |
-| payment | int64_t | Total payment done to the RAM vault |
-
-Most relevant actions: `create.b`, `issue.b`, `clrmintst`
-
--   `cleos` Query Example
-
-```sh
-cleos get table eosio.nft.ft eosio.nft.ft ramvault.a
-```
-
--   `curl` query example
-
-```sh
-curl <NODEOS_API_IP>/v1/chain/get_table_rows -X POST -d '{"scope":"eosio.nft.ft", "code":"eosio.nft.ft", "table":"ramvault.a", "json": true}'
-```
-
-## factorygrp.a
-
--   Table: `factorygrp.a`
--   Code: `eosio.nft.ft`
--   Scope: `eosio.nft.ft`
--   Key: `id`
-
-The table stores information about the utilization of RAM vault per account with usage and UOS payment done
-
-| Fields      | Type                   | Description                                                  |
-| ----------- | ---------------------- | ------------------------------------------------------------ |
-| id          | uint64_t               | ID of this Uniq factory group                                |
-| manager     | eosio::name            | Manager of the factory group                                 |
-| uri         | std::string            | URI of the factory group metadata                            |
-| hash        | eosio::checksum256     | Hash of the factory group metadata                           |
-| factories   | std::vector\<uint64_t> | Array of factories in the Uniq factory group                 |
-| uos_payment | int64_t                | UOS payment charged during the creation of the factory group |
-
-Most relevant actions: `creategrp`, `deletegrp`
-
--   `cleos` Query Example
-
-```sh
-cleos get table eosio.nft.ft eosio.nft.ft factorygrp.a
-```
-
--   `curl` query example
-
-```sh
-curl <NODEOS_API_IP>/v1/chain/get_table_rows -X POST -d '{"scope":"eosio.nft.ft", "code":"eosio.nft.ft", "table":"factorygrp.a", "json": true}'
-```
-
-## saleshrlimcfg
-
--   Table: `saleshrlmcfg`
--   Code: `eosio.nft.ft`
--   Scope: `0 - first hand, 1 - second hand`
--   Key: N/A
-
-The table stores information about maximum share basis points that can be distributed during Uniq purchase
-
-| Fields                    | Type                        | Description                                                                                         |
-| ------------------------- | --------------------------- | --------------------------------------------------------------------------------------------------- |
-| max_ultra_share_bp        | uint16_t                    | Maximum protocol fee that can be configured with `globalshare`                                      |
-| max_factory_share_bp      | uint16_t                    | Maximum total resale shares that can be specified during Uniq factory creation                      |
-| min_promoter_share_bp     | uint16_t                    | Minimum allowed promoter fee for first-hand or second-hand purchase (depending on scope)            |
-| max_promoter_share_bp     | uint16_t                    | Maximum allowed promoter fee for first-hand or second-hand purchase (depending on scope) metadata   |
-| default_promoter          | std::optional\<eosio::name> | Default promoter used during first-hand or second-hand purchase if none was specified in the action |
-| promoter_payments_enabled | bool                        | Whether the promoter shares are enabled globally                                                    |
-
-Most relevant actions: `setsharelim`
-
--   `cleos` Query Example
-
-```sh
-cleos get table eosio.nft.ft 0 saleshrlmcfg
-```
-
--   `curl` query example
-
-```sh
-curl <NODEOS_API_IP>/v1/chain/get_table_rows -X POST -d '{"scope":0, "code":"eosio.nft.ft", "table":"saleshrlmcfg", "json": true}'
-```
-
-## fctrprchs.a
-
--   Table: `fctrprchs.a`
--   Code: `eosio.nft.ft`
--   Scope: `Uniq factory ID`
--   Key: `id`
-
-The table stores information about the utilization of RAM vault per account with usage and UOS payment done
-
-| Fields                     | Type                                            | Description                                                                                                                                        |
-| -------------------------- | ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| id                         | uint64_t                                        | ID of this purchase requirement                                                                                                                    |
-| price                      | asset                                           | Price of the uniq specified in UOS or USD                                                                                                          |
-| purchase_limit             | uint32_t                                        | Max number of uniqs that can be purchased with this purchase option                                                                                |
-| purchased_tokens_no        | uint16_t                                        | Number of uniqs that were already purchased using this option (Default: 0)                                                                         |
-| promoter_basis_point       | uint16_t                                        | UOS share received by the promoter with each purchase done for this option. Specified in basis points. 1 means 0.01%                               |
-| purchase_option_with_uniqs | std::optional\<purchase_requirement_with_uniqs> | Optional feature that allows the purchase option to require user to own uniqs from specific factories or to pay with uniqs from specific factories |
-| sale_shares                | std::vector\<sale_share>                        | A vector of [account, share] pairs setting the share each account receives during the purchase                                                     |
-| uos_payment                | int64_t                                         | UOS payment charged during the creation of the purchase option                                                                                     |
-| purchase_window_start      | std::optional\<eosio::time_point_sec>           | Optional start of the purchase window. Cannot purchase using this option until the start                                                           |
-| purchase_window_end        | std::optional\<eosio::time_point_sec>           | Optional end of the purchase window. Cannot purchase using this option after the end                                                               |
-| group_restriction          | std::optional\<uint64_t_vector>                 | Optional user group requirement can be specified                                                                                                   |
-
-Most relevant actions: `setprchsreq.a`, `setprchsreq.b`, `delprchsreq.a`, `purchase.a`
-
--   `cleos` Query Example
-
-```sh
-cleos get table eosio.nft.ft 123 fctrprchs.a
-```
-
--   `curl` query example
-
-```sh
-curl <NODEOS_API_IP>/v1/chain/get_table_rows -X POST -d '{"scope":"123", "code":"eosio.nft.ft", "table":"fctrprchs.a", "json": true}'
-```
-
-The tables below describe the structure and usage of each of the fields inside `purchase_option_with_uniqs` and `uniqs_count` structures that can be provided 
-
-### `purchase_option_with_uniqs` type
-
-| Field                            | Type                        | Description                                                                                                                                                |
-| -------------------------------- | --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| transfer_tokens_receiver_account | std::optional\<eosio::name> | If any of the `factories` specified contain a requirement with `transfer` strategy then this account will be the one to receive the uniq during `purchase` |
-| factories                        | std::vector\<uniqs_count>   | List of purchase requirements using uniqs from other factories. Description of the `uniqs_count` type provided below                                       |
-
-### `uniqs_count` type
-
-| Field            | Type     | Description                                                                                                                                                                                                                                                                                                                        |
-| ---------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| token_factory_id | uint64_t | ID of the factory that the user needs to have Uniqs from                                                                                                                                                                                                                                                                           |
-| count            | uint32_t | How many Uniqs are needed from the specified factory                                                                                                                                                                                                                                                                               |
-| strategy         | uint8_t  | Can be either `check` (use 0), `burn` (use 1), `transfer` (use 2). If `check` is used - only the presence of the Uniqs is validated, no change occurs. If `burn` is specified - provided uniq from the factory will be burnt. If `transfer` is specified - provided uniq will be transferred to `transfer_tokens_receiver_account` |
-
-### `group_restriction` type
-
-By default, regardless of which action version is used, `group_restriction` will be saved as vector of 64-bit integers. This might be hard to read since it includes logical expression with the value. For example: `2305843009213693953` means `NOT 1` or `~1`.
-
-To be displayed as human-readable values, we recommend you implement some conversion on your side. Here is our small JavaScript example to convert 64-bit integer to readable string. You can run the included demo with `node user-group-converter.js`.
-
-```js
-// user-group-converter.js
-const { isBigUint64Array } = require("util/types")
-
-const OR_MASK       = 0x1000000000000000n   // 0: AND, 1: OR (= 1152921504606846976)
-const NEGATION_MASK = 0x2000000000000000n   // 0: No Negation, 1: Negation (= 2305843009213693952)
-const GROUP_ID_MASK = ~(OR_MASK + NEGATION_MASK)
-
-/* RULES
-- 1st element in group restriction array should not contain OR or AND
-- Combination rules: [OR] + [NEGATION] + [group_id]
-    + &[group_id]   = 0                     + 0                     + [group_id]
-    + |[group_id]   = 1152921504606846976   + 0                     + [group_id]
-    + ~[group_id]   = 0                     + 2305843009213693952   + [group_id]
-    + |~[group_id]  = 1152921504606846976   + 2305843009213693952   + [group_id]
-*/
-
-const expression_to_string = (group, firstIndex = false) => {
-    var result = ""
-    
-    // OR Extraction
-    if (!firstIndex) {
-        if ((group & OR_MASK) == OR_MASK)
-            result += "|" // OR
-        else
-            result += "&" // AND
-    }
-
-    // NEGATION Extraction
-    if ((group & NEGATION_MASK) == NEGATION_MASK)
-        result += "~" // NOT
-
-    // Group ID Extraction
-    result += group & GROUP_ID_MASK
-    
-    return result;
-}
-
-const convert_group_restrictions = (groupRestrictions) => {
-
-    var result = ""
-
-    if (!isBigUint64Array(groupRestrictions) || groupRestrictions.length == 0)
-        return result
-    
-    for (var i = 0; i < groupRestrictions.length; ++i) {
-        result += expression_to_string(groupRestrictions[i], i == 0);
-    }
-
-    return result
-}
-
-const demo = () => {
-    const groups = new BigUint64Array([2305843009213693953n, 2n, 3458764513820540931n]) // = "~1&2|~3"
-    console.log(convert_group_restrictions(groups))
-}
-
-demo()
-```
-
-## offercfg.a
-
--   Table: `offercfg.a`
--   Code: `eosio.nft.ft`
--   Scope: `eosio.nft.ft`
--   Key: `N/A`
-
-The table stores information about global Uniq offer configuration
-
-| Fields                    | Type     | Description                                                              |
-| ------------------------- | -------- | ------------------------------------------------------------------------ |
-| min_price                 | asset    | Minimum offer price in UOS or USD (Default: 1 UOS)                       |
-| min_duration              | uint32_t | Minimum duration for offer in seconds (Default: 86400 sec or 1 day)      |
-| max_duration              | uint32_t | Maximum duration for offer in seconds (Default: 15552000 sec or 180 day) |
-| max_active_offer_per_user | uint32_t | Maximum active offer per user (Default: 50)                              |
-
-Most relevant actions: `stofrcfg.a`
-
--   `cleos` Query Example
-
-```sh
-cleos get table eosio.nft.ft eosio.nft.ft offercfg.a
-```
-
--   `curl` query example
-
-```sh
-curl <NODEOS_API_IP>/v1/chain/get_table_rows -X POST -d '{"scope":"eosio.nft.ft", "code":"eosio.nft.ft", "table":"offercfg.a", "json": true}'
-```
-
-## next.nftofr
-
--   Table: `next.nftofr`
--   Code: `eosio.nft.ft`
--   Scope: `0`
--   Key: N/A
-
-The table stores information about the ID of the next created Uniq offer
-
-| Fields | Type     | Description                                      |
-| ------ | -------- | ------------------------------------------------ |
-| value  | uint64_t | ID that the next created Uniq offer will receive |
-
-Most relevant actions: `mknftofr.a`
-
--   `cleos` Query Example
-
-```sh
-cleos get table eosio.nft.ft 0 next.nftofr
-```
-
--   `curl` query example
-
-```sh
-curl <NODEOS_API_IP>/v1/chain/get_table_rows -X POST -d '{"scope":"0", "code":"eosio.nft.ft", "table":"next.nftofr", "json": true}'
-```
-
-## nftoffer.a
-
--   Table: `nftoffer.a`
--   Code: `eosio.nft.ft`
--   Scope: `Uniq ID`
--   Key: `id`
-
-The table stores information about the offer made by the buyer for specific Uniq ID
-
-| Fields               | Type                 | Description                                                                                  |
-| -------------------- | -------------------- | -------------------------------------------------------------------------------------------- |
-| offer_id             | uint64_t             | Uniq offer ID                                                                                |
-| buyer                | name                 | Buyer who makes the offer for the Uniq                                                       |
-| receiver             | std::optional\<name> | User who will receive the Uniq if offer is accepted, if specified                            |
-| price                | asset                | Offer price in UOS                                                                           |
-| promoter_basis_point | uint16_t             | UOS share received by the promoter with this offer. Specified in basis points. 1 means 0.01% |
-| expiry_date          | time_point_sec       | Expiry date of the offer                                                                     |
-
-Most relevant actions: `mknftofr.a`
-
--   `cleos` Query Example
-
-```sh
-cleos get table eosio.nft.ft <UNIQ ID> nftoffer.a
-```
-
--   `curl` query example
-
-```sh
-curl <NODEOS_API_IP>/v1/chain/get_table_rows -X POST -d '{"scope":"<UNIQ ID>", "code":"eosio.nft.ft", "table":"nftoffer.a", "json": true}'
-```
-
-## next.fctofr
-
--   Table: `next.fctofr`
--   Code: `eosio.nft.ft`
--   Scope: `0`
--   Key: `N/A`
-
-The table stores information about the ID of the next created Uniq offer
-
-| Fields | Type     | Description                                              |
-| ------ | -------- | -------------------------------------------------------- |
-| value  | uint64_t | ID that the next created Uniq factory offer will receive |
-
-Most relevant actions: `mkfctofr.a`
-
--   `cleos` Query Example
-
-```sh
-cleos get table eosio.nft.ft 0 next.fctofr
-```
-
--   `curl` query example
-
-```sh
-curl <NODEOS_API_IP>/v1/chain/get_table_rows -X POST -d '{"scope":"0", "code":"eosio.nft.ft", "table":"next.fctofr", "json": true}'
-```
-
-## fctoffer.a
-
--   Table: `fctoffer.a`
--   Code: `eosio.nft.ft`
--   Scope: `Uniq factory ID`
--   Key: `id`
-
-The table stores information about the offer made by the buyer for specific Uniq factory ID
-
-| Fields               | Type                 | Description                                                                                  |
-| -------------------- | -------------------- | -------------------------------------------------------------------------------------------- |
-| offer_id             | uint64_t             | Uniq factory offer ID                                                                        |
-| buyer                | name                 | Buyer who makes the offer for Uniq factory                                                   |
-| receiver             | std::optional\<name> | User who will receive the Uniq if offer is accepted, if specified                            |
-| price                | asset                | Offer price in UOS                                                                           |
-| promoter_basis_point | uint16_t             | UOS share received by the promoter with this offer. Specified in basis points. 1 means 0.01% |
-| expiry_date          | time_point_sec       | Expiry date of the offer                                                                     |
-
-Most relevant actions: `mkfctofr.a`
-
--   `cleos` Query Example
-
-```sh
-cleos get table eosio.nft.ft <UNIQ FACTORY ID> fctoffer.a
-```
-
--   `curl` query example
-
-```sh
-curl <NODEOS_API_IP>/v1/chain/get_table_rows -X POST -d '{"scope":"<UNIQ FACTORY ID>", "code":"eosio.nft.ft", "table":"fctoffer.a", "json": true}'
-```
-
-## buyoffer.a
-
--   Table: `buyoffer.a`
--   Code: `eosio.nft.ft`
--   Scope: `eosio.nft.ft`
--   Key: `account`
-
-The table stores the Uniq IDs and Uniq factory IDs on which the buyer made offers.
-
-| Fields      | Type                  | Description                                                             |
-| ----------- | --------------------- | ----------------------------------------------------------------------- |
-| buyer       | name                  | Buyer account                                                           |
-| nft_ids     | std:vector\<uint64_t> | Uniq IDs of all offers made by buyer, sorted in ascending order         |
-| factory_ids | std:vector\<uint64_t> | Uniq factory IDs of all offers made by buyer, sorted in ascending order |
-
-Most relevant actions: `mkfctofr.a`
-
--   `cleos` Query Example
-
-```sh
-cleos get table eosio.nft.ft eosio.nft.ft buyoffer.a
-```
-
--   `curl` query example
-
-```sh
-curl <NODEOS_API_IP>/v1/chain/get_table_rows -X POST -d '{"scope":"eosio.nft.ft", "code":"eosio.nft.ft", "table":"buyoffer.a", "json": true}'
-```
-
----
-title: 'NFT Tables'
-order: 1
-
----
-
-# NFT Tables
-
-## factory.b
-
--   Table: `factory.b`
--   Code: `eosio.nft.ft`
--   Scope: `eosio.nft.ft`
--   Key: `id`
-
-The table contains uniq factories settings and the operational info.
-
-| Fields                  | Type                              | Description                                                                                                                              |
-| ----------------------- | --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| id                      | uint64_t                          | (primary key) The token factory ID                                                                                                       |
-| asset_manager           | eosio::name                       | Account that manages the token lifecycle - issuing, burning, reselling etc.                                                              |
-| asset_creator           | eosio::name                       | Account that ceates the token factory.                                                                                                   |
-| minimum_resell_price    | eosio::asset                      | A minimum price when resell on marketplaces.                                                                                             |
-| resale_shares           | std::vector\<eosio::resale_share> | A vector of [account, share] pairs setting the share each account receives during the token resale.                                      |
-| mintable_window_start   | std::optional\<uint32_t>          | The beginning of the time window when tokens can be minted.                                                                              |
-| mintable_window_end     | std::optional\<uint32_t>          | The end of the time window when tokens can be minted.                                                                                    |
-| trading_window_start    | std::optional\<uint32_t>          | The beginning of the time window when tokens can be traded.                                                                              |
-| trading_window_end      | std::optional\<uint32_t>          | The end of the time window when tokens can be traded.                                                                                    |
-| recall_window_start     | std::optional\<uint32_t>          | *Disabled*. The beginning of the time window when tokens can be recalled.                                                                |
-| recall_window_end       | std::optional\<uint32_t>          | *Disabled*. The beginning of the time window when tokens can be recalled.                                                                |
-| lockup_time             | std::optional\<uint32_t>          | *Disabled*. The time window since token minting in which the token cannot be transferred                                                 |
-| conditionless_receivers | std::vector\<eosio::name>         | A set of token receiver account tokens can be transferred to without any restrictions - like trading windows, minimum resell price, etc. |
-| stat                    | uint8_t                           | The token factory status:0 = active - fully functional1 = inactive - cannot mint2 = shutdown - cannot mint or set active                 |
-| factory_uri             | std::string                       | The token factory metadata URI vector.                                                                                                   |
-| factory_hash            | eosio::checksum256                | The token factory metadata hash.                                                                                                         |
-| max_mintable_tokens     | std::optional\<uint32_t>          | The maximal number of tokens that can be minted with the factory.                                                                        |
-| minted_tokens_no        | uint32_t                          | The number of minted of tokens.                                                                                                          |
-| existing_tokens_no      | uint32_t                          | The number of minted minus number of burnt tokens.                                                                                       |
-| authorized_tokens_no    | std::optional\<uint32_t>          | The current quantity of tokens that authorized minters can issue                                                                         |
-| account_minting_limit   | std::optional\<uint32_t>          | The limit of tokens that can be minted to each individual account                                                                        |
-| transfer_window_start   | std::optional\<uint32_t>          | The beginning fo the time window when tokens can be transferred                                                                          |
-| transfer_window_end     | std::optional\<uint32_t>          | The end of the time window when tokens can be transferred                                                                                |
-| default_token_uri       | std::string                       | The default token metadata URI for tokens without dedicated URI                                                                          |
-| default_token_hash      | std::optional\<checksum256>       | The default token metadata hash                                                                                                          |
-| lock_hash               | bool                              | Controls whether metadata of the factory, tokens or default tokens could be changed                                                      |
-
-Most relevant actions: **create.b, issue.b, settknmeta, setdflttkn, setcondrecv, setmeta.b, setstatus**
-
-## factory.a
-
--   Table: `factory.a`
--   Code: `eosio.nft.ft`
--   Scope: `eosio.nft.ft`
--   Key: `id`
-
-The table contains uniq factories settings and the operational info.
-
-::: warning
-Deprecated. Refer to `factory.b` instead
-:::
-
-| Fields                          | Type                              | Description                                                                                                                              |
-| ------------------------------- | --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| id                              | uint64_t                          | (primary key) The token factory ID                                                                                                       |
-| asset_manager                   | eosio::name                       | Account that manages the token lifecycle - issuing, burning, reselling etc.                                                              |
-| asset_creator                   | eosio::name                       | Account that creates the token factory.                                                                                                  |
-| conversion_rate_oracle_contract | eosio::name                       | *Deprecated*. Please do not use.                                                                                                         |
-| chosen_rate                     | std::vector\<eosio::asset>        | *Deprecated*. Please do not use.                                                                                                         |
-| minimum_resell_price            | eosio::asset                      | A minimum price when resell on marketplaces.                                                                                             |
-| resale_shares                   | std::vector\<eosio::resale_share> | A vector of [account, share] pairs setting the share each account receives during the token resale.                                      |
-| mintable_window_start           | std::optional\<uint32_t>          | The beginning of the time window when tokens can be minted.                                                                              |
-| mintable_window_end             | std::optional\<uint32_t>          | The end of the time window when tokens can be minted.                                                                                    |
-| trading_window_start            | std::optional\<uint32_t>          | The beginning of the time window when tokens can be traded.                                                                              |
-| trading_window_end              | std::optional\<uint32_t>          | The end of the time window when tokens can be traded.                                                                                    |
-| recall_window_start             | std::optional\<uint32_t>          | The beginning of the time window when tokens can be recalled.                                                                            |
-| recall_window_end               | std::optional\<uint32_t>          | The beginning of the time window when tokens can be recalled.                                                                            |
-| lockup_time                     | std::optional\<uint32_t>          | The time window since token minting in which the token cannot be transferred                                                             |
-| conditionless_receivers         | std::vector\<eosio::name>         | A set of token receiver account tokens can be transferred to without any restrictions - like trading windows, minimum resell price, etc. |
-| stat                            | uint8_t                           | The token factory status:0 = active - fully functional1 = inactive - cannot mint2 = shutdown - cannot mint or set active                 |
-| meta_uris                       | std::vector\<std::string>         | The token factory metadata URI vector.                                                                                                   |
-| meta_hash                       | eosio::checksum256                | The token factory metadata hash.                                                                                                         |
-| max_mintable_tokens             | std::optional\<uint32_t>          | The maximal number of tokens that can be minted with the factory.                                                                        |
-| minted_tokens_no                | uint32_t                          | The number of minted of tokens.                                                                                                          |
-| existing_tokens_no              | uint32_t                          | The number of minted minus number of burnt tokens.                                                                                       |
-
-Most relevant actions: **create, issue, setcondrecv, setmeta, setstatus**
-
--   `cleos` Query Example
-
-```sh
-cleos get table eosio.nft.ft eosio.nft.ft factory.a
-```
-
--   `curl` query example
-
-```sh
-curl <NODEOS_API_IP>/v1/chain/get_table_rows -X POST -d '{"scope":"eosio.nft.ft", "code":"eosio.nft.ft", "table":"factory.a", "json": true}'
-```
-
----
-
-## token.b
-
--   Table: `token.b`
--   Code: `eosio.nft.ft`
--   Scope: `account`
--   Key: `id`
-
-The table stores the tokens owned by a user.
-
-| Fields           | Type                               | Description                                              |
-| ---------------- | ---------------------------------- | -------------------------------------------------------- |
-| id               | uint64_t                           | (primary key) Global token ID                            |
-| token_factory_id | uint64_t                           | The token factory ID the token was issued with.          |
-| mint_date        | eosio::time_point_sec              | The token mint date.                                     |
-| serial_number    | uint32_t                           | The ordinal number of the token assigned during issuance |
-| uri              | std::optional\<string>             | URI pointing to the metadata of this token               |
-| hash             | std::optional\<eosio::checksum256> | hash of the metadata for this token                      |
-
-Most relevant actions: **buy**, **burn**, **issue.b**, **resell**.
-
--   `cleos` Query Example
-
-```sh
-cleos get table eosio.nft.ft <ACCOUNT> token.b
-```
-
--   `curl` query example
-
-```sh
-curl <NODEOS_API_IP>/v1/chain/get_table_rows -X POST -d '{"scope":"<ACCOUNT>", "code":"eosio.nft.ft", "table":"token.b", "json": true}'
-```
-
----
-
-## token.a
-
--   Table: `token.a`
--   Code: `eosio.nft.ft`
--   Scope: `account`
--   Key: `id`
-
-The table stores the tokens owned by a user.
-
-::: warning
-Deprecated. Refer to `token.b` instead
-:::
-
-| Fields           | Type                  | Description                                              |
-| ---------------- | --------------------- | -------------------------------------------------------- |
-| id               | uint64_t              | (primary key) Global token ID                            |
-| token_factory_id | uint64_t              | The token factory ID the token was issued with.          |
-| mint_date        | eosio::time_point_sec | The token mint date.                                     |
-| serial_number    | uint32_t              | The ordinal number of the token assigned during issuance |
-
-Most relevant actions: **buy, burn**, **issue, resell**.
-
--   `cleos` Query Example
-
-```sh
-cleos get table eosio.nft.ft <ACCOUNT> token.a
-```
-
--   `curl` query example
-
-```sh
-curl <NODEOS_API_IP>/v1/chain/get_table_rows -X POST -d '{"scope":"<ACCOUNT>", "code":"eosio.nft.ft", "table":"token.a", "json": true}'
-```
-
----
-
-## resale.a
-
--   Table: `resale.a`
--   Code: `eosio.nft.ft`
--   Scope: `eosio.nft.ft`
--   Key: `token_id`
-
-The table stores tokens for resale.
-
-| Fields               | Type         | Description                             |
-| -------------------- | ------------ | --------------------------------------- |
-| token_id             | uint64_t     | (primary key) Global token ID           |
-| owner                | eosio::name  | The token owner account.                |
-| price                | eosio::asset | The token resale price.                 |
-| promoter_basis_point | uint16_t     | The token resale advertiser commission. |
-
-Most relevant actions: **resell, cancellresell**
-
--   `cleos` Query Example
-
-```sh
-cleos get table eosio.nft.ft eosio.nft.ft resale.a
-```
-
--   `curl` query example
-
-```sh
-curl <NODEOS_API_IP>/v1/chain/get_table_rows -X POST -d '{"scope":"eosio.nft.ft", "code":"eosio.nft.ft", "table":"resale.a", "json": true}'
-```
-
----
-
-## authmintrs.a
-
--   Table: `authmintrs.a`
--   Code: `eosio.nft.ft`
--   Scope: `token factory ID`
--   Key: `authorized_minter`
-
-The table stores information about token minters permitted by uniq factories asset managers or other authorized minters to issue tokens.
-
-| Fields            | Type        | Description                                          |
-| ----------------- | ----------- | ---------------------------------------------------- |
-| authorized_minter | eosio::name | (primary key) The authorized minter account.         |
-| quantity          | uint32_t    | The number of tokens the authorized minter can mint. |
-
-Most relevant actions: **authminter, issue**
-
--   `cleos` Query Example
-
-```sh
-cleos get table eosio.nft.ft <TOKEN FACTORY ID> authmintrs.a
-```
-
--   `curl` query example
-
-```sh
-curl <NODEOS_API_IP>/v1/chain/get_table_rows -X POST -d '{"scope":"<TOKEN FACTORY ID>", "code":"eosio.nft.ft", "table":"authmintrs.a", "json": true}'
-```
-
-## global.share
-
--   Table: `global.share`
--   Code: `eosio.nft.ft`
--   Scope: `eosio.nft.ft` (for second hand), `0` (for first hand)
--   Key: N/A
-
-The table stores information about global share of each first hand purchase or second hand token sale: which account and how many basis points it receives (each basis point = 0.01%)
-
-| Fields      | Type        | Description                                     |
-| ----------- | ----------- | ----------------------------------------------- |
-| receiver    | eosio::name | Receiver of the global sale share               |
-| basis_point | uint16_t    | Share of the sale specified in the basis points |
-
-Most relevant actions: `buy`, `resell`, `globalshare`, `fhglobalshr`, `purchase.a`
-
--   `cleos` Query Example
-
-```sh
-cleos get table eosio.nft.ft eosio.nft.ft global.share
-```
-
--   `curl` query example
-
-```sh
-curl <NODEOS_API_IP>/v1/chain/get_table_rows -X POST -d '{"scope":"eosio.nft.ft", "code":"eosio.nft.ft", "table":"global.share", "json": true}'
-```
-
-## migration
-
--   Table: `migration`
--   Code: `eosio.nft.ft`
--   Scope: `eosio.nft.ft`
--   Key: N/A
-
-The table stores information about current active NFT standard version and flags used to indicate the status of the migration
-
-| Fields                | Type     | Description                                                                                                                                                         |
-| --------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| active_nft_version    | uint64_t | Version of the current active NFT standard                                                                                                                          |
-| table_migration_stats | uint16_t | Bitmask storing information about the status of the migration. `factory_a_migration_done = 0x0000'0000'0000'0001`, `token_a_migration_done = 0x0000'0000'0000'0002` |
-
-Most relevant actions: `migration`, `mgrfactories`, `mgrnfts`, `setnftmgrflg`
-
--   `cleos` Query Example
-
-```sh
-cleos get table eosio.nft.ft eosio.nft.ft migration
-```
-
--   `curl` query example
-
-```sh
-curl <NODEOS_API_IP>/v1/chain/get_table_rows -X POST -d '{"scope":"eosio.nft.ft", "code":"eosio.nft.ft", "table":"migration", "json": true}'
-```
-
-## next.factory
-
--   Table: `next.factory`
--   Code: `eosio.nft.ft`
--   Scope: `0`
--   Key: N/A
-
-The table stores information about the ID of the next created token factory
-
-| Fields | Type     | Description                                         |
-| ------ | -------- | --------------------------------------------------- |
-| value  | uint64_t | ID that the next created token factory will receive |
-
-Most relevant actions: `create`, `create.b`
-
--   `cleos` Query Example
-
-```sh
-cleos get table eosio.nft.ft 0 next.factory
-```
-
--   `curl` query example
-
-```sh
-curl <NODEOS_API_IP>/v1/chain/get_table_rows -X POST -d '{"scope":"0", "code":"eosio.nft.ft", "table":"next.factory", "json": true}'
-```
-
-## next.token
-
--   Table: `next.token`
--   Code: `eosio.nft.ft`
--   Scope: `0`
--   Key: N/A
-
-The table stores information about the ID of the next issued token
-
-| Fields | Type     | Description                                |
-| ------ | -------- | ------------------------------------------ |
-| value  | uint64_t | ID that the next issued token will receive |
-
-Most relevant actions: `issue`, `issue.b`
-
--   `cleos` Query Example
-
-```sh
-cleos get table eosio.nft.ft 0 next.token
-```
-
--   `curl` query example
-
-```sh
-curl <NODEOS_API_IP>/v1/chain/get_table_rows -X POST -d '{"scope":"0", "code":"eosio.nft.ft", "table":"next.token", "json": true}'
-```
-
-## next.fct.grp
-
--   Table: `next.fct.grp`
--   Code: `eosio.nft.ft`
--   Scope: `0`
--   Key: N/A
-
-The table stores information about the ID of the next created factory group
-
-| Fields | Type     | Description                                         |
-| ------ | -------- | --------------------------------------------------- |
-| value  | uint64_t | ID that the next created token factory will receive |
-
-Most relevant actions: `creategrp`
-
--   `cleos` Query Example
-
-```sh
-cleos get table eosio.nft.ft 0 next.fct.grp
-```
-
--   `curl` query example
-
-```sh
-curl <NODEOS_API_IP>/v1/chain/get_table_rows -X POST -d '{"scope":"0", "code":"eosio.nft.ft", "table":"next.fct.grp", "json": true}'
-```
-
-## tfcreateflag
-
--   Table: `tfcreateflag`
--   Code: `eosio.nft.ft`
--   Scope: `eosio.nft.ft`
--   Key: N/A
-
-The table stores information about whether the creation of uniq factories by accounts other than Ultra is allowed
-
-| Fields        | Type | Description                                                                       |
-| ------------- | ---- | --------------------------------------------------------------------------------- |
-| require_ultra | bool | Whether Ultra permission is required to create a token factory. Default is `true` |
-
-Most relevant actions: `create.b`
-
--   `cleos` Query Example
-
-```sh
-cleos get table eosio.nft.ft eosio.nft.ft tfcreateflag
-```
-
--   `curl` query example
-
-```sh
-curl <NODEOS_API_IP>/v1/chain/get_table_rows -X POST -d '{"scope":"eosio.nft.ft", "code":"eosio.nft.ft", "table":"tfcreateflag", "json": true}'
-```
-
-## mintstat.a
-
--   Table: `mintstat.a`
--   Code: `eosio.nft.ft`
--   Scope: `token factory ID`
--   Key: `user`
-
-The table stores information about how many tokens were minted to the specific user account. Utilized to check against minting limit within the token factory
-
-| Fields | Type     | Description                                                            |
-| ------ | -------- | ---------------------------------------------------------------------- |
-| user   | name     | Account name of the user                                               |
-| minted | uint32_t | Number of tokens that were minted to this user from this token factory |
-
-Most relevant actions: `issue`, `issue.b`
-
--   `cleos` Query Example
-
-```sh
-cleos get table eosio.nft.ft 15 mintstat.a
-```
-
--   `curl` query example
-
-```sh
-curl <NODEOS_API_IP>/v1/chain/get_table_rows -X POST -d '{"scope":"15", "code":"eosio.nft.ft", "table":"mintstat.a", "json": true}'
-```
-
-## ramvault.a
-
--   Table: `ramvault.a`
--   Code: `eosio.nft.ft`
--   Scope: `eosio.nft.ft`
--   Key: `owner`
-
-The table stores information about the utilization of RAM vault per account with usage and UOS payment done
-
-| Fields  | Type    | Description                         |
-| ------- | ------- | ----------------------------------- |
-| owner   | name    | Owner of this RAM vault entry       |
-| usage   | int64_t | Current RAM usage of the vault RAM  |
-| payment | int64_t | Total payment done to the RAM vault |
-
-Most relevant actions: `create.b`, `issue.b`, `clrmintst`
-
--   `cleos` Query Example
-
-```sh
-cleos get table eosio.nft.ft eosio.nft.ft ramvault.a
-```
-
--   `curl` query example
-
-```sh
-curl <NODEOS_API_IP>/v1/chain/get_table_rows -X POST -d '{"scope":"eosio.nft.ft", "code":"eosio.nft.ft", "table":"ramvault.a", "json": true}'
-```
-
-## factorygrp.a
-
--   Table: `factorygrp.a`
--   Code: `eosio.nft.ft`
--   Scope: `eosio.nft.ft`
--   Key: `id`
-
-The table stores information about the utilization of RAM vault per account with usage and UOS payment done
-
-| Fields      | Type                   | Description                                                  |
-| ----------- | ---------------------- | ------------------------------------------------------------ |
-| id          | uint64_t               | ID of this token factory group                               |
-| manager     | eosio::name            | Manager of the factory group                                 |
-| uri         | std::string            | URI of the factory group metadata                            |
-| hash        | eosio::checksum256     | Hash of the factory group metadata                           |
-| factories   | std::vector\<uint64_t> | Array of factories in the token factory group                |
-| uos_payment | int64_t                | UOS payment charged during the creation of the factory group |
-
-Most relevant actions: `creategrp`, `deletegrp`
-
--   `cleos` Query Example
-
-```sh
-cleos get table eosio.nft.ft eosio.nft.ft factorygrp.a
-```
-
--   `curl` query example
-
-```sh
-curl <NODEOS_API_IP>/v1/chain/get_table_rows -X POST -d '{"scope":"eosio.nft.ft", "code":"eosio.nft.ft", "table":"factorygrp.a", "json": true}'
-```
-
-## saleshrlimcfg
-
--   Table: `saleshrlmcfg`
--   Code: `eosio.nft.ft`
--   Scope: `0 - first hand, 1 - second hand`
--   Key: N/A
-
-The table stores information about maximum share basis points that can be distributed during token purchase
-
-| Fields                    | Type                        | Description                                                                                         |
-| ------------------------- | --------------------------- | --------------------------------------------------------------------------------------------------- |
-| max_ultra_share_bp        | uint16_t                    | Maximum protocol fee that can be configured with `globalshare`                                      |
-| max_factory_share_bp      | uint16_t                    | Maximum total resale shares that can be specified during token factory creation                     |
-| min_promoter_share_bp     | uint16_t                    | Minimum allowed promoter fee for first-hand or second-hand purchase (depending on scope)            |
-| max_promoter_share_bp     | uint16_t                    | Maximum allowed promoter fee for first-hand or second-hand purchase (depending on scope) metadata   |
-| default_promoter          | std::optional\<eosio::name> | Default promoter used during first-hand or second-hand purchase if none was specified in the action |
-| promoter_payments_enabled | bool                        | Whether the promoter shares are enabled globally                                                    |
-
-Most relevant actions: `setsharelim`
-
--   `cleos` Query Example
-
-```sh
-cleos get table eosio.nft.ft 0 saleshrlmcfg
-```
-
--   `curl` query example
-
-```sh
-curl <NODEOS_API_IP>/v1/chain/get_table_rows -X POST -d '{"scope":0, "code":"eosio.nft.ft", "table":"saleshrlmcfg", "json": true}'
-```
-
-## fctrprchs.a
-
--   Table: `fctrprchs.a`
--   Code: `eosio.nft.ft`
--   Scope: `token factory ID`
--   Key: `id`
-
-The table stores information about the utilization of RAM vault per account with usage and UOS payment done
-
-| Fields                     | Type                                            | Description                                                                                                                                        |
-| -------------------------- | ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| id                         | uint64_t                                        | ID of this purchase requirement                                                                                                                    |
-| price                      | asset                                           | Price of the uniq specified in UOS or USD                                                                                                          |
-| purchase_limit             | uint32_t                                        | Max number of uniqs that can be purchased with this purchase option                                                                                |
-| purchased_tokens_no        | uint16_t                                        | Number of uniqs that were already purchased using this option (Default: 0)                                                                         |
-| promoter_basis_point       | uint16_t                                        | UOS share received by the promoter with each purchase done for this option. Specified in basis points. 1 means 0.01%                               |
-| purchase_option_with_uniqs | std::optional\<purchase_requirement_with_uniqs> | Optional feature that allows the purchase option to require user to own uniqs from specific factories or to pay with uniqs from specific factories |
-| sale_shares                | std::vector\<sale_share>                        | A vector of [account, share] pairs setting the share each account receives during the purchase                                                     |
-| uos_payment                | int64_t                                         | UOS payment charged during the creation of the purchase option                                                                                     |
-| purchase_window_start      | std::optional\<eosio::time_point_sec>           | Optional start of the purchase window. Cannot purchase using this option until the start                                                           |
-| purchase_window_end        | std::optional\<eosio::time_point_sec>           | Optional end of the purchase window. Cannot purchase using this option after the end                                                               |
-| group_restriction          | std::optional\<uint64_t_vector>                 | Optional user group requirement can be specified                                                                                                   |
-
-Most relevant actions: `setprchsreq.a`, `setprchsreq.b`, `delprchsreq.a`, `purchase.a`
-
--   `cleos` Query Example
-
-```sh
-cleos get table eosio.nft.ft 123 fctrprchs.a
-```
-
--   `curl` query example
-
-```sh
-curl <NODEOS_API_IP>/v1/chain/get_table_rows -X POST -d '{"scope":"123", "code":"eosio.nft.ft", "table":"fctrprchs.a", "json": true}'
-```
-
-The tables below describe the structure and usage of each of the fields inside `purchase_option_with_uniqs` and `uniqs_count` structures that can be provided 
-
-### `purchase_option_with_uniqs` type
-
-| Field                            | Type                        | Description                                                                                                                                                |
-| -------------------------------- | --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| transfer_tokens_receiver_account | std::optional\<eosio::name> | If any of the `factories` specified contain a requirement with `transfer` strategy then this account will be the one to receive the uniq during `purchase` |
-| factories                        | std::vector\<uniqs_count>   | List of purchase requirements using uniqs from other factories. Description of the `uniqs_count` type provided below                                       |
-
-### `uniqs_count` type
-
-| Field            | Type     | Description                                                                                                                                                                                                                                                                                                                         |
-| ---------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| token_factory_id | uint64_t | ID of the factory that the user needs to have tokens from                                                                                                                                                                                                                                                                           |
-| count            | uint32_t | How many tokens are needed from the specified factory                                                                                                                                                                                                                                                                               |
-| strategy         | uint8_t  | Can be either `check` (use 0), `burn` (use 1), `transfer` (use 2). If `check` is used - only the presence of the tokens is validated, no change occurs. If `burn` is specified - provided uniq from the factory will be burnt. If `transfer` is specified - provided uniq will be transferred to `transfer_tokens_receiver_account` |
-
-### `group_restriction` type
-
-By default, regardless of which action version is used, `group_restriction` will be saved as vector of 64-bit integers. This might be hard to read since it includes logical expression with the value. For example: `2305843009213693953` means `NOT 1` or `~1`.
-
-To be displayed as human-readable values, we recommend you implement some conversion on your side. Here is our small JavaScript example to convert 64-bit integer to readable string. You can run the included demo with `node user-group-converter.js`.
-
-```js
-// user-group-converter.js
-const { isBigUint64Array } = require("util/types")
-
-const OR_MASK       = 0x1000000000000000n   // 0: AND, 1: OR (= 1152921504606846976)
-const NEGATION_MASK = 0x2000000000000000n   // 0: No Negation, 1: Negation (= 2305843009213693952)
-const GROUP_ID_MASK = ~(OR_MASK + NEGATION_MASK)
-
-/* RULES
-- 1st element in group restriction array should not contain OR or AND
-- Combination rules: [OR] + [NEGATION] + [group_id]
-    + &[group_id]   = 0                     + 0                     + [group_id]
-    + |[group_id]   = 1152921504606846976   + 0                     + [group_id]
-    + ~[group_id]   = 0                     + 2305843009213693952   + [group_id]
-    + |~[group_id]  = 1152921504606846976   + 2305843009213693952   + [group_id]
-*/
-
-const expression_to_string = (group, firstIndex = false) => {
-    var result = ""
-    
-    // OR Extraction
-    if (!firstIndex) {
-        if ((group & OR_MASK) == OR_MASK)
-            result += "|" // OR
-        else
-            result += "&" // AND
-    }
-
-    // NEGATION Extraction
-    if ((group & NEGATION_MASK) == NEGATION_MASK)
-        result += "~" // NOT
-
-    // Group ID Extraction
-    result += group & GROUP_ID_MASK
-    
-    return result;
-}
-
-const convert_group_restrictions = (groupRestrictions) => {
-
-    var result = ""
-
-    if (!isBigUint64Array(groupRestrictions) || groupRestrictions.length == 0)
-        return result
-    
-    for (var i = 0; i < groupRestrictions.length; ++i) {
-        result += expression_to_string(groupRestrictions[i], i == 0);
-    }
-
-    return result
-}
-
-const demo = () => {
-    const groups = new BigUint64Array([2305843009213693953n, 2n, 3458764513820540931n]) // = "~1&2|~3"
-    console.log(convert_group_restrictions(groups))
-}
-
-demo()
-```
 ---
 title: 'NFT Tables'
 order: 1
@@ -10843,9 +8888,6 @@ For Ultra, core token `UOS` are issued under account `eosio.token` using this co
 -   1 Billion Ultra UOS were issued at genesis to support swapping with ERC20 UOS and we will use inflation to pay Block Producers.
 -   The UOS token is used to transfer value in the network, and as a way to gain access to required network resources like RAM or POWER.
 
-### 5 - Other Fungible Token
-
--   We currently accept request for creating new Fungible Token on out Public Testnet. Please follow this [guide](../../../products/fungible-tokens/index.md).
 
 ---
 title: 'close'
@@ -11930,7 +9972,7 @@ In traditional EOS blockchain accounts, the OWNER permission may change the ACTI
 
 ## Ultra Account
 
-Accounts created using Ultra client are referred to as Ultra Accounts. Formerly referred to as `Easy Blockchain Account` (or EBA). This type of account is managed by Ultra Backend and provides users account recovery options in case you lose access to your account.
+Accounts created using Ultra client are referred to as Ultra Accounts. Formerly referred to as `Easy Blockchain Account` (or EBA). This type of account is managed by Ultra Backend and provides users with account recovery options in case they lose access to their account.
 
 The name in this case is auto-generated on chain with format of `aa1aa2aa3aa4` where the positional numerals 1, 2, 3 and 4 remain in the same place for all accounts, but the letters `a` will be incremented for each new account starting from `a` and ending at `z` after which the next `a` will be incremented to a `b` and so on (e.g. `aa1aa2aa3aa4`, `aa1aa2aa3ab4`, `aa1aa2aa3ac4`, ... `aa1aa2aa3az4`, `aa1aa2aa3ba4`).
 
@@ -11942,17 +9984,17 @@ The name in this case is auto-generated on chain with format of `1aa2aa3aa4aa` w
 
 ## Ultra Premium Wallet
 
-Ownership of the account and private keys is the same as for Ultra Pro Wallet. In this case Ultra will be responsible for personally creating an account for you. The limitation on the name is that it is a single purpose name like `devname123` or `productname`. Request for this type of account should be directed to [developers@ultra.io](developers@ultra.io)
+Ownership of the account and private keys is the same as for Ultra Pro Wallet. In this case Ultra will be responsible for personally creating an account for you. The limitation on the name is that it is a single purpose name like `devname123` or `productname`.
 
 ## Ultra Corporate Wallet
 
-Ownership of the account and private keys is the same as for Ultra Pro Wallet. Ultra in this case is also responsible for creating such accounts. The name format follows a format like `partner.contract`, `partner.data`, `partner.account` or `contract.partner`, etc. Requests for this type of account should be directed to [developers@ultra.io](developers@ultra.io).
+Ownership of the account and private keys mirrors that of Ultra Pro Wallet. Ultra is responsible for creating these accounts. Names follow the pattern `partner.contract`, `partner.data`, `partner.account`, or `contract.partner`, etc.
 
 ## Okay, how do I make an account?
 
 We currently allow **Ultra Accounts** to be created through the official ultra.io client which can be found at [https://ultra.io](https://ultra.io).
 
-For creating **Ultra Pro Wallet** refer to this [Testnet tutorial](../../../tutorials/fundamentals/tutorial-generate-key-and-create-testnet-account.md) or to a [Mainnet guide](../../../tutorials/guides/how-to-create-ultra-pro-wallet.md)
+To create **Ultra Pro Wallet**, refer to either [Testnet tutorial](../../../tutorials/fundamentals/tutorial-generate-key-and-create-testnet-account.md) or [Mainnet guide](../../../tutorials/guides/how-to-create-ultra-pro-wallet.md).
 
 Using our docker image you can create local accounts for testing.
 
@@ -13003,7 +11045,7 @@ Meaning, developers who wish **to deploy a smart contract** on the production ne
 
 Account names are automatically generated sequentially based on the previous name. Developers are not required to provide a name for an account, developers are given one.
 
-_Requires system contracts to be deployed, and applied on Testnet and production networks._
+_Requires system contracts to be deployed, and applied on Testnet and Mainnet._
 
 ### Name Type Rules
 
@@ -14214,11 +12256,11 @@ Pro tips:
 
 The dependencies necessary to upload files to a repository can be found below, separated by environment:
 
-- [Dev](https://download.dev.app.ultra.io/downloads-dev-ultraio/dev/solid-state-networks/direct6/6.0.0/archive.zip)
-- [QA](https://download.qa.app.ultra.io/downloads-dev-ultraio/qa/solid-state-networks/direct6/6.0.0/archive.zip)
-- [Preprod](https://download-cdn.preprod.app.ultra.io/solid-state-networks/direct6/6.0.0/archive.zip)
-- [Sandbox](https://download.staging.app.ultra.io/downloads-staging-ultraio/solid-state-networks/direct6/6.0.0/archive.zip)
-- [Production](https://download-cdn.app.ultra.io/solid-state-networks/direct6/6.0.0/archive.zip)
+- [Dev](https://download.dev.app.ultra.io/downloads-dev-ultraio/dev/solid-state-networks/direct6/5.1.0/archive.zip)
+- [QA](https://download.qa.app.ultra.io/downloads-dev-ultraio/qa/solid-state-networks/direct6/5.1.0/archive.zip)
+- [Preprod](https://download-cdn.preprod.app.ultra.io/solid-state-networks/direct6/5.1.0/archive.zip)
+- [Sandbox](https://download.staging.app.ultra.io/downloads-staging-ultraio/solid-state-networks/direct6/5.1.0/archive.zip)
+- [Production](https://download-cdn.app.ultra.io/solid-state-networks/direct6/5.1.0/archive.zip)
 
 
 ### Running filebeam
@@ -15967,75 +14009,6 @@ contract-builder -i ./test/example-contract -b "-DTEST=true"
 See [https://github.com/ultraio/contract-builder/tree/main/test](https://github.com/ultraio/contract-builder/tree/main/test) for example contracts to utilize with this project.
 
 ---
-title: 'Request Fungible Token'
-
-outline: [0, 4]
-order: -99
----
-
-# Request Fungible Token
-
-## Prerequisite
-
-By design, we do not allow developers to freely create new Fungible Token (FT) on our blockchain since developers might take advantage of our blockchain and spam the network by sending their FT to everyone. This action first of all wastes our RAM that can be put to much better use, and second of all it will annoy our users with a lot of junk FT.
-
-However, Ultra still allows developers to create their own FT on our network if they make a request and meet our requirements.
-
-## Requirements
-
--   You need to own a developer account before making a request. Please refer to this [process](../../blockchain/general/tools/cleos.md#creating-an-account).
--   Token you want to create must meet our standards. Please refer below for more info.
-
-## Make a request
-
--   Send request email to [developers@ultra.io](developers@ultra.io)
-
--   Or go to our [Discord](https://discord.com/invite/mkfkJexbV3).
-
--   Navigate to one of our development channels.
-
-![](/images/discord-dev-channels.png)
-
--   Create an FT creation request with your account. You can follow this example:
-
-```sh
-FT Creation Request
-Account: 1ab2cd3ef4gh
-Token Max Supply: 100000.000000 TOKEN
-```
-
--   If your token meet our requirements, we will process your token creation, and issue the token to your requested account.
-
-_Note_: Since creating token requires Ultra and Block Producers reviews, it might take up to 2-5 working days once your request is approved.
-
-## Token Requirements
-
--   Token Symbol
-    -   Can only be characters in capital
-    -   Can not have more than 7 characters
-    -   Must meet our community standards and regulations.
-    -   Must not be taken yet.
--   Token Supply
-    -   Cannot be 0
-    -   The maximum supply without decimal is `2^62 - 1` or `4611686018427387903`
-    -   You can define how many decimals you can have by moving the decimal point on your desired max supply.
-    -   The maximum number of digits you can have before the decimal point is `18`.
-
-Examples:
-
--   Valid Token
-    -   18273.21233 TEST
-    -   213.0 BDGA
-    -   123467889 A
--   Invalid Token
-    -   1000 G4H%A - Token symbol contains invalid character.
-    -   1000.0000 ABCDEFGH - Token symbol is too long
-    -   17268.9900 SEX - Token symbol might not meet our standards.
-    -   1000.000 UOS - UOS is our core token and it already taken.
-    -   0 HAGD - Max supply need to be larger than 0.
-    -   10000.0000000000000000 ABC - Max supply without decimal point is larger than `4611686018427387903`.
-
----
 title: 'Products'
 
 outline: [0, 5]
@@ -16107,12 +14080,6 @@ Check out some of the various libraries, code examples and products we have avai
         <td><a href="https://www.npmjs.com/package/@ultraos/contract-builder">NPM</a></td>
         <td>N/A</td>
     </tr>
-     <tr>
-        <td>Fungible Tokens</td>
-        <td>Request to create a fungible token alternative to UOS on our chain.</td>
-        <td>N/A</td>
-        <td><a href="./fungible-tokens/index">Tutorial</a></td>
-    </tr>
     <tr>
         <td>Smart Contract Toolkit for VSCode</td>
         <td>An all-inclusive tool to build smart contracts, create transactions, create accounts, and deploy contracts to Ultra/EOS blockchain.</td>
@@ -16124,6 +14091,12 @@ Check out some of the various libraries, code examples and products we have avai
         <td>A bot that links Discord Users with Ultra Accounts, and allows custom role integration based on owned uniqs.</td>
         <td><a href="https://github.com/ultraio/ultra-discord-uniq-roles-bot">Source</a></td>
         <td><a href="./uniq-discord-bot/index">Tutorial</a></td>
+    </tr>
+     <tr>
+        <td>Uniq Metadata Tool</td>
+        <td>A CLI tool that helps with creation and validation of Uniq Metadata files.</td>
+        <td><a href="https://github.com/ultraio/metadata-tool">Source</a></td>
+        <td><a href="./uniq-metadata-tool/index">Tutorial</a></td>
     </tr>
 </table>
 
@@ -16137,7 +14110,7 @@ order: 2
 
 ## Introduction
 
-Welcome to the API Authentication Documentation for the Ultra API . This document provides guidelines and instructions for managing authentication when interacting with our API.
+Welcome to the API Authentication Documentation for Ultra API . This document provides guidelines and instructions for managing authentication when interacting with our API.
 
 ## How to register
 
@@ -16155,7 +14128,7 @@ For backend applications, you'll need a client ID and a client secret. To set up
 
 ## Authentication Flow
 
-The authentication flow for Ultra API depends on the type of application.
+The authentication flow for the Ultra API depends on the type of application.
 
 ### Frontend Application Authentication Flow
 
@@ -16315,7 +14288,7 @@ order: -9999
 
 Ultra is excited to offer external developers enhanced access to on-chain data through an easily consumable package, designed to streamline the integration process within their applications.
 
-Leveraging the power of [graphQL](https://graphql.org/), the Ultra API adopts a schema-driven approach, making data more accessible and developer-friendly.
+Leveraging the power of [GraphQL](https://graphql.org/), the Ultra API adopts a schema-driven approach, making data more accessible and developer-friendly.
 
 Resources provided include:
 
@@ -16361,7 +14334,8 @@ order: 4
 
 ##### Description
 
-Provides direct access to detailed information about a specific Uniq using its unique blockchain ID.
+Provides direct access to detailed information about a specific Uniq
+using its unique blockchain ID.
 
 ##### Response
 
@@ -16782,11 +14756,1506 @@ query Uniq($id: BigInt!) {
 }
 ```
 
+
+## `uniqBuyOfferConfig`
+
+##### Description
+
+Allows retrieving the configuration applied to all offers.
+
+##### Response
+
+Returns [`[UniqBuyOfferConfig!]!`](types.md#uniqbuyofferconfig)
+
+#### Example
+
+##### Query
+
+``` js
+query UniqBuyOfferConfig {
+  uniqBuyOfferConfig {
+    maxActiveOfferPerUser
+    maxDuration
+    minDuration
+    minPrice {
+      amount
+      currency {
+        code
+        symbol
+      }
+    }
+  }
+}
+```
+
+##### Response
+
+``` js
+{
+  "data": {
+    "uniqBuyOfferConfig": [
+      {
+        "maxActiveOfferPerUser": 987,
+        "maxDuration": 987,
+        "minDuration": 987,
+        "minPrice": MonetaryAmount
+      }
+    ]
+  }
+}
+```
+
+
+## `uniqBuyOffers`
+
+##### Description
+
+Simplifies the process of finding offers based on the factory, uniq, or
+buyer. This functionality is designed to include offers that are no
+longer valid, enabling the retrieval of any offer, whether expired or if
+the associated uniq has been burned. Please note that this query won't
+return the factory offer for each uniq it applies to, as factory offers
+don't have a uniq attached. If you prefer to see valid factory offer for
+each uniq it applies to, you should utilize the "uniqEffectiveBuyOffers"
+query instead.
+
+##### Response
+
+Returns a [`UniqBuyOfferList!`](types.md#uniqbuyofferlist)
+
+##### Arguments
+
+| Name                                                                                    | Description                                                                                                                                                                                                                |
+|-----------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `buyer` - [`WalletId`](types.md#walletid)                                            | The optional filter on buyer wallet ID.                                                                                                                                                                                    |
+| `maxExpiryDate` - [`Date`](types.md#date)                                            | The optional filter max expiry date.                                                                                                                                                                                       |
+| `minExpiryDate` - [`Date`](types.md#date)                                            | The optional filter min expiry date.                                                                                                                                                                                       |
+| `ofType` - [`UniqBuyOfferOfTypeFilterInput`](types.md#uniqbuyofferoftypefilterinput) | the optional filter to enable filtering on offer types. note that additional subfilters are available within this filter (example : uniqid or uniqburned), but the type of offer will be determined by the subfilter used. |
+| `pagination` - [`PaginationInput`](types.md#paginationinput)                         | The optional pagination input.                                                                                                                                                                                             |
+| `uniqFactoryId` - [`BigInt`](types.md#bigint)                                        | The optional filter on uniq factory ID.                                                                                                                                                                                    |
+
+#### Example
+
+##### Query
+
+``` js
+query UniqBuyOffers(
+  $buyer: WalletId,
+  $maxExpiryDate: Date,
+  $minExpiryDate: Date,
+  $ofType: UniqBuyOfferOfTypeFilterInput,
+  $pagination: PaginationInput,
+  $uniqFactoryId: BigInt
+) {
+  uniqBuyOffers(
+    buyer: $buyer,
+    maxExpiryDate: $maxExpiryDate,
+    minExpiryDate: $minExpiryDate,
+    ofType: $ofType,
+    pagination: $pagination,
+    uniqFactoryId: $uniqFactoryId
+  ) {
+    data {
+      buyer
+      expiryDate
+      id
+      price {
+        amount
+        currency {
+          code
+          symbol
+        }
+      }
+      receiver
+      type
+      uniq {
+        factory {
+          accountMintingLimit
+          assetCreator
+          assetManager
+          authorizedMinters {
+            quantity
+            walletId
+          }
+          conditionlessReceivers
+          defaultUniqMetadata {
+            cachedSource {
+              contentType
+              integrity {
+                hash
+                type
+              }
+              uri
+            }
+            content {
+              attributes {
+                descriptor {
+                  description
+                  dynamic
+                  name
+                  type
+                }
+                key
+                value
+              }
+              description
+              dynamicAttributes {
+                contentType
+                uris
+              }
+              dynamicResources {
+                key
+                value {
+                  contentType
+                  uris
+                }
+              }
+              medias {
+                gallery {
+                  contentType
+                  integrity {
+                    hash
+                    type
+                  }
+                  uri
+                }
+                hero {
+                  contentType
+                  integrity {
+                    hash
+                    type
+                  }
+                  uri
+                }
+                product {
+                  contentType
+                  integrity {
+                    hash
+                    type
+                  }
+                  uri
+                }
+                square {
+                  contentType
+                  integrity {
+                    hash
+                    type
+                  }
+                  uri
+                }
+              }
+              name
+              properties
+              resources {
+                key
+                value {
+                  contentType
+                  integrity {
+                    hash
+                    type
+                  }
+                  uri
+                }
+              }
+              subName
+            }
+            source {
+              contentType
+              integrity {
+                hash
+                type
+              }
+              uri
+            }
+            status
+          }
+          firsthandPurchases {
+            groupRestriction {
+              excludes
+              includes
+            }
+            id
+            option {
+              factories {
+                count
+                id
+                strategy
+              }
+              transferUniqsReceiver
+            }
+            price {
+              amount
+              currency {
+                code
+                symbol
+              }
+            }
+            promoterBasisPoints
+            purchaseLimit
+            purchaseWindow {
+              endDate
+              startDate
+            }
+            purchasedUniqs
+            saleShares {
+              basisPoints
+              receiver
+            }
+            uosPayment
+          }
+          id
+          metadata {
+            cachedSource {
+              contentType
+              integrity {
+                hash
+                type
+              }
+              uri
+            }
+            content {
+              attributes {
+                key
+                value {
+                  description
+                  dynamic
+                  name
+                  type
+                }
+              }
+              description
+              medias {
+                gallery {
+                  contentType
+                  integrity {
+                    hash
+                    type
+                  }
+                  uri
+                }
+                hero {
+                  contentType
+                  integrity {
+                    hash
+                    type
+                  }
+                  uri
+                }
+                product {
+                  contentType
+                  integrity {
+                    hash
+                    type
+                  }
+                  uri
+                }
+                square {
+                  contentType
+                  integrity {
+                    hash
+                    type
+                  }
+                  uri
+                }
+              }
+              name
+              properties
+              resources {
+                key
+                value {
+                  contentType
+                  integrity {
+                    hash
+                    type
+                  }
+                  uri
+                }
+              }
+              subName
+            }
+            locked
+            source {
+              contentType
+              integrity {
+                hash
+                type
+              }
+              uri
+            }
+            status
+          }
+          mintableWindow {
+            endDate
+            startDate
+          }
+          resale {
+            minimumPrice {
+              amount
+              currency {
+                code
+                symbol
+              }
+            }
+            shares {
+              basisPoints
+              receiver
+            }
+          }
+          status
+          stock {
+            authorized
+            existing
+            maxMintable
+            mintable
+            minted
+          }
+          tradingWindow {
+            endDate
+            startDate
+          }
+          transferWindow {
+            endDate
+            startDate
+          }
+          type
+        }
+        id
+        metadata {
+          cachedSource {
+            contentType
+            integrity {
+              hash
+              type
+            }
+            uri
+          }
+          content {
+            attributes {
+              descriptor {
+                description
+                dynamic
+                name
+                type
+              }
+              key
+              value
+            }
+            description
+            dynamicAttributes {
+              contentType
+              uris
+            }
+            dynamicResources {
+              key
+              value {
+                contentType
+                uris
+              }
+            }
+            medias {
+              gallery {
+                contentType
+                integrity {
+                  hash
+                  type
+                }
+                uri
+              }
+              hero {
+                contentType
+                integrity {
+                  hash
+                  type
+                }
+                uri
+              }
+              product {
+                contentType
+                integrity {
+                  hash
+                  type
+                }
+                uri
+              }
+              square {
+                contentType
+                integrity {
+                  hash
+                  type
+                }
+                uri
+              }
+            }
+            name
+            properties
+            resources {
+              key
+              value {
+                contentType
+                integrity {
+                  hash
+                  type
+                }
+                uri
+              }
+            }
+            subName
+          }
+          source {
+            contentType
+            integrity {
+              hash
+              type
+            }
+            uri
+          }
+          status
+        }
+        mintDate
+        owner
+        resale {
+          onSaleDate
+          price {
+            amount
+            currency {
+              code
+              symbol
+            }
+          }
+          promoterBasisPoints
+          shares {
+            basisPoints
+            receiver
+          }
+        }
+        serialNumber
+        tradingPeriod {
+          duration
+          endDate
+          startDate
+        }
+        transferPeriod {
+          duration
+          endDate
+          startDate
+        }
+        type
+      }
+      uniqFactory {
+        accountMintingLimit
+        assetCreator
+        assetManager
+        authorizedMinters {
+          quantity
+          walletId
+        }
+        conditionlessReceivers
+        defaultUniqMetadata {
+          cachedSource {
+            contentType
+            integrity {
+              hash
+              type
+            }
+            uri
+          }
+          content {
+            attributes {
+              descriptor {
+                description
+                dynamic
+                name
+                type
+              }
+              key
+              value
+            }
+            description
+            dynamicAttributes {
+              contentType
+              uris
+            }
+            dynamicResources {
+              key
+              value {
+                contentType
+                uris
+              }
+            }
+            medias {
+              gallery {
+                contentType
+                integrity {
+                  hash
+                  type
+                }
+                uri
+              }
+              hero {
+                contentType
+                integrity {
+                  hash
+                  type
+                }
+                uri
+              }
+              product {
+                contentType
+                integrity {
+                  hash
+                  type
+                }
+                uri
+              }
+              square {
+                contentType
+                integrity {
+                  hash
+                  type
+                }
+                uri
+              }
+            }
+            name
+            properties
+            resources {
+              key
+              value {
+                contentType
+                integrity {
+                  hash
+                  type
+                }
+                uri
+              }
+            }
+            subName
+          }
+          source {
+            contentType
+            integrity {
+              hash
+              type
+            }
+            uri
+          }
+          status
+        }
+        firsthandPurchases {
+          groupRestriction {
+            excludes
+            includes
+          }
+          id
+          option {
+            factories {
+              count
+              id
+              strategy
+            }
+            transferUniqsReceiver
+          }
+          price {
+            amount
+            currency {
+              code
+              symbol
+            }
+          }
+          promoterBasisPoints
+          purchaseLimit
+          purchaseWindow {
+            endDate
+            startDate
+          }
+          purchasedUniqs
+          saleShares {
+            basisPoints
+            receiver
+          }
+          uosPayment
+        }
+        id
+        metadata {
+          cachedSource {
+            contentType
+            integrity {
+              hash
+              type
+            }
+            uri
+          }
+          content {
+            attributes {
+              key
+              value {
+                description
+                dynamic
+                name
+                type
+              }
+            }
+            description
+            medias {
+              gallery {
+                contentType
+                integrity {
+                  hash
+                  type
+                }
+                uri
+              }
+              hero {
+                contentType
+                integrity {
+                  hash
+                  type
+                }
+                uri
+              }
+              product {
+                contentType
+                integrity {
+                  hash
+                  type
+                }
+                uri
+              }
+              square {
+                contentType
+                integrity {
+                  hash
+                  type
+                }
+                uri
+              }
+            }
+            name
+            properties
+            resources {
+              key
+              value {
+                contentType
+                integrity {
+                  hash
+                  type
+                }
+                uri
+              }
+            }
+            subName
+          }
+          locked
+          source {
+            contentType
+            integrity {
+              hash
+              type
+            }
+            uri
+          }
+          status
+        }
+        mintableWindow {
+          endDate
+          startDate
+        }
+        resale {
+          minimumPrice {
+            amount
+            currency {
+              code
+              symbol
+            }
+          }
+          shares {
+            basisPoints
+            receiver
+          }
+        }
+        status
+        stock {
+          authorized
+          existing
+          maxMintable
+          mintable
+          minted
+        }
+        tradingWindow {
+          endDate
+          startDate
+        }
+        transferWindow {
+          endDate
+          startDate
+        }
+        type
+      }
+      uniqFactoryId
+      uniqId
+    }
+    pagination {
+      limit
+      skip
+    }
+    totalCount
+  }
+}
+```
+
+##### Variables
+
+``` js
+{
+  "buyer": "aa1aa2aa3ag4",
+  "maxExpiryDate": "Thu Jul 13 2023 13:27:11 GMT+0200",
+  "minExpiryDate": "Thu Jul 13 2023 13:27:11 GMT+0200",
+  "ofType": UniqBuyOfferOfTypeFilterInput,
+  "pagination": PaginationInput,
+  "uniqFactoryId": 987
+}
+```
+
+##### Response
+
+``` js
+{
+  "data": {
+    "uniqBuyOffers": {
+      "data": [UniqBuyOffer],
+      "pagination": Pagination,
+      "totalCount": 123
+    }
+  }
+}
+```
+
+
+## `uniqEffectiveBuyOffers`
+
+##### Description
+
+Enables the retrieval of effective offers. This feature provides active
+offers for a specified uniq, factory, buyer, or owner. By default, this
+query returns offers for each uniq it applies to, including those made
+on both the uniq and uniq factory sides, unless a specific filter is
+applied. Note: An active offer means the offer is not expired, and the
+associated uniq is not burned.
+
+##### Response
+
+Returns a
+[`UniqEffectiveBuyOfferList!`](types.md#uniqeffectivebuyofferlist)
+
+##### Arguments
+
+| Name                                                                           | Description                                        |
+|--------------------------------------------------------------------------------|----------------------------------------------------|
+| `buyer` - [`WalletId`](types.md#walletid)                                   | The optional filter on buyer wallet ID.            |
+| `pagination` - [`PaginationInput`](types.md#paginationinput)                | The optional pagination input.                     |
+| `subject` - [`UniqBuyOfferSubjectInput`](types.md#uniqbuyoffersubjectinput) | The optional filter on uniq ID or owner wallet ID. |
+| `type` - [`UniqBuyOfferType`](types.md#uniqbuyoffertype)                    | The optional filter on buy offer type.             |
+| `uniqFactoryId` - [`BigInt`](types.md#bigint)                               | The optional filter on uniq factory ID.            |
+
+#### Example
+
+##### Query
+
+``` js
+query UniqEffectiveBuyOffers(
+  $buyer: WalletId,
+  $pagination: PaginationInput,
+  $subject: UniqBuyOfferSubjectInput,
+  $type: UniqBuyOfferType,
+  $uniqFactoryId: BigInt
+) {
+  uniqEffectiveBuyOffers(
+    buyer: $buyer,
+    pagination: $pagination,
+    subject: $subject,
+    type: $type,
+    uniqFactoryId: $uniqFactoryId
+  ) {
+    data {
+      buyer
+      expiryDate
+      id
+      price {
+        amount
+        currency {
+          code
+          symbol
+        }
+      }
+      receiver
+      type
+      uniq {
+        factory {
+          accountMintingLimit
+          assetCreator
+          assetManager
+          authorizedMinters {
+            quantity
+            walletId
+          }
+          conditionlessReceivers
+          defaultUniqMetadata {
+            cachedSource {
+              contentType
+              integrity {
+                hash
+                type
+              }
+              uri
+            }
+            content {
+              attributes {
+                descriptor {
+                  description
+                  dynamic
+                  name
+                  type
+                }
+                key
+                value
+              }
+              description
+              dynamicAttributes {
+                contentType
+                uris
+              }
+              dynamicResources {
+                key
+                value {
+                  contentType
+                  uris
+                }
+              }
+              medias {
+                gallery {
+                  contentType
+                  integrity {
+                    hash
+                    type
+                  }
+                  uri
+                }
+                hero {
+                  contentType
+                  integrity {
+                    hash
+                    type
+                  }
+                  uri
+                }
+                product {
+                  contentType
+                  integrity {
+                    hash
+                    type
+                  }
+                  uri
+                }
+                square {
+                  contentType
+                  integrity {
+                    hash
+                    type
+                  }
+                  uri
+                }
+              }
+              name
+              properties
+              resources {
+                key
+                value {
+                  contentType
+                  integrity {
+                    hash
+                    type
+                  }
+                  uri
+                }
+              }
+              subName
+            }
+            source {
+              contentType
+              integrity {
+                hash
+                type
+              }
+              uri
+            }
+            status
+          }
+          firsthandPurchases {
+            groupRestriction {
+              excludes
+              includes
+            }
+            id
+            option {
+              factories {
+                count
+                id
+                strategy
+              }
+              transferUniqsReceiver
+            }
+            price {
+              amount
+              currency {
+                code
+                symbol
+              }
+            }
+            promoterBasisPoints
+            purchaseLimit
+            purchaseWindow {
+              endDate
+              startDate
+            }
+            purchasedUniqs
+            saleShares {
+              basisPoints
+              receiver
+            }
+            uosPayment
+          }
+          id
+          metadata {
+            cachedSource {
+              contentType
+              integrity {
+                hash
+                type
+              }
+              uri
+            }
+            content {
+              attributes {
+                key
+                value {
+                  description
+                  dynamic
+                  name
+                  type
+                }
+              }
+              description
+              medias {
+                gallery {
+                  contentType
+                  integrity {
+                    hash
+                    type
+                  }
+                  uri
+                }
+                hero {
+                  contentType
+                  integrity {
+                    hash
+                    type
+                  }
+                  uri
+                }
+                product {
+                  contentType
+                  integrity {
+                    hash
+                    type
+                  }
+                  uri
+                }
+                square {
+                  contentType
+                  integrity {
+                    hash
+                    type
+                  }
+                  uri
+                }
+              }
+              name
+              properties
+              resources {
+                key
+                value {
+                  contentType
+                  integrity {
+                    hash
+                    type
+                  }
+                  uri
+                }
+              }
+              subName
+            }
+            locked
+            source {
+              contentType
+              integrity {
+                hash
+                type
+              }
+              uri
+            }
+            status
+          }
+          mintableWindow {
+            endDate
+            startDate
+          }
+          resale {
+            minimumPrice {
+              amount
+              currency {
+                code
+                symbol
+              }
+            }
+            shares {
+              basisPoints
+              receiver
+            }
+          }
+          status
+          stock {
+            authorized
+            existing
+            maxMintable
+            mintable
+            minted
+          }
+          tradingWindow {
+            endDate
+            startDate
+          }
+          transferWindow {
+            endDate
+            startDate
+          }
+          type
+        }
+        id
+        metadata {
+          cachedSource {
+            contentType
+            integrity {
+              hash
+              type
+            }
+            uri
+          }
+          content {
+            attributes {
+              descriptor {
+                description
+                dynamic
+                name
+                type
+              }
+              key
+              value
+            }
+            description
+            dynamicAttributes {
+              contentType
+              uris
+            }
+            dynamicResources {
+              key
+              value {
+                contentType
+                uris
+              }
+            }
+            medias {
+              gallery {
+                contentType
+                integrity {
+                  hash
+                  type
+                }
+                uri
+              }
+              hero {
+                contentType
+                integrity {
+                  hash
+                  type
+                }
+                uri
+              }
+              product {
+                contentType
+                integrity {
+                  hash
+                  type
+                }
+                uri
+              }
+              square {
+                contentType
+                integrity {
+                  hash
+                  type
+                }
+                uri
+              }
+            }
+            name
+            properties
+            resources {
+              key
+              value {
+                contentType
+                integrity {
+                  hash
+                  type
+                }
+                uri
+              }
+            }
+            subName
+          }
+          source {
+            contentType
+            integrity {
+              hash
+              type
+            }
+            uri
+          }
+          status
+        }
+        mintDate
+        owner
+        resale {
+          onSaleDate
+          price {
+            amount
+            currency {
+              code
+              symbol
+            }
+          }
+          promoterBasisPoints
+          shares {
+            basisPoints
+            receiver
+          }
+        }
+        serialNumber
+        tradingPeriod {
+          duration
+          endDate
+          startDate
+        }
+        transferPeriod {
+          duration
+          endDate
+          startDate
+        }
+        type
+      }
+      uniqFactory {
+        accountMintingLimit
+        assetCreator
+        assetManager
+        authorizedMinters {
+          quantity
+          walletId
+        }
+        conditionlessReceivers
+        defaultUniqMetadata {
+          cachedSource {
+            contentType
+            integrity {
+              hash
+              type
+            }
+            uri
+          }
+          content {
+            attributes {
+              descriptor {
+                description
+                dynamic
+                name
+                type
+              }
+              key
+              value
+            }
+            description
+            dynamicAttributes {
+              contentType
+              uris
+            }
+            dynamicResources {
+              key
+              value {
+                contentType
+                uris
+              }
+            }
+            medias {
+              gallery {
+                contentType
+                integrity {
+                  hash
+                  type
+                }
+                uri
+              }
+              hero {
+                contentType
+                integrity {
+                  hash
+                  type
+                }
+                uri
+              }
+              product {
+                contentType
+                integrity {
+                  hash
+                  type
+                }
+                uri
+              }
+              square {
+                contentType
+                integrity {
+                  hash
+                  type
+                }
+                uri
+              }
+            }
+            name
+            properties
+            resources {
+              key
+              value {
+                contentType
+                integrity {
+                  hash
+                  type
+                }
+                uri
+              }
+            }
+            subName
+          }
+          source {
+            contentType
+            integrity {
+              hash
+              type
+            }
+            uri
+          }
+          status
+        }
+        firsthandPurchases {
+          groupRestriction {
+            excludes
+            includes
+          }
+          id
+          option {
+            factories {
+              count
+              id
+              strategy
+            }
+            transferUniqsReceiver
+          }
+          price {
+            amount
+            currency {
+              code
+              symbol
+            }
+          }
+          promoterBasisPoints
+          purchaseLimit
+          purchaseWindow {
+            endDate
+            startDate
+          }
+          purchasedUniqs
+          saleShares {
+            basisPoints
+            receiver
+          }
+          uosPayment
+        }
+        id
+        metadata {
+          cachedSource {
+            contentType
+            integrity {
+              hash
+              type
+            }
+            uri
+          }
+          content {
+            attributes {
+              key
+              value {
+                description
+                dynamic
+                name
+                type
+              }
+            }
+            description
+            medias {
+              gallery {
+                contentType
+                integrity {
+                  hash
+                  type
+                }
+                uri
+              }
+              hero {
+                contentType
+                integrity {
+                  hash
+                  type
+                }
+                uri
+              }
+              product {
+                contentType
+                integrity {
+                  hash
+                  type
+                }
+                uri
+              }
+              square {
+                contentType
+                integrity {
+                  hash
+                  type
+                }
+                uri
+              }
+            }
+            name
+            properties
+            resources {
+              key
+              value {
+                contentType
+                integrity {
+                  hash
+                  type
+                }
+                uri
+              }
+            }
+            subName
+          }
+          locked
+          source {
+            contentType
+            integrity {
+              hash
+              type
+            }
+            uri
+          }
+          status
+        }
+        mintableWindow {
+          endDate
+          startDate
+        }
+        resale {
+          minimumPrice {
+            amount
+            currency {
+              code
+              symbol
+            }
+          }
+          shares {
+            basisPoints
+            receiver
+          }
+        }
+        status
+        stock {
+          authorized
+          existing
+          maxMintable
+          mintable
+          minted
+        }
+        tradingWindow {
+          endDate
+          startDate
+        }
+        transferWindow {
+          endDate
+          startDate
+        }
+        type
+      }
+    }
+    pagination {
+      limit
+      skip
+    }
+    totalCount
+  }
+}
+```
+
+##### Variables
+
+``` js
+{
+  "buyer": "aa1aa2aa3ag4",
+  "pagination": PaginationInput,
+  "subject": UniqBuyOfferSubjectInput,
+  "type": "UNIQ",
+  "uniqFactoryId": 987
+}
+```
+
+##### Response
+
+``` js
+{
+  "data": {
+    "uniqEffectiveBuyOffers": {
+      "data": [UniqEffectiveBuyOffer],
+      "pagination": Pagination,
+      "totalCount": 987
+    }
+  }
+}
+```
+
+
 ## `uniqFactories`
 
 ##### Description
 
-Retrieves a list of Uniq factories, optionally filtered by asset manager, and applies pagination for result management. Returns all factories if no specific filters are used.
+Retrieves a list of Uniq factories, optionally filtered by asset
+manager, and applies pagination for result management. Returns all
+factories if no specific filters are used.
 
 ##### Response
 
@@ -17088,17 +16557,20 @@ query UniqFactories(
     "uniqFactories": {
       "data": [UniqFactory],
       "pagination": Pagination,
-      "totalCount": 123
+      "totalCount": 987
     }
   }
 }
 ```
 
+
 ## `uniqFactory`
 
 ##### Description
 
-Fetches a specific Uniq factory by its blockchain ID, providing detailed information about its configuration, operations, and associated default Uniqs metadata.
+Fetches a specific Uniq factory by its blockchain ID, providing detailed
+information about its configuration, operations, and associated default
+Uniqs metadata.
 
 ##### Response
 
@@ -17406,6 +16878,7 @@ query UniqFactory($id: BigInt!) {
 }
 ```
 
+
 ## `uniqGlobalShares`
 
 ##### Response
@@ -17441,12 +16914,13 @@ query UniqGlobalShares {
 ```
 
 
-
 ## `uniqsOfFactory`
 
 ##### Description
 
-Lists Uniqs associated with a particular factory, allowing for advanced filtering based on serial numbers, IDs, resale status, and incorporates pagination for comprehensive result exploration.
+Lists Uniqs associated with a particular factory, allowing for advanced
+filtering based on serial numbers, IDs, resale status, and incorporates
+pagination for comprehensive result exploration.
 
 ##### Response
 
@@ -17883,17 +17357,19 @@ query UniqsOfFactory(
     "uniqsOfFactory": {
       "data": [Uniq],
       "pagination": Pagination,
-      "totalCount": 987
+      "totalCount": 123
     }
   }
 }
 ```
 
+
 ## `uniqsOfWallet`
 
 ##### Description
 
-Enables querying user-specific Uniqs, offering personalized insight into Uniq ownership and management based on wallet ID.
+Enables querying user-specific Uniqs, offering personalized insight into
+Uniq ownership and management based on wallet ID.
 
 ##### Response
 
@@ -18317,7 +17793,7 @@ query UniqsOfWallet(
   "factoryIds": [987],
   "ids": [987],
   "pagination": PaginationInput,
-  "resale": true,
+  "resale": false,
   "walletId": "aa1aa2aa3ag4"
 }
 ```
@@ -18347,13 +17823,27 @@ order: 1
 
 We're thrilled to announce the release of a new version of the Ultra API. This update focuses on enhancing user experience, increasing performance, and introducing new functionalities to make integration even more seamless.
 
-## Key Highlights
+## Release 0.2.0
+
+### Key Highlights
+
+-   Introducing the `uniqEffectiveBuyOffers`. Please refer to the `uniqEffectiveBuyOffers` queries section for detailed information. We strongly advise utilizing this feature to retrieve all currently active offers.
+-   Presenting the `uniqBuyOffers`. For more details, see the `uniqBuyOffers` queries section. We strongly encourage using this feature to retrieve specific offers, which may include expired offers or those related to burned uniq.
+
+### Bugfixes
+
+-   Addressed issues where metadata remained stuck in processing state without any reported errors.
+-   Corrected occurrences of HTTP 500 errors instead of 400 errors for subscriptions used over HTTP protocol rather than WebSocket.
+
+## Release 0.1.0
+
+### Key Highlights
 
 -   Introducing the `uniqSnapshots` subscription! Refer to the `uniqSnapshots` subscription section for more information. We highly recommend using this new subscription. Please note that the `uniqsOfFactory` and `uniqsOfWallet` subscriptions are now deprecated.
 -   Introducing the `uniqFactorySnapshots` subscription! Refer to the `uniqFactorySnapshots` subscription section for more information. We highly recommend using this new subscription. Please note that the `uniqFactories` subscription is now deprecated.
 -   Explore the new `uniqGlobalShares` query! Find details in the `uniqGlobalShares` query section. We strongly recommend using this query to compute sale shares prices. The `uniqGlobalShares` query provides the protocol fee basis point applied to each resale. Reminder: Owner revenue = Price - (Price x 0.0001 x (Protocol fee basis point + Promoter fee basis point + Creators shares basis point)).
 
-## Breaking changes
+### Breaking changes
 
 -   **Removed** enum `BlockStep` - The Ultra API will now reflect only irreversible transactions.
 
@@ -18378,7 +17868,7 @@ We're thrilled to announce the release of a new version of the Ultra API. This u
     }
     ```
 
-## Bugfixes
+### Bugfixes
 
 -   Resolved issues related to metadata not being present for old uniqs or factory. The API now correctly includes metadata for all uniqs and factory instances.
 -   Fixed issues with trading/transfer windows. Users can now perform trading and transfers without encountering unexpected errors or disruptions.
@@ -18389,15 +17879,142 @@ deploy: ['staging', 'mainnet']
 order: 5
 ---
 
+
+# Understanding GraphQL Subscriptions
+
+GraphQL subscriptions enable a real-time connection between the client and the server, allowing the server to push updates to the client when specific events occur. Subscriptions can be used for live queries or as a stream of events. The `graphql-ws` library simplifies the process of implementing these subscriptions.
+
+## Basic Concept of Subscriptions
+
+Unlike queries and mutations, which follow a request-response pattern, subscriptions use a persistent connection (typically via WebSocket) to push updates from the server to the client.
+
+## Setting Up with `graphql-ws`
+
+To implement subscriptions with the `graphql-ws` library, follow these basic steps:
+
+1. **Install the Library**: Ensure you have the `graphql-ws` library installed.
+
+2. **Establish a WebSocket Connection**: Create a WebSocket connection using the `graphql-ws` library.
+
+3. **Authenticate the Connection**: During the connection initialization, include an authorization header to authenticate the user. This is crucial for secure communications.
+
+4. **Subscribe to Events**: Use the connection to subscribe to the desired events. When these events occur, the server will push updates to the client.
+
+## Step-by-Step Example with Code
+
+### 1. Creating the WebSocket Client
+
+```javascript
+import { createClient } from 'graphql-ws';
+
+const client = createClient({
+    url: 'wss://your-graphql-endpoint/graphql',
+    connectionParams: {
+        headers: {
+            authorization: 'Bearer your_user_token',
+        },
+    },
+});
+```
+
+### 2. Subscribing to a Subscription
+
+```javascript
+client.subscribe(
+    {
+        query: `subscription {
+          eventOccurred {
+            field1
+            field2
+          }
+        }`,
+    },
+    {
+        next: (data) => console.log(data),
+        error: (err) => console.error(err),
+        complete: () => console.log('Subscription complete'),
+    },
+);
+```
+
+## Postman: Testing an Example WebSocket Connections
+
+### 1. Creating a WebSocket Request
+
+-   Open Postman and create a new WebSocket request.
+-   Set the URL to your GraphQL subscription endpoint (e.g., `wss://your-graphql-endpoint/graphql`).
+-   Add the correct sub-protocol `Sec-WebSocket-Protocol : graphql-transport-ws` on header section.
+
+### 2. Initializing the Connection
+
+-   In the "Text" tab, enter the following JSON payload to initialize the connection with the authorization header:
+
+    ```json
+    {
+        "type": "connection_init",
+        "payload": {
+            "headers": { "authorization": "Bearer {{BEARER_TOKEN}}" }
+        }
+    }
+    ```
+
+-   Click the "Connect" button to establish the WebSocket connection.
+
+### 3. Subscribing to a GraphQL Subscription
+
+-   After the connection is successfully initialized, enter the following JSON payload to subscribe to a GraphQL subscription:
+
+    ```json
+    {
+        "id": "d77e14e3-9ef2-43a3-a15e-d81a5f346f73",
+        "type": "subscribe",
+        "payload": {
+            "variables": {
+                "positionStrategy": "EARLIEST"
+            },
+            "query": "subscription UniqFactorySnapshots( $positionStrategy: StreamPositionStrategy!) { uniqFactorySnapshots( positionStrategy: $positionStrategy ) { cursor id position state { accountMintingLimit assetCreator assetManager authorizedMinters { quantity walletId } conditionlessReceivers defaultUniqMetadata { cachedSource { contentType integrity { hash type } uri } content { attributes { descriptor { description dynamic name type } key value } description dynamicAttributes { contentType uris } dynamicResources { key value { contentType uris } } medias { gallery { contentType integrity { hash type } uri } hero { contentType integrity { hash type } uri } product { contentType integrity { hash type } uri } square { contentType integrity { hash type } uri } } name properties resources { key value { contentType integrity { hash type } uri } } subName } source { contentType integrity { hash type } uri } status } firsthandPurchases { groupRestriction { excludes includes } id option { factories { count id strategy } transferUniqsReceiver } price { amount currency { code symbol } } promoterBasisPoints purchaseLimit purchaseWindow { endDate startDate } purchasedUniqs saleShares { basisPoints receiver } uosPayment } id metadata { cachedSource { contentType integrity { hash type } uri } content { attributes { key value { description dynamic name type } } description medias { gallery { contentType integrity { hash type } uri } hero { contentType integrity { hash type } uri } product { contentType integrity { hash type } uri } square { contentType integrity { hash type } uri } } name properties resources { key value { contentType integrity { hash type } uri } } subName } locked source { contentType integrity { hash type } uri } status } mintableWindow { endDate startDate } resale { minimumPrice { amount currency { code symbol } } shares { basisPoints receiver } } status stock { authorized existing maxMintable mintable minted } tradingWindow { endDate startDate } transferWindow { endDate startDate } type } } }"
+        }
+    }
+    ```
+
+-   Click the "Send" button to start the subscription.
+
+### 4. Handling the Cursor Value
+
+For subsequent requests, include the cursor value if it is not the first subscription. Here is an example of how to modify the subscription request to include the cursor value:
+
+```json
+{
+    "id": "d77e14e3-9ef2-43a3-a15e-d81a5f346f73",
+    "type": "subscribe",
+    "payload": {
+        "variables": {
+            "cursor": "1k05ksqt9v3ew",
+            "positionStrategy": "EARLIEST"
+        },
+        "query": "subscription UniqFactorySnapshots( $cursor: StreamCursor, $positionStrategy: StreamPositionStrategy!) { uniqFactorySnapshots( cursor: $cursor, positionStrategy: $positionStrategy ) { cursor id position state { accountMintingLimit assetCreator assetManager authorizedMinters { quantity walletId } conditionlessReceivers defaultUniqMetadata { cachedSource { contentType integrity { hash type } uri } content { attributes { descriptor { description dynamic name type } key value } description dynamicAttributes { contentType uris } dynamicResources { key value { contentType uris } } medias { gallery { contentType integrity { hash type } uri } hero { contentType integrity { hash type } uri } product { contentType integrity { hash type } uri } square { contentType integrity { hash type } uri } } name properties resources { key value { contentType integrity { hash type } uri } } subName } source { contentType integrity { hash type } uri } status } firsthandPurchases { groupRestriction { excludes includes } id option { factories { count id strategy } transferUniqsReceiver } price { amount currency { code symbol } } promoterBasisPoints purchaseLimit purchaseWindow { endDate startDate } purchasedUniqs saleShares { basisPoints receiver } uosPayment } id metadata { cachedSource { contentType integrity { hash type } uri } content { attributes { key value { description dynamic name type } } description medias { gallery { contentType integrity { hash type } uri } hero { contentType integrity { hash type } uri } product { contentType integrity { hash type } uri } square { contentType integrity { hash type } uri } } name properties resources { key value { contentType integrity { hash type } uri } } subName } locked source { contentType integrity { hash type } uri } status } mintableWindow { endDate startDate } resale { minimumPrice { amount currency { code symbol } } shares { basisPoints receiver } } status stock { authorized existing maxMintable mintable minted } tradingWindow { endDate startDate } transferWindow { endDate startDate } type } } }"
+    }
+}
+```
+
+## Appendix
+
+References
+
+-   GraphQL over WebSocket Protocol: [graphql-ws](https://github.com/enisdenjo/graphql-ws/blob/master/PROTOCOL.md)
+
 # Subscriptions
 
 ## `uniqFactories`
 
-Transition to uniqFactorySnapshots for improved data management. This method will be phased out in future updates.
+Transition to uniqFactorySnapshots for improved data management. This
+method will be phased out in future updates.
 
 ##### Description
 
-Subscribes to updates on Uniq Factories, providing a mechanism for real-time monitoring and data synchronization based on specified criteria.
+Subscribes to updates on Uniq Factories, providing a mechanism for
+real-time monitoring and data synchronization based on specified
+criteria.
 
 ##### Response
 
@@ -18705,11 +18322,14 @@ subscription UniqFactories($assetManager: WalletId) {
 }
 ```
 
+
 ## `uniqFactorySnapshots`
 
 ##### Description
 
-Engages with Uniq Factory snapshots, offering an advanced model for tracking changes and state transitions within factories, powered by stream positions and optional cursors for continuity.
+Engages with Uniq Factory snapshots, offering an advanced model for
+tracking changes and state transitions within factories, powered by
+stream positions and optional cursors for continuity.
 
 ##### Response
 
@@ -19016,11 +18636,14 @@ subscription UniqFactorySnapshots(
 }
 ```
 
+
 ## `uniqSnapshots`
 
 ##### Description
 
-Initiates a subscription to Uniq snapshots, offering a modern framework for observing Uniq state changes and updates, supported by strategic stream positioning and cursor-based continuity.
+Initiates a subscription to Uniq snapshots, offering a modern framework
+for observing Uniq state changes and updates, supported by strategic
+stream positioning and cursor-based continuity.
 
 ##### Response
 
@@ -19232,13 +18855,17 @@ subscription UniqSnapshots(
 }
 ```
 
+
 ## `uniqsOfFactory`
 
-Adopt uniqSnapshots for enhanced state tracking and real-time updates. This method is slated for discontinuation.
+Adopt uniqSnapshots for enhanced state tracking and real-time updates.
+This method is slated for discontinuation.
 
 ##### Description
 
-Provides a subscription service for tracking Uniqs associated with a specific factory, leveraging serial number ranges and ID filters for targeted data retrieval.
+Provides a subscription service for tracking Uniqs associated with a
+specific factory, leveraging serial number ranges and ID filters for
+targeted data retrieval.
 
 ##### Response
 
@@ -19673,13 +19300,17 @@ subscription UniqsOfFactory(
 }
 ```
 
+
 ## `uniqsOfWallet`
 
-Shift to uniqSnapshots for a streamlined and updated approach to Uniq monitoring. This subscription will be phased out.
+Shift to uniqSnapshots for a streamlined and updated approach to Uniq
+monitoring. This subscription will be phased out.
 
 ##### Description
 
-Facilitates user-centric tracking of Uniqs, catering to individual ownership patterns and preferences with optional filters for ID and factory association.
+Facilitates user-centric tracking of Uniqs, catering to individual
+ownership patterns and preferences with optional filters for ID and
+factory association.
 
 ##### Response
 
@@ -20127,7 +19758,9 @@ order: 6
 
 ##### Description
 
-A binary integer decimal representation of a 128-bit decimal value, supporting 34 decimal digits of significand and an exponent range of -6143 to +6144.
+A binary integer decimal representation of a 128-bit decimal value,
+supporting 34 decimal digits of significand and an exponent range of
+-6143 to +6144.
 
 ##### Example
 
@@ -20135,11 +19768,13 @@ A binary integer decimal representation of a 128-bit decimal value, supporting 3
 987.65
 ```
 
+
 ## BigInt
 
 ##### Description
 
-Defines a Long class for representing a 64-bit two’s-complement integer value.
+Defines a Long class for representing a 64-bit two’s-complement integer
+value.
 
 ##### Example
 
@@ -20148,20 +19783,25 @@ Defines a Long class for representing a 64-bit two’s-complement integer value.
 ```
 
 
-
 ## Boolean
 
 ##### Description
 
 The `Boolean` scalar type represents `true` or `false`.
 
+##### Example
+
+``` js
+true
+```
 
 
 ## Currency
 
 ##### Description
 
-Defines a currency unit for displaying pricing information, adhering to ISO 4217 standards for currency representation.
+Defines a currency unit for displaying pricing information, adhering to
+ISO 4217 standards for currency representation.
 
 ##### Fields
 
@@ -20174,18 +19814,19 @@ Defines a currency unit for displaying pricing information, adhering to ISO 4217
 
 ``` js
 {
-  "code": "xyz789",
+  "code": "abc123",
   "symbol": "xyz789"
 }
 ```
-
 
 
 ## Date
 
 ##### Description
 
-ISO 8601 date format. The timezone is always zero UTC offset, as denoted by the suffix Z. Milliseconds since epoch is an alternative input format.
+ISO 8601 date format. The timezone is always zero UTC offset, as denoted
+by the suffix Z. Milliseconds since epoch is an alternative input
+format.
 
 ##### Example
 
@@ -20194,12 +19835,13 @@ ISO 8601 date format. The timezone is always zero UTC offset, as denoted by the 
 ```
 
 
-
 ## Float
 
 ##### Description
 
-The `Float` scalar type represents signed double-precision fractional values as specified by [IEEE 754](https://en.wikipedia.org/wiki/IEEE_floating_point).
+The `Float` scalar type represents signed double-precision fractional
+values as specified by [IEEE
+754](https://en.wikipedia.org/wiki/IEEE_floating_point).
 
 ##### Example
 
@@ -20208,19 +19850,18 @@ The `Float` scalar type represents signed double-precision fractional values as 
 ```
 
 
-
 ## Int
 
 ##### Description
 
-The `Int` scalar type represents non-fractional signed whole numeric values. Int can represent values between -(2^31) and 2^31 - 1.
+The `Int` scalar type represents non-fractional signed whole numeric
+values. Int can represent values between -(2^31) and 2^31 - 1.
 
 ##### Example
 
 ``` js
-987
+123
 ```
-
 
 
 ## JSONObject
@@ -20236,7 +19877,6 @@ Represent a JSON object.
 ```
 
 
-
 ## JSONPrimitive
 
 ##### Description
@@ -20250,12 +19890,12 @@ Represent all supported primitive type for json object.
 ```
 
 
-
 ## MonetaryAmount
 
 ##### Description
 
-Encapsulates a monetary value in a specific currency, allowing for precise financial transactions.
+Encapsulates a monetary value in a specific currency, allowing for
+precise financial transactions.
 
 ##### Fields
 
@@ -20271,12 +19911,12 @@ Encapsulates a monetary value in a specific currency, allowing for precise finan
 ```
 
 
-
 ## Pagination
 
 ##### Description
 
-Pagination applied to the result. Maximum limit allowed result per page is 25.
+Pagination applied to the result. Maximum limit allowed result per page
+is 25.
 
 ##### Fields
 
@@ -20288,16 +19928,17 @@ Pagination applied to the result. Maximum limit allowed result per page is 25.
 ##### Example
 
 ``` js
-{"limit": 123, "skip": 123}
+{"limit": 987, "skip": 987}
 ```
-
 
 
 ## PaginationInput
 
 ##### Description
 
-Pagination filter. Used as query argument, it's optional filter. If not provided, default pagination will be applied with skip value to 0 and limit to 25 maximum results per page.
+Pagination filter. Used as query argument, it's optional filter. If not
+provided, default pagination will be applied with skip value to 0 and
+limit to 25 maximum results per page.
 
 ##### Fields
 
@@ -20309,9 +19950,8 @@ Pagination filter. Used as query argument, it's optional filter. If not provided
 ##### Example
 
 ``` js
-{"limit": 987, "skip": 987}
+{"limit": 987, "skip": 123}
 ```
-
 
 
 ## StreamCursor
@@ -20325,7 +19965,6 @@ An opaque string used to resume a stream.
 ``` js
 "0"
 ```
-
 
 
 ## StreamPosition
@@ -20349,7 +19988,6 @@ The stream position.
 ```
 
 
-
 ## StreamPositionStrategy
 
 ##### Description
@@ -20370,26 +20008,28 @@ The stream position strategy.
 ```
 
 
-
 ## String
 
 ##### Description
 
-The `String` scalar type represents textual data, represented as UTF-8 character sequences. The String type is most often used by GraphQL to represent free-form human-readable text.
+The `String` scalar type represents textual data, represented as UTF-8
+character sequences. The String type is most often used by GraphQL to
+represent free-form human-readable text.
 
 ##### Example
 
 ``` js
-"abc123"
+"xyz789"
 ```
-
 
 
 ## Uniq
 
 ##### Description
 
-Encapsulates all pertinent details of a Uniq, including its blockchain ID, asset type, ownership, and associated metadata, providing a comprehensive overview of its identity and status.
+Encapsulates all pertinent details of a Uniq, including its blockchain
+ID, asset type, ownership, and associated metadata, providing a
+comprehensive overview of its identity and status.
 
 ##### Fields
 
@@ -20424,12 +20064,192 @@ Encapsulates all pertinent details of a Uniq, including its blockchain ID, asset
 ```
 
 
+## UniqBuyOffer
+
+##### Description
+
+A buy offer record on a uniq factory or a uniq.
+
+##### Fields
+
+| Field Name                                                   | Description                      |
+|--------------------------------------------------------------|----------------------------------|
+| `buyer` - [`WalletId!`](#walletid)                | The buy offer wallet ID.         |
+| `expiryDate` - [`Date!`](#date)                   | The buy offer expry date.        |
+| `id` - [`BigInt!`](#bigint)                       | The buy offer ID.                |
+| `price` - [`MonetaryAmount!`](#monetaryamount)    | The buy offer price.             |
+| `receiver` - [`WalletId`](#walletid)              | The optional buy offer receiver. |
+| `type` - [`UniqBuyOfferType!`](#uniqbuyoffertype) | The buy offer type.              |
+| `uniq` - [`Uniq`](#uniq)                          | The buy offer Uniq.              |
+| `uniqFactory` - [`UniqFactory`](#uniqfactory)     | The buy offer Uniq Factory.      |
+| `uniqFactoryId` - [`BigInt`](#bigint)             | The buy offer Uniq Factory ID.   |
+| `uniqId` - [`BigInt`](#bigint)                    | The buy offer Uniq ID.           |
+
+##### Example
+
+``` js
+{
+  "buyer": "aa1aa2aa3ag4",
+  "expiryDate": "Thu Jul 13 2023 13:27:11 GMT+0200",
+  "id": 987,
+  "price": MonetaryAmount,
+  "receiver": "aa1aa2aa3ag4",
+  "type": "UNIQ",
+  "uniq": Uniq,
+  "uniqFactory": UniqFactory,
+  "uniqFactoryId": 987,
+  "uniqId": 987
+}
+```
+
+
+## UniqBuyOfferConfig
+
+##### Description
+
+UniqBuyOfferConfig type represents the configuration for a uniq buy
+offer.
+
+##### Fields
+
+| Field Name                                                   | Description                                          |
+|--------------------------------------------------------------|------------------------------------------------------|
+| `maxActiveOfferPerUser` - [`BigInt!`](#bigint)    | The maximum number of active offers a user can have. |
+| `maxDuration` - [`BigInt!`](#bigint)              | The maximum duration of the offer.                   |
+| `minDuration` - [`BigInt!`](#bigint)              | The minimum duration of the offer.                   |
+| `minPrice` - [`MonetaryAmount!`](#monetaryamount) | The minimum price of the offer.                      |
+
+##### Example
+
+``` js
+{
+  "maxActiveOfferPerUser": 987,
+  "maxDuration": 987,
+  "minDuration": 987,
+  "minPrice": MonetaryAmount
+}
+```
+
+
+## UniqBuyOfferFilterInput
+
+##### Description
+
+Enable filtering on uniq buy offers only and provide the filter on uniq
+ID and/or burned.
+
+##### Fields
+
+| Input Field                                     | Description                                                                                                                             |
+|-------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|
+| `enabled` - [`Boolean!`](#boolean)   | Enable filtering exclusively for uniq buy offers. Set this variable to `true` to activate the filter, ensuring clarity and readability. |
+| `uniqBurned` - [`Boolean`](#boolean) | The optional uniqBurned filter retrieves offers where the associated uniq has been burned, making the offer invalid.                    |
+| `uniqId` - [`BigInt`](#bigint)       | Optional filter to retrieve only offers related to a specific uniq.                                                                     |
+
+##### Example
+
+``` js
+{"enabled": false, "uniqBurned": true, "uniqId": 987}
+```
+
+
+## UniqBuyOfferList
+
+##### Description
+
+Organizes a collection of UniqBuyOffers into a structured list,
+incorporating pagination to manage and navigate through large datasets
+effectively.
+
+##### Fields
+
+| Field Name                                              | Description                                                                                                                               |
+|---------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------|
+| `data` - [`[UniqBuyOffer!]!`](#uniqbuyoffer) | An array of UniqBuyOffers, each representing a unique asset within the platform, selected according to specified criteria.                |
+| `pagination` - [`Pagination!`](#pagination)  | Pagination details, facilitating the efficient browsing of large collections by segmenting the data into manageable portions.             |
+| `totalCount` - [`Int!`](#int)                | The total count of UniqBuyOffers matching the query parameters, essential for understanding the scope of results and planning navigation. |
+
+##### Example
+
+``` js
+{
+  "data": [UniqBuyOffer],
+  "pagination": Pagination,
+  "totalCount": 123
+}
+```
+
+
+## UniqBuyOfferOfTypeFilterInput
+
+##### Description
+
+Enable filtering on either uniq or uniq factory buy offers.
+
+##### Fields
+
+| Input Field                                                                                    | Description                     |
+|------------------------------------------------------------------------------------------------|---------------------------------|
+| `uniq` - [`UniqBuyOfferFilterInput`](#uniqbuyofferfilterinput)                      | Filter for uniq offers.         |
+| `uniqFactory` - [`UniqFactoryBuyOfferFilterInput`](#uniqfactorybuyofferfilterinput) | Filter for uniq factory offers. |
+
+##### Example
+
+``` js
+{
+  "uniq": UniqBuyOfferFilterInput,
+  "uniqFactory": UniqFactoryBuyOfferFilterInput
+}
+```
+
+
+## UniqBuyOfferSubjectInput
+
+##### Description
+
+Enable filtering of effective buy offers based on either a uniq ID or an
+owner.
+
+##### Fields
+
+| Input Field                                  | Description                    |
+|----------------------------------------------|--------------------------------|
+| `owner` - [`WalletId`](#walletid) | The filter on owner wallet ID. |
+| `uniqId` - [`BigInt`](#bigint)    | The filter on uniq ID.         |
+
+##### Example
+
+``` js
+{"owner": "aa1aa2aa3ag4", "uniqId": 987}
+```
+
+
+## UniqBuyOfferType
+
+##### Description
+
+The uniq buy offer type.
+
+##### Values
+
+| Enum Value     | Description                    |
+|----------------|--------------------------------|
+| `UNIQ`         | A buy offer on a uniq.         |
+| `UNIQ_FACTORY` | A buy offer on a uniq factory. |
+
+##### Example
+
+``` js
+"UNIQ"
+```
+
 
 ## UniqDynamicResource
 
 ##### Description
 
-Represents a dynamic Uniq resource capable of being refreshed to reflect changes, including multiple URIs for alternate versions or updates.
+Represents a dynamic Uniq resource capable of being refreshed to reflect
+changes, including multiple URIs for alternate versions or updates.
 
 ##### Fields
 
@@ -20442,18 +20262,80 @@ Represents a dynamic Uniq resource capable of being refreshed to reflect changes
 
 ``` js
 {
-  "contentType": "xyz789",
+  "contentType": "abc123",
   "uris": ["xyz789"]
 }
 ```
 
+
+## UniqEffectiveBuyOffer
+
+##### Description
+
+An effective buy offer on a uniq.
+
+##### Fields
+
+| Field Name                                                   | Description                      |
+|--------------------------------------------------------------|----------------------------------|
+| `buyer` - [`WalletId!`](#walletid)                | The buy offer wallet ID.         |
+| `expiryDate` - [`Date!`](#date)                   | The buy offer expry date.        |
+| `id` - [`BigInt!`](#bigint)                       | The buy offer ID.                |
+| `price` - [`MonetaryAmount!`](#monetaryamount)    | The buy offer price.             |
+| `receiver` - [`WalletId`](#walletid)              | The optional buy offer receiver. |
+| `type` - [`UniqBuyOfferType!`](#uniqbuyoffertype) | The buy offer type.              |
+| `uniq` - [`Uniq!`](#uniq)                         | The buy offer Uniq.              |
+| `uniqFactory` - [`UniqFactory!`](#uniqfactory)    | The buy offer Uniq Factory.      |
+
+##### Example
+
+``` js
+{
+  "buyer": "aa1aa2aa3ag4",
+  "expiryDate": "Thu Jul 13 2023 13:27:11 GMT+0200",
+  "id": 987,
+  "price": MonetaryAmount,
+  "receiver": "aa1aa2aa3ag4",
+  "type": "UNIQ",
+  "uniq": Uniq,
+  "uniqFactory": UniqFactory
+}
+```
+
+
+## UniqEffectiveBuyOfferList
+
+##### Description
+
+Organizes a collection of UniqEffectiveBuyOffers into a structured list,
+incorporating pagination to manage and navigate through large datasets
+effectively.
+
+##### Fields
+
+| Field Name                                                                | Description                                                                                                                                        |
+|---------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
+| `data` - [`[UniqEffectiveBuyOffer!]!`](#uniqeffectivebuyoffer) | An array of UniqEffectiveBuyOffers, each representing a unique asset within the platform, selected according to specified criteria.                |
+| `pagination` - [`Pagination!`](#pagination)                    | Pagination details, facilitating the efficient browsing of large collections by segmenting the data into manageable portions.                      |
+| `totalCount` - [`Int!`](#int)                                  | The total count of UniqEffectiveBuyOffers matching the query parameters, essential for understanding the scope of results and planning navigation. |
+
+##### Example
+
+``` js
+{
+  "data": [UniqEffectiveBuyOffer],
+  "pagination": Pagination,
+  "totalCount": 123
+}
+```
 
 
 ## UniqFactory
 
 ##### Description
 
-Aggregates all relevant information about a Uniq factory, encompassing types, statuses, and operational details.
+Aggregates all relevant information about a Uniq factory, encompassing
+types, statuses, and operational details.
 
 ##### Fields
 
@@ -20502,12 +20384,12 @@ Aggregates all relevant information about a Uniq factory, encompassing types, st
 ```
 
 
-
 ## UniqFactoryActionWindow
 
 ##### Description
 
-Provides a timeframe for actions related to a Uniq factory, such as minting, trading, or transferring.
+Provides a timeframe for actions related to a Uniq factory, such as
+minting, trading, or transferring.
 
 ##### Fields
 
@@ -20535,12 +20417,12 @@ Provides a timeframe for actions related to a Uniq factory, such as minting, tra
 ```
 
 
-
 ## UniqFactoryAuthorizedMinter
 
 ##### Description
 
-Information about authorized minters for a Uniq factory, including wallet IDs and minting quotas.
+Information about authorized minters for a Uniq factory, including
+wallet IDs and minting quotas.
 
 ##### Fields
 
@@ -20559,12 +20441,31 @@ Information about authorized minters for a Uniq factory, including wallet IDs an
 ```
 
 
+## UniqFactoryBuyOfferFilterInput
+
+##### Description
+
+Enable filtering on uniq factory buy offers.
+
+##### Fields
+
+| Input Field                                   | Description                                                                                                                                     |
+|-----------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
+| `enabled` - [`Boolean!`](#boolean) | Enable filtering exclusively for uniq factory buy offers. Set this variable to `true` to activate the filter, ensuring clarity and readability. |
+
+##### Example
+
+``` js
+{"enabled": false}
+```
+
 
 ## UniqFactoryDigest
 
 ##### Description
 
-Summarizes immutable information about a Uniq Factory, capturing its identity, operational parameters, and lifecycle management details.
+Summarizes immutable information about a Uniq Factory, capturing its
+identity, operational parameters, and lifecycle management details.
 
 ##### Fields
 
@@ -20597,12 +20498,12 @@ Summarizes immutable information about a Uniq Factory, capturing its identity, o
 ```
 
 
-
 ## UniqFactoryFirsthandPurchase
 
 ##### Description
 
-Details firsthand purchase information for a Uniq factory, including pricing, limits, and applicable restrictions.
+Details firsthand purchase information for a Uniq factory, including
+pricing, limits, and applicable restrictions.
 
 ##### Fields
 
@@ -20629,7 +20530,7 @@ Details firsthand purchase information for a Uniq factory, including pricing, li
   "id": 987,
   "option": UniqFactoryFirsthandPurchaseOption,
   "price": MonetaryAmount,
-  "promoterBasisPoints": 123,
+  "promoterBasisPoints": 987,
   "purchaseLimit": 987,
   "purchaseWindow": UniqFactoryPurchaseWindow,
   "purchasedUniqs": 987,
@@ -20639,12 +20540,12 @@ Details firsthand purchase information for a Uniq factory, including pricing, li
 ```
 
 
-
 ## UniqFactoryFirsthandPurchaseGroupRestriction
 
 ##### Description
 
-Represents group-based restrictions for firsthand purchases, allowing for inclusion and exclusion criteria based on group memberships.
+Represents group-based restrictions for firsthand purchases, allowing
+for inclusion and exclusion criteria based on group memberships.
 
 ##### Fields
 
@@ -20660,12 +20561,12 @@ Represents group-based restrictions for firsthand purchases, allowing for inclus
 ```
 
 
-
 ## UniqFactoryFirsthandPurchaseOption
 
 ##### Description
 
-Outlines firsthand purchase options, including potential restrictions and strategies for managing factory-related purchases.
+Outlines firsthand purchase options, including potential restrictions
+and strategies for managing factory-related purchases.
 
 ##### Fields
 
@@ -20686,12 +20587,12 @@ Outlines firsthand purchase options, including potential restrictions and strate
 ```
 
 
-
 ## UniqFactoryFirsthandPurchaseOptionFactory
 
 ##### Description
 
-Describes firsthand purchase options associated with a Uniq factory, including applicable strategies and quantities.
+Describes firsthand purchase options associated with a Uniq factory,
+including applicable strategies and quantities.
 
 ##### Fields
 
@@ -20706,7 +20607,6 @@ Describes firsthand purchase options associated with a Uniq factory, including a
 ``` js
 {"count": 987, "id": 987, "strategy": "BURN"}
 ```
-
 
 
 ## UniqFactoryFirsthandPurchaseOptionFactoryStrategy
@@ -20731,12 +20631,13 @@ Uniq Factory.
 ```
 
 
-
 ## UniqFactoryList
 
 ##### Description
 
-Provides a paginated list of Uniq factories, including data on individual factories and total counts for navigation and display purposes.
+Provides a paginated list of Uniq factories, including data on
+individual factories and total counts for navigation and display
+purposes.
 
 ##### Fields
 
@@ -20757,12 +20658,12 @@ Provides a paginated list of Uniq factories, including data on individual factor
 ```
 
 
-
 ## UniqFactoryMetadata
 
 ##### Description
 
-Encapsulates global metadata for a Uniq factory, including status, source, cached content, and resolved information.
+Encapsulates global metadata for a Uniq factory, including status,
+source, cached content, and resolved information.
 
 ##### Fields
 
@@ -20780,19 +20681,19 @@ Encapsulates global metadata for a Uniq factory, including status, source, cache
 {
   "cachedSource": UniqResource,
   "content": UniqFactoryMetadataContent,
-  "locked": true,
+  "locked": false,
   "source": UniqResource,
   "status": "INVALID"
 }
 ```
 
 
-
 ## UniqFactoryMetadataAttribute
 
 ##### Description
 
-Stores key-value pairs describing attributes for Uniqs related to a factory, providing detailed information about each attribute.
+Stores key-value pairs describing attributes for Uniqs related to a
+factory, providing detailed information about each attribute.
 
 ##### Fields
 
@@ -20811,12 +20712,12 @@ Stores key-value pairs describing attributes for Uniqs related to a factory, pro
 ```
 
 
-
 ## UniqFactoryMetadataContent
 
 ##### Description
 
-Represents content associated with Uniq factory metadata, including names, descriptions, media, and additional properties.
+Represents content associated with Uniq factory metadata, including
+names, descriptions, media, and additional properties.
 
 ##### Fields
 
@@ -20835,9 +20736,9 @@ Represents content associated with Uniq factory metadata, including names, descr
 ``` js
 {
   "attributes": [UniqFactoryMetadataAttribute],
-  "description": "abc123",
+  "description": "xyz789",
   "medias": UniqMedias,
-  "name": "abc123",
+  "name": "xyz789",
   "properties": {"someProperty": "myStringValue", "otherProperty": 987},
   "resources": [UniqMetadataResource],
   "subName": "abc123"
@@ -20845,12 +20746,13 @@ Represents content associated with Uniq factory metadata, including names, descr
 ```
 
 
-
 ## UniqFactoryMintableWindow
 
 ##### Description
 
-Specifies the time window during which Uniqs can be minted from a factory, with various combinations of start and end dates dictating minting availability.
+Specifies the time window during which Uniqs can be minted from a
+factory, with various combinations of start and end dates dictating
+minting availability.
 
 ##### Fields
 
@@ -20869,12 +20771,12 @@ Specifies the time window during which Uniqs can be minted from a factory, with 
 ```
 
 
-
 ## UniqFactoryPurchaseWindow
 
 ##### Description
 
-Defines a purchase window for Uniq factories, indicating when Uniqs can be bought directly from the factory.
+Defines a purchase window for Uniq factories, indicating when Uniqs can
+be bought directly from the factory.
 
 ##### Fields
 
@@ -20893,12 +20795,12 @@ Defines a purchase window for Uniq factories, indicating when Uniqs can be bough
 ```
 
 
-
 ## UniqFactoryResale
 
 ##### Description
 
-Details the resale information for a Uniq factory, including minimum pricing and commission shares for secondary market sales.
+Details the resale information for a Uniq factory, including minimum
+pricing and commission shares for secondary market sales.
 
 ##### Fields
 
@@ -20917,12 +20819,13 @@ Details the resale information for a Uniq factory, including minimum pricing and
 ```
 
 
-
 ## UniqFactorySnapshot
 
 ##### Description
 
-Represents a momentary snapshot of a Uniq Factory's state, including its blockchain ID and operational status, facilitating real-time data synchronization and monitoring.
+Represents a momentary snapshot of a Uniq Factory's state, including its
+blockchain ID and operational status, facilitating real-time data
+synchronization and monitoring.
 
 ##### Fields
 
@@ -20945,12 +20848,12 @@ Represents a momentary snapshot of a Uniq Factory's state, including its blockch
 ```
 
 
-
 ## UniqFactoryStatus
 
 ##### Description
 
-Represents the operational status of a Uniq factory within the blockchain environment.
+Represents the operational status of a Uniq factory within the
+blockchain environment.
 
 ##### Values
 
@@ -20967,12 +20870,12 @@ Represents the operational status of a Uniq factory within the blockchain enviro
 ```
 
 
-
 ## UniqFactoryStock
 
 ##### Description
 
-Represents the stock information of a Uniq factory, detailing mintable quantities and existing circulation.
+Represents the stock information of a Uniq factory, detailing mintable
+quantities and existing circulation.
 
 ##### Fields
 
@@ -20997,12 +20900,12 @@ Represents the stock information of a Uniq factory, detailing mintable quantitie
 ```
 
 
-
 ## UniqFactoryTradingWindow
 
 ##### Description
 
-Specifies the time window during which Uniqs can be traded. This window is checked during buy/resell actions to enforce trading periods.
+Specifies the time window during which Uniqs can be traded. This window
+is checked during buy/resell actions to enforce trading periods.
 
 ##### Fields
 
@@ -21021,12 +20924,13 @@ Specifies the time window during which Uniqs can be traded. This window is check
 ```
 
 
-
 ## UniqFactoryTransferWindow
 
 ##### Description
 
-Defines the time window during which Uniqs can be transferred. This is checked during transfer actions to ensure compliance with specified periods.
+Defines the time window during which Uniqs can be transferred. This is
+checked during transfer actions to ensure compliance with specified
+periods.
 
 ##### Fields
 
@@ -21045,12 +20949,12 @@ Defines the time window during which Uniqs can be transferred. This is checked d
 ```
 
 
-
 ## UniqList
 
 ##### Description
 
-Organizes a collection of Uniqs into a structured list, incorporating pagination to manage and navigate through large datasets effectively.
+Organizes a collection of Uniqs into a structured list, incorporating
+pagination to manage and navigate through large datasets effectively.
 
 ##### Fields
 
@@ -21071,12 +20975,12 @@ Organizes a collection of Uniqs into a structured list, incorporating pagination
 ```
 
 
-
 ## UniqMedias
 
 ##### Description
 
-Centralizes visual representation details of tokens and factories, ensuring an engaging and informative display across frontend interfaces.
+Centralizes visual representation details of tokens and factories,
+ensuring an engaging and informative display across frontend interfaces.
 
 ##### Fields
 
@@ -21099,12 +21003,15 @@ Centralizes visual representation details of tokens and factories, ensuring an e
 ```
 
 
-
 ## UniqMetadata
 
 ##### Description
 
-Represents the essence of a Uniq token, encapsulating its name, description, visual identity, and associated metadata to forge a link between on-chain presence and off-chain representation. This forms the basis for understanding and interacting with the token within digital environments.
+Represents the essence of a Uniq token, encapsulating its name,
+description, visual identity, and associated metadata to forge a link
+between on-chain presence and off-chain representation. This forms the
+basis for understanding and interacting with the token within digital
+environments.
 
 ##### Fields
 
@@ -21127,12 +21034,12 @@ Represents the essence of a Uniq token, encapsulating its name, description, vis
 ```
 
 
-
 ## UniqMetadataAttribute
 
 ##### Description
 
-Associates key-value pairs with a Uniq, describing its attributes in a structured format for easy reference and interpretation.
+Associates key-value pairs with a Uniq, describing its attributes in a
+structured format for easy reference and interpretation.
 
 ##### Fields
 
@@ -21153,12 +21060,12 @@ Associates key-value pairs with a Uniq, describing its attributes in a structure
 ```
 
 
-
 ## UniqMetadataAttributeDescriptor
 
 ##### Description
 
-Allows the specification of structured data attributes for Uniqs, including whether the attribute is dynamic and its data type.
+Allows the specification of structured data attributes for Uniqs,
+including whether the attribute is dynamic and its data type.
 
 ##### Fields
 
@@ -21174,12 +21081,11 @@ Allows the specification of structured data attributes for Uniqs, including whet
 ``` js
 {
   "description": "xyz789",
-  "dynamic": true,
-  "name": "abc123",
+  "dynamic": false,
+  "name": "xyz789",
   "type": "ISODateString"
 }
 ```
-
 
 
 ## UniqMetadataAttributeType
@@ -21204,12 +21110,13 @@ Defines the data type of attributes associated with Uniq metadata.
 ```
 
 
-
 ## UniqMetadataContent
 
 ##### Description
 
-Defines the comprehensive content structure of Uniq metadata according to the NFT standard, encompassing names, descriptions, media, and additional data attributes.
+Defines the comprehensive content structure of Uniq metadata according
+to the NFT standard, encompassing names, descriptions, media, and
+additional data attributes.
 
 ##### Fields
 
@@ -21234,7 +21141,7 @@ Defines the comprehensive content structure of Uniq metadata according to the NF
   "dynamicAttributes": UniqDynamicResource,
   "dynamicResources": [UniqMetadataDynamicResource],
   "medias": UniqMedias,
-  "name": "xyz789",
+  "name": "abc123",
   "properties": {"someProperty": "myStringValue", "otherProperty": 987},
   "resources": [UniqMetadataResource],
   "subName": "abc123"
@@ -21242,12 +21149,14 @@ Defines the comprehensive content structure of Uniq metadata according to the NF
 ```
 
 
-
 ## UniqMetadataDynamicResource
 
 ##### Description
 
-Facilitates the inclusion of dynamic media or reference data within Uniq metadata, allowing for content that may update or change over time. Each resource must be identified and managed as a dynamic resource to accommodate variability and updates.
+Facilitates the inclusion of dynamic media or reference data within Uniq
+metadata, allowing for content that may update or change over time. Each
+resource must be identified and managed as a dynamic resource to
+accommodate variability and updates.
 
 ##### Fields
 
@@ -21266,12 +21175,14 @@ Facilitates the inclusion of dynamic media or reference data within Uniq metadat
 ```
 
 
-
 ## UniqMetadataResource
 
 ##### Description
 
-Enables the addition of extra media or reference data to Uniq metadata, enhancing its descriptive and visual elements. Each media or reference is strictly categorized as a static resource for consistency and reliability.
+Enables the addition of extra media or reference data to Uniq metadata,
+enhancing its descriptive and visual elements. Each media or reference
+is strictly categorized as a static resource for consistency and
+reliability.
 
 ##### Fields
 
@@ -21288,7 +21199,6 @@ Enables the addition of extra media or reference data to Uniq metadata, enhancin
   "value": UniqStaticResource
 }
 ```
-
 
 
 ## UniqMetadataStatus
@@ -21313,12 +21223,12 @@ Tracks the progress and outcome of metadata processing for Uniqs.
 ```
 
 
-
 ## UniqResale
 
 ##### Description
 
-Details a specific resale transaction for a Uniq, including the date, price, shares, and promoter fees involved.
+Details a specific resale transaction for a Uniq, including the date,
+price, shares, and promoter fees involved.
 
 ##### Fields
 
@@ -21335,18 +21245,19 @@ Details a specific resale transaction for a Uniq, including the date, price, sha
 {
   "onSaleDate": "Thu Jul 13 2023 13:27:11 GMT+0200",
   "price": MonetaryAmount,
-  "promoterBasisPoints": 987,
+  "promoterBasisPoints": 123,
   "shares": [UniqSaleShare]
 }
 ```
-
 
 
 ## UniqResource
 
 ##### Description
 
-Represents a digital resource, such as an image or video, associated with a Uniq, providing a URI for access and integrity information for verification.
+Represents a digital resource, such as an image or video, associated
+with a Uniq, providing a URI for access and integrity information for
+verification.
 
 ##### Fields
 
@@ -21362,17 +21273,17 @@ Represents a digital resource, such as an image or video, associated with a Uniq
 {
   "contentType": "abc123",
   "integrity": UniqResourceIntegrity,
-  "uri": "xyz789"
+  "uri": "abc123"
 }
 ```
-
 
 
 ## UniqResourceIntegrity
 
 ##### Description
 
-Details the integrity of a Uniq resource, ensuring that the resource is authentic and unaltered through cryptographic verification.
+Details the integrity of a Uniq resource, ensuring that the resource is
+authentic and unaltered through cryptographic verification.
 
 ##### Fields
 
@@ -21388,12 +21299,12 @@ Details the integrity of a Uniq resource, ensuring that the resource is authenti
 ```
 
 
-
 ## UniqResourceIntegrityType
 
 ##### Description
 
-Specifies the cryptographic hash algorithm used for ensuring the integrity of Uniq resources.
+Specifies the cryptographic hash algorithm used for ensuring the
+integrity of Uniq resources.
 
 ##### Values
 
@@ -21408,12 +21319,12 @@ Specifies the cryptographic hash algorithm used for ensuring the integrity of Un
 ```
 
 
-
 ## UniqSaleShare
 
 ##### Description
 
-Describes the commission structure for secondary market sales, including the receiver and the commission rate.
+Describes the commission structure for secondary market sales, including
+the receiver and the commission rate.
 
 ##### Fields
 
@@ -21426,18 +21337,18 @@ Describes the commission structure for secondary market sales, including the rec
 
 ``` js
 {
-  "basisPoints": 987,
+  "basisPoints": 123,
   "receiver": "aa1aa2aa3ag4"
 }
 ```
-
 
 
 ## UniqSerialRangeInput
 
 ##### Description
 
-Defines a range of serial numbers for Uniqs, facilitating filtering based on serial number criteria.
+Defines a range of serial numbers for Uniqs, facilitating filtering
+based on serial number criteria.
 
 ##### Fields
 
@@ -21453,12 +21364,12 @@ Defines a range of serial numbers for Uniqs, facilitating filtering based on ser
 ```
 
 
-
 ## UniqSnapshot
 
 ##### Description
 
-Enables real-time tracking of Uniq states within the ecosystem, offering a snapshot-based approach to data synchronization and monitoring.
+Enables real-time tracking of Uniq states within the ecosystem, offering
+a snapshot-based approach to data synchronization and monitoring.
 
 ##### Fields
 
@@ -21481,12 +21392,12 @@ Enables real-time tracking of Uniq states within the ecosystem, offering a snaps
 ```
 
 
-
 ## UniqState
 
 ##### Description
 
-Captures the comprehensive state of a Uniq within a streaming data model, facilitating dynamic updates and real-time monitoring.
+Captures the comprehensive state of a Uniq within a streaming data
+model, facilitating dynamic updates and real-time monitoring.
 
 ##### Fields
 
@@ -21521,12 +21432,12 @@ Captures the comprehensive state of a Uniq within a streaming data model, facili
 ```
 
 
-
 ## UniqStaticResource
 
 ##### Description
 
-A static representation of a Uniq resource, including a predefined hash for integrity verification and a specific URI for retrieval.
+A static representation of a Uniq resource, including a predefined hash
+for integrity verification and a specific URI for retrieval.
 
 ##### Fields
 
@@ -21542,15 +21453,17 @@ A static representation of a Uniq resource, including a predefined hash for inte
 {
   "contentType": "abc123",
   "integrity": UniqResourceIntegrity,
-  "uri": "xyz789"
+  "uri": "abc123"
 }
 ```
+
 
 ## UniqTradingPeriod
 
 ##### Description
 
-Defines a trading period for a Uniq, specifying start and end dates, as well as the duration of the trading opportunity.
+Defines a trading period for a Uniq, specifying start and end dates, as
+well as the duration of the trading opportunity.
 
 ##### Fields
 
@@ -21570,11 +21483,13 @@ Defines a trading period for a Uniq, specifying start and end dates, as well as 
 }
 ```
 
+
 ## UniqTransferPeriod
 
 ##### Description
 
-Specifies a transfer period for a Uniq, outlining when the asset can be transferred between parties within designated timeframes.
+Specifies a transfer period for a Uniq, outlining when the asset can be
+transferred between parties within designated timeframes.
 
 ##### Fields
 
@@ -21594,6 +21509,7 @@ Specifies a transfer period for a Uniq, outlining when the asset can be transfer
 }
 ```
 
+
 ## UniqType
 
 ##### Description
@@ -21612,6 +21528,7 @@ Categorizes the nature of a Uniq asset within the ecosystem.
 ``` js
 "COLLECTIBLE"
 ```
+
 
 ## WalletId
 
@@ -23194,6 +23111,245 @@ MONGODB_URL=mongodb://USERNAME:PASSWORD@HOST
 ```
 
 ---
+title: 'Introduction'
+
+order: -99999999
+---
+
+# Uniq Metadata Tool
+
+The metadata tool simplifies the process for creating complicated uniq factories and associating tokens with those factories. This tool allows the user to specify token factory specifications and corresponding token(s) specifications in an easy to use CSV template.
+
+This tool takes CSVs and media files (Uniq images, videos and other supported media files) as input, converts to files to JSON objects, validates the JSON data, generates sha256 hashes of the JSON objects and outputs the generated JSON files.
+
+![Metadata Tool](/images/token-factories/metadatatool.png)
+
+**Note that the tool itself does not interact with the blockchain; rather, it simplifies the process of creating complicated uniq factories and the associated tokens.**
+
+## Install
+
+You can download the latest version of the tool from the [GitHub Releases Page](https://github.com/ultraio/metadata-tool/releases)
+
+## Features
+
+-   Simplifies factory creation
+-   Supports multiple media types
+-   Converts CSV to JSON metadata
+-   Hash Validation
+-   Schema Validation
+
+## Tutorials & Help
+
+-   TODO
+
+---
+title: 'How to log in to the Ultra Toolkit using Anchor Wallet'
+order: -99999
+oultine: [0, 5]
+---
+
+# How to log in to the Ultra Toolkit using Anchor Wallet
+
+Ultra Toolkit is a decentralized application facilitating seamless interaction with the Ultra blockchain and its smart contracts. Designed for developers, it provides essential functionalities such as interacting with Ultra smart contracts, searching for Uniqs, Uniq Factories and Users.
+
+This tutorial will cover the simplest process of logging in to the Ultra Toolkit using [Anchor Wallet](https://www.greymass.com/anchor).
+Anchor is a security and privacy focused open-source digital wallet for all Antelope-based networks.
+
+## Prerequisites
+
+-   You must have created your Ultra Pro Wallet. If you need help creating your Ultra Pro Wallet, please refer to [How to create an Ultra Pro Wallet using Ultra Wallet Extension](../guides/how-to-create-ultra-pro-wallet-using-toolkit.md) tutorial.
+
+## Goal
+
+The goal of this tutorial is to login into the Ultra Toolkit using Anchor Wallet.
+
+## Setting Up Anchor Wallet
+
+1. Download Anchor (https://www.greymass.com/anchor#download) and follow the installation instructions.
+2. Once installed, open Anchor Wallet and click on the `Setup an Account` button.
+   ![](./images/anchor-wallet-setup-account.png)
+3. Enter a password for the Anchor Wallet, and click on `Set Password` button. Remember this password as this will be used every time you sign a transaction through Anchor.
+   ![](./images/anchor-wallet-set-pwd.png)
+4. Re-enter the password in the password confirmation screen and click `Set Password` again.
+   ![](./images/anchor-wallet-confirm-pwd.png)
+5. You will now see a list of different blockchains. From the list, click on `EOS`.
+   ![](./images/anchor-wallet-chains-page.png)
+6. Click on the top left EOS icon and then click on `Manage Blockchains`.
+   ![](./images/anchor-wallet-manage-chains.png)
+7. On the manage blockchains page, click on `Add/Remove`.
+   ![](./images/anchor-wallet-manage-add-remove.png)
+8. You will see a list of available blockchain networks, from the list find `EOS` and uncheck the checkbox next to it, and then click on the `+ Custom Blockchain` button on the top right.
+   ![](./images/anchor-wallet-uncheck-eos.png)
+9. You will be prompted to add a new chain. Use the following details:
+
+    - **For Mainnet:**
+        - Chain ID: `a9c481dfbc7d9506dc7e87e9a137c931b0a9303f64fd7a1d08b8230133920097`
+        - Name of Blockchain: `Ultra Mainnet`
+        - Default Node: `https://ultra.api.eosnation.io`
+        - Default Token Symbol: `UOS`
+
+    ![](./images/anchor-wallet-add-new-chain.png)
+    For the sake of this tutorial, we are using `Mainnet` network, but you can follow the same steps to add Ultra `Testnet` network too.
+
+    - **For Testnet:**
+        - Chain ID: `7fc56be645bb76ab9d747b53089f132dcb7681db06f0852cfa03eaf6f7ac80e9`
+        - Name of Blockchain: `Ultra Testnet`
+        - Default Node: `https://ultratest.api.eosnation.io`
+        - Default Token Symbol: `UOS`
+
+    Click on the `Save` button to proceed.
+
+10. You will now see `Ultra Mainnet` added to the list of available blockchain networks. Check the checkbox next to `Ultra Mainnet` and click on the `Enable 1 blockchains` button.
+    ![](./images/anchor-wallet-enable-chain.png)
+11. After enabling `Ultra Mainnet`, you'll be redirected to `Manage Available Blockchains` page. From this page, select `Ultra Mainnet`.
+    ![](./images/anchor-wallet-available-chains.png)
+12. You will now see the `Setup a Wallet` page. Click on the `Import an existing Account` button, and then click on `Import Private Key`.
+    ![](./images/anchor-wallet-import-account.png)
+    ![](./images/anchor-wallet-import-pvt-key.png)
+
+    Enter the private key associated with your Ultra Pro account, and it will load a list of all associated accounts for that private key. From the list of accounts, select the one that you want to use. This is usually the account with `@active` in its name.
+
+    Once selected, click on the `Import Account(s)` button.
+    ![](./images/anchor-wallet-import-pvt-key-pt2.png)
+
+13. After importing your account, you will see the account home page. On this page you can see your account balance and your account name.
+    ![](./images/anchor-wallet-account-imported.png)
+
+    You have now successfully added your Ultra Pro account to Anchor wallet.
+
+## Accessing the Toolkit
+
+To access the Ultra Toolkit, please visit: https://toolkit.ultra.io
+
+## Network Selection
+
+Once you're on the Toolkit homepage, click on the network selection component on the top right of your screen.
+
+![](../fundamentals/images/toolkit-network-selection.png)
+
+Clicking on the network selection component will open up a list of available networks that you can use the toolkit on. For the sake of this tutorial, we will be using the Ultra Mainnet. From the list of available networks, click on `Mainnet`.
+
+## Login to Toolkit
+
+Click on the `Login To Toolkit` button to open a list of all supported login methods, and then select the `Anchor` option.
+
+![](../fundamentals/images/toolkit-login-button.png)
+
+![](./images/toolkit-login-options-anchor.png)
+
+Once you click on `Anchor` option, a login modal will be opened. This may automatically launch your Anchor wallet. If not, you can click on the `Launch Anchor` button to open Anchor wallet on your machine.
+
+![](./images/toolkit-login-anchor-prompt.png)
+
+From your Anchor wallet window, you will see a prompt for signing request. Click on the `Unlock Wallet + Sign` button to continue.
+
+![](./images/anchor-authorize-login.png)
+
+Enter your Anchor password and click on `Authorize` button.
+
+![](./images/anchor-authorize-login-pwd.png)
+
+Once authorized, you will be logged in to the toolkit. You can verify this by checking for your account name in the top left corner of your screen.
+
+![](./images/toolkit-login-account-name.png)
+
+You have now successfully logged in to the Ultra Toolkit using Anchor Wallet.
+
+## What's next?
+
+After logging in to the toolkit, you can utilize it to sign transactions with your Anchor Wallet. Explore the following tutorials which demonstrate the process with Ultra Wallet. However, you can seamlessly adapt these instructions to sign transactions with your Anchor Wallet.
+
+-   [Tutorial - Token transfer and Uniq purchase transactions](../fundamentals/tutorial-token-transfer-and-nft-purchase.md)
+
+---
+title: 'How to log in to the Ultra Toolkit using Ledger'
+order: -99998
+oultine: [0, 5]
+
+---
+
+# How to log in to the Ultra Toolkit using Ledger
+
+Ultra Toolkit is a decentralized application facilitating seamless interaction with the Ultra blockchain and its smart contracts. Designed for developers, it provides essential functionalities such as interacting with Ultra smart contracts, searching for Uniqs, Uniq Factories and Users.
+
+This tutorial will cover the simplest process of logging in into the Ultra Toolkit using a [Ledger Device](https://www.ledger.com).
+Ledger devices are hardware crypto wallets that store your private keys offline.
+
+## Prerequisites
+
+-   You must have a [Ledger Device](https://www.ledger.com). For the sake of this tutorial, we are going to use a Ledger Nano X.
+-   You must have already an account created via official [Ultra client](https://ultra.io/) or Ultra Wallet extension. Refer to the [How to create an Ultra Pro Wallet using Ultra Wallet Extension](../guides/how-to-create-ultra-pro-wallet.md) tutorial to create an account.
+-   Your account must have sufficient UOS tokens for a new account creation transactions fees. Current Ultra Pro Wallet creation price is <OracleConversion :amount="2.0" scope="......2nf5.o4" :param="70000" />.
+
+## Goal
+
+The goal of this tutorial is to login into the Ultra Toolkit using Ledger.
+
+## Setting Up Ledger for EOS
+
+1. Follow instructions provided with your Ledger device and ensure you install the companion [Ledger Live](https://www.ledger.com/ledger-live) application.
+2. Once installed, connect your Ledger and open Ledger Live application. Navigate to `My Ledger` section from the sidebar and search for `EOS` application in the `App Catalog` section.
+   ![](./images/ledger-search-eos-app.png)
+3. Install the EOS application by clicking the `Install` button.
+4. After you install the EOS application, you will need to go open the EOS application from your Ledger device and then head into settings, and set "Contract data" setting to be allowed.
+   ![](./images/ledger1.jpg)
+   ![](./images/ledger2.jpg)
+   ![](./images/ledger3.jpg)
+
+## Getting Public Key from Ledger
+
+Your ledger device comes with multiple public keys. Each public key is assigned an index value starting from `0`. For the sake of this tutorial, we will use the first public key (i.e; the public key at index `0`).
+
+To obtain the public key of your Ledger, go to Ultra Toolkit (https://toolkit.ultra.io), and
+click on the `Login To Toolkit` button to open a list of all supported login methods, and then select the `Ledger` option.
+
+![](../fundamentals/images/toolkit-login-button.png)
+
+![](./images/toolkit-login-options-ledger.png)
+
+The new prompt will ask you to input your Ledger index. Enter `0` (or whatever index you want to use), and click `Select` button. It will load your public key associated with that specific index.
+
+![](./images/toolkit-legder-login-show-pub-key.png)
+
+**Copy this public key and save it as you will need it in the next steps.**
+
+## Creating Ultra Pro Wallet for your Ledger
+
+Once you have copied the public key associated with your Ledger device, it is now time to create an Ultra Pro Wallet for that public key. To do so, follow the [How to create an Ultra Pro Wallet using Ultra Wallet Extension](../guides/how-to-create-ultra-pro-wallet.md#create-an-ultra-pro-wallet) guide, and instead of generating a new key pair, use the public key that you have obtained in the previous steps.
+
+## Login to Toolkit
+
+Once you have created an Ultra Pro Wallet for your Ledger, return to Ultra Toolkit homepage (https://toolkit.ultra.io), and click on the network selection component on the top right of your screen.
+
+![](../fundamentals/images/toolkit-network-selection.png)
+
+Clicking on the network selection component will open up a list of available networks that you can use the toolkit on. From the list of available networks, click on `Mainnet`.
+
+Click on the `Login To Toolkit` button to open a list of all supported login methods, and then select the `Ledger` option.
+
+![](../fundamentals/images/toolkit-login-button.png)
+
+![](./images/toolkit-login-options-ledger.png)
+
+The new prompt will ask you to input your Ledger index. Enter the index number that you selected earlier and click `Select` button. It will load your Ultra Pro Wallet account associated with that specific index.
+
+![](./images/toolkit-ledger-login-index.png)
+
+![](./images/toolkit-ledger-account-selection.png)
+
+From the list of accounts, select the one that you want to use. This is usually the account with `@active` in its name. You will now be logged in to the toolkit. You can verify this by checking for your account name in the top left corner of your screen.
+
+![](./images/toolkit-login-account-name.png)
+
+You have now successfully logged in to the Ultra Toolkit using Ledger.
+
+## What's next?
+
+After logging in to the toolkit, you can utilize it to sign transactions with your Ledger device. Explore the following tutorials which demonstrate the process with Ultra Wallet. However, you can seamlessly adapt these instructions to sign transactions with your Ledger device.
+
+-   [Tutorial - Token transfer and Uniq purchase transactions](../fundamentals/tutorial-token-transfer-and-nft-purchase.md)
+
+---
 title: 'Development Environment Setup'
 
 order: -9998
@@ -24403,14 +24559,14 @@ oultine: [0, 4]
 
 # Creating a Testnet Account
 
-It's easy to create an account on our public Testnet. These accounts are used for interacting with smart contracts, or for deploying smart contracts to. If you wish to do the latter, please reach out to developers@ultra.io so that we can help set the flag which enables you to do so. We restrict direct access to reduce spam and malicious behaviour on the network.
+It's easy to create an account on our public Testnet. These accounts are used for interacting with smart contracts, or for deploying smart contracts to.
 
 ## Faucets
 
 Ultra provides two types of faucets on our public Testnet.
 
--   `Account Faucet` - Here you can provide a public key and we will generate an account.
--   `Token Faucet` - Here you can fund your Testnet account with some fake UOS for testing purposes.
+-   `Account Faucet` - Here you can provide a public key and we will generate an account. Refer to [this tutorial](../../fundamentals/tutorial-generate-key-and-create-testnet-account.md) for details
+-   `Token Faucet` - Here you can fund your Testnet account with some fake UOS for testing purposes. Refer to [this tutorial](../../fundamentals/tutorial-obtain-token-and-purchase-ram.md) for details
 
 ## Using your account with Ultra's Authenticator
 
@@ -24846,20 +25002,194 @@ oultine: [0, 4]
 
 
 ---
-title: 'How to create an Ultra Pro Wallet'
+title: 'How to buy UOS tokens on Ultra Mainnet using the Ultra Wallet'
+order: -99983
+outline: [0, 6]
+---
+
+# How to buy UOS tokens on Ultra Mainnet using the Ultra Wallet
+
+This guide will guide you through the process of purchasing UOS tokens on Ultra Mainnet using the Ultra Wallet extension. UOS is the native token of the Ultra Network, and having it enables you to participate in various activities within the Ultra ecosystem.
+
+## Prerequisites
+
+Before you begin, ensure that you have completed the following steps:
+- **Wallet Setup**: You must have the Ultra Wallet extension installed and set up in your browser. If you haven't done this yet, please refer to our tutorial on [Setting Up the Ultra Wallet](../fundamentals/tutorial-setup-the-wallet.md). Note that you must select `Mainnet` environment and log in using your Mainnet account (either Ultra Account or Ultra Pro Wallet).
+- **Account Creation**: Account created using official [Ultra client](https://ultra.io/) or Wallet Extension. You need to have an Ultra account linked to your wallet. For details refer to [Account Creation Guide](./how-to-create-ultra-pro-wallet.md).
+
+## Step 1: Open the Ultra Wallet Extension
+
+Begin by opening the Ultra Wallet extension in your browser. This is where all your transactions for buying UOS will initiate.
+
+![](./images/buying-UOS-open-wallet-extension.png)
+
+## Step 2: Initiate Purchase
+
+Click on the 'Buy UOS' button within the Ultra Wallet interface to start the purchasing process.
+
+![](./images/buying-UOS-ultra-wallet.png)
+
+### Step 2a: Alternative Method - Purchasing UOS via the Ultra Client
+
+Alternatively, you can also purchase UOS tokens directly through the Ultra Client. Simply navigate to your wallet screen within the Ultra Client and click on the `Buy UOS coins` button. This method provides another convenient option for acquiring UOS tokens.
+
+![](./images/buying-UOS-ultra-client.png)
+
+## Step 3: Acknowledge the Disclaimer
+
+Upon clicking `Buy UOS`, you will be presented with a disclaimer page. It's important to read and understand this as it informs you that you are leaving the site managed by Ultra to a third-party website. Ultra does not control the quality, content, reliability, or security of the third-party website.
+
+![](./images/buying-UOS-disclaimer.png)
+
+## Step 4: Specify Purchase Amount
+
+On the wallet application page, you need to specify how much UOS you want to buy. Note: The minimum transaction amount must be equivalent to at least $50, and the maximum is $20,000. For example, if you decide to buy 500 UOS, it might cost approximately $86.14. Click `Continue` after entering your desired amount.
+
+![](./images/buying-UOS-wallet-app.png)
+
+## Step 5: Choose Payment Method
+
+Next, choose your preferred payment method from the options available, which could include credit cards, bank transfers, or other payment services. Select your option, then click `Continue`.
+
+![](./images/buying-UOS-choose-payment-method.png)
+
+## Step 6: Enter Payment Details
+
+Enter your payment details on the provided form. This usually requires entering your credit card information. Double-check all details for accuracy before clicking the `Next` button to complete your purchase.
+
+![](./images/buying-UOS-card-information.png)
+
+## Conclusion
+
+Once you have completed these steps, your transaction will be processed, and the UOS tokens will be credited to your wallet. Always verify the transaction within your wallet and check your new UOS balance to ensure the purchase was successful.
+
+
+---
+title: 'How to create an Ultra Pro Wallet using Ultra Toolkit'
 order: -99988
 oultine: [0, 5]
 ---
 
-# How to create an Ultra Pro Wallet
+# How to create an Ultra Pro Wallet using Ultra Toolkit
+
+This tutorial will cover the simplest process of creating a developer account on Mainnet to be used to interact with the blockchain using the Ultra Toolkit.
+
+## Prerequisites
+
+-   Account created using official [Ultra client](https://ultra.io/) or you can create it later during the tutorial using the Wallet Extension
+-   Installed the [Ultra Wallet Chrome Extension](https://chromewebstore.google.com/detail/ultra-wallet/kjjebdkfeagdoogagbhepmbimaphnfln). Simply click `Add to` on the extension page
+-   Your account must have sufficient UOS tokens for transactions and fees. Current Ultra Pro Wallet creation price is <OracleConversion :amount="2.0" scope="......2nf5.o4" :param="70000" />. This tutorial will briefly cover how to get UOS on Mainnet but if you already have some then you will be able to skip that step
+
+## Goal
+
+The goal of this tutorial is to create a new developer Ultra Pro Wallet on Mainnet, using the Ultra Toolkit. You can use your Ultra Pro Wallet to directly interact with the blockchain. It is desireable for developers as it provides a more granular control over your account and allows it to be easily used for other tools and libraries like `cleos` or `Wharfkit`.
+
+## Open and log in to the Ultra Wallet
+
+To be able to create an Ultra Pro Wallet on Mainnet you will need to open your Wallet Extension and make sure you are switched to Mainnet. (You may need to log out from your Testnet account if it is currently logged in by clicking on the circular icon and clicking `Log out`).
+
+![](./images/UltraProWallet/wallet-mainnet-selection.png)
+
+Now if you already have an Ultra Account (created using the Ultra client) then you can simply use the `Sign In` option. If you don't have an account yet and need to create an account then proceed with `Sign Up` option, after signing up return back to this step and now use the `Sign In` option.
+
+## Buy UOS tokens
+
+To be able to create an Ultra Pro Wallet you will need some UOS available on your Ultra Account. The current Ultra Pro Wallet creation price is 2 USD which is approximately <OracleConversion :amount="2.0" scope="......2nf5.o4" :param="70000" /> so you need to have at least this amount of UOS and, preferably, a bit more to account for UOS price fluctuations.
+
+If you don't have the required amount yet then you can utilize the `Buy UOS` option of the Ultra Wallet extension.
+
+![](./images/UltraProWallet/wallet-buy-uos.png)
+
+When you have enough funds you can proceed with the creation of the Ultra Pro Wallet.
+
+## Generate a Key Pair
+
+You will need a [private and public key pair](../../blockchain/general/antelope-ultra/public-and-private-keys.md) in order to create your Ultra Pro Wallet. If you already have a key pair, you can skip this step, or you can generate a new one using the form below by pressing the `Generate Key` button.
+
+::: warning
+
+In most cases we don't recommend generating private keys online. Please seek out some of the [alternative ways](../../blockchain/general/antelope-ultra/public-and-private-keys.md#alternative-ways-to-generate-keypairs) to generate a key pair safely.
+
+It is up to you to properly secure your private key and not to lose it. If you lose the original copy of the private key you may eventually lose access to your new Ultra Pro Wallet account completely.
+
+:::
+
+<KeyGenerator />
+\
+\
+Once you have your key pair, you can proceed with the creation of the Ultra Pro Wallet.
+
+## Log in to the Ultra Toolkit
+
+Log in to the Ultra Toolkit (https://toolkit.ultra.io) using your Ultra Wallet extension. Refer to [Log in to the Ultra Toolkit Tutorial](../fundamentals/tutorial-login-to-toolkit.md) if you need help logging into the Ultra Toolkit.
+
+Once logged in, make sure you have selected `Mainnet` endpoint in the Ultra Toolkit.
+
+![](./images/select-network-mainnet-toolkit.png)
+
+## Create an Ultra Pro Wallet
+
+1. Once logged in to the toolkit, click on `Transaction Builder` from the Ultra Toolkit sidebar menu to open the transaction builder page.
+
+![](./images/toolkit-tx-builder.png)
+
+2. On the transaction builder page, click on the `eosio` contract button to load all related actions.
+
+![](./images/toolkit-tx-builder-select-contract.png)
+
+3. From the list of actions, search for `newnonebact` and click on `eosio::newnonebact` option.
+
+![](./images/toolkit-tx-builder-select-action.png)
+
+4. Clicking on the `eosio::newnonebact` option will open up the transaction modal.
+
+5. Fill the required fields for the `newnonebact` action.
+    1. **creator**: `aa1aa2aa3ai4` (your existing Ultra Account, who will pay the account creation fee)
+    2. Under `owner` section:
+        1. **threshold**: Input `1` as the threshold for owner authority.
+        2. Click on the `Add` button for `keys` section and enter your public key in the **key** input, and `1` in the **weight** input.
+    3. Under `active` section:
+        1. **threshold**: Input `1` as the threshold for active authority.
+        2. Click on the `Add` button for `keys` section and enter your public key in the **key** input, and `1` in the **weight** input.
+    4. **max_payment**: You need to specify the maximum amount of UOS you are willing to pay to create the Ultra Pro Wallet. The current Ultra Pro Wallet creation price is 2 USD which is approximately <OracleConversion :amount="2.0" scope="......2nf5.o4" :param="70000" /> so you need to input at least this amount of UOS and, preferably, a bit more to account for UOS price fluctuations (e.g. increase the current price by 1 UOS).
+    5. Once you have inputted all the values, click on the `Send 1 Action` button.
+
+![](./images/toolkit-newnonebact-form.png)
+
+6. Clicking on the `Send 1 Action` button will open up the transaction confirmation modal. You can click on the `Details` button to view the transaction in JSON form. Click on the `Confirm` button to submit your transaction.
+
+![](./images/toolkit-newnonebact-confirmation-form.png)
+
+7. Confirm and sign the transaction using the Ultra Wallet extension. This step is crucial as it authorizes the blockchain to execute the transfer under your account.
+
+![](./images/ultra-wallet-confirm-tx.png)
+
+8. After signing the transaction, you will see a confirmation screen indicating that the transaction was successfully completed. To check the transaction on the block explorer, click on the `View in Explorer` text. Your new Ultra Pro Wallet name will be listed in the actions list.
+
+![](./images/toolkit-tx-success.png)
+![](./images/explorer-account-created.png)
+
+For more information on the action, please refer to the [`newnonebact` action documentation](../../blockchain/contracts/system-contract/system-actions/newnonebact.md).
+
+## Sign In to the Ultra Wallet using Ultra Pro Wallet
+
+The process of using your new Ultra Pro Wallet through the Ultra Wallet extension is identical to the [Tutorial - Setup Ultra Wallet](../fundamentals/tutorial-setup-the-wallet.md). The only exception is if you wish to continue using the `Mainnet` network when logging into the Wallet, as the Ultra Pro Wallet you've just made is exclusively for Mainnet.
+
+---
+title: 'How to create an Ultra Pro Wallet using Ultra Wallet Extension'
+order: -99989
+oultine: [0, 5]
+---
+
+# How to create an Ultra Pro Wallet using Ultra Wallet Extension
 
 This tutorial will cover the simplest process of creating a developer account on Mainnet to be used to interact with the blockchain using the Ultra Wallet extension.
 
 ## Prerequisites
 
-- Account created using official [Ultra client](https://ultra.io/) or you can create it later during the tutorial using the Wallet Extension
-- Installed the [Ultra Wallet Chrome Extension](https://chromewebstore.google.com/detail/ultra-wallet/kjjebdkfeagdoogagbhepmbimaphnfln). Simply click `Add to` on the extension page
-- Your account must have sufficient UOS tokens for transactions and fees. Current Ultra Pro Wallet creation price: <OracleConversion :amount="2.0" scope="......2nf5.o4" :param="70000" />. This tutorial will briefly cover how to get UOS on Mainnet but if you already have some then you will be able to skip that step
+-   Account created using official [Ultra client](https://ultra.io/) or you can create it later during the tutorial using the Wallet Extension
+-   Installed the [Ultra Wallet Chrome Extension](https://chromewebstore.google.com/detail/ultra-wallet/kjjebdkfeagdoogagbhepmbimaphnfln). Simply click `Add to` on the extension page
+-   Your account must have sufficient UOS tokens for transactions and fees. Current Ultra Pro Wallet creation price is <OracleConversion :amount="2.0" scope="......2nf5.o4" :param="70000" />. This tutorial will briefly cover how to get UOS on Mainnet but if you already have some then you will be able to skip that step
 
 ## Goal
 
@@ -24887,8 +25217,8 @@ When you have enough funds you can proceed with the creation of the Ultra Pro Wa
 
 This will open a new browser tab where you will have 2 options:
 
-- Generate a new private and public key pair
-- Use an existing pair to create an Ultra Pro Wallet
+-   Generate a new private and public key pair
+-   Use an existing pair to create an Ultra Pro Wallet
 
 ![](./images/UltraProWallet/wallet-generate-or-paste-public-key.png)
 
@@ -24920,7 +25250,7 @@ Your new Ultra Pro Wallet name will be listed in the actions list. You cannot ch
 
 ## Sign In to the Ultra Wallet using Ultra Pro Wallet
 
-The process of using your new Ultra Pro Wallet through the Ultra Wallet extension is identical to the [Tutorial - Setup Ultra Wallet](../fundamentals/tutorial-setup-the-wallet.md). The only exception is that you want to keep using the `Mainnet` when signing in to the Wallet since the Ultra Pro Wallet you have just created is for Mainnet only.
+The process of using your new Ultra Pro Wallet through the Ultra Wallet extension is identical to the [Tutorial - Setup Ultra Wallet](../fundamentals/tutorial-setup-the-wallet.md). The only exception is if you wish to continue using the `Mainnet` network when logging into the Wallet, as the Ultra Pro Wallet you've just made is exclusively for Mainnet.
 
 ---
 title: 'How to get RAM'
@@ -25224,6 +25554,64 @@ It's highly recommended to use `curl` requests against [REST API Endpoints](./ho
 ![](./images/block-explorer/explorer-tables.png)
 
 ---
+title: 'How to swap UOS from Ultra to Ethereum'
+order: -99982
+outline: [0, 5]
+---
+
+# How to swap UOS from Ultra Mainnet to Ethereum
+
+This document guides you through the process of swapping UOS tokens from the Ultra Mainnet to UOS ERC-20 tokens on the Ethereum network using the Ultra Client. This process is designed for users who already have an Ethereum account and are familiar with cryptocurrency transactions.
+
+## Prerequisites
+
+Before you begin the swapping process, ensure that you meet the following requirements:
+- **Ultra Account**: You must have an active account on the Ultra Mainnet with UOS tokens available for swapping.
+- **Ethereum Account**: You should already have an Ethereum account set up to receive the UOS ERC-20 tokens. This account should be able to interact with ERC-20 tokens and possibly have some ETH for transaction fees on the Ethereum network.
+
+Make sure both accounts are secure and that you have access to all necessary credentials.
+
+## Step 1: Prepare the Swap in the Ultra Client
+
+Start the swap process by opening the Ultra Client. Navigate to the Token Swap section.
+
+1. Enter the amount of UOS you want to swap. In this example, we will swap 3000 UOS.
+2. Enter your Ethereum address where you want to receive the UOS ERC-20 tokens. Make sure this is an address you control.
+
+![](./images/ultra-swap-ultra-client.png)
+
+Once you have entered the UOS amount and your Ethereum address, confirm the details and initiate the swap. This process will interact with the blockchain to transfer your UOS tokens and issue the equivalent amount in UOS ERC-20 on the Ethereum network.
+
+## Step 2: Verify the Transaction on the Ultra Network
+
+To ensure that everything went smoothly on the Ultra side:
+1. Visit the Ultra blockchain explorer at [https://explorer.mainnet.ultra.io/](https://explorer.mainnet.ultra.io/).
+2. Search for the transaction using the transaction ID provided by the Ultra Client.
+
+This step will help you confirm that the tokens were correctly deducted from your Ultra account.
+
+![](./images/ultra-swap-ultra-explorer.png)
+
+## Step 3: Verify the Swap on Ethereum
+
+After executing the swap transaction, you can verify your ERC-20 UOS tokens on the Ethereum network using Etherscan.
+
+1. Go to [https://etherscan.io](https://etherscan.io).
+2. Search for your Ethereum address to view the updated balance and incoming transactions under `Token Transfer (ERC-20)` tab.
+
+![](./images/ultra-swap-ether-scan.png)
+
+### Check Transaction Details
+
+To see the details of the transaction, including the amount of UOS ERC-20 received and the transaction hash, click on the specific transaction listed in your transaction history.
+
+![](./images/ultra-swap-ether-scan-txn-details.png)
+
+## Conclusion
+
+Following these steps ensures that you successfully swap your UOS tokens from the Ultra network to ERC-20 tokens on the Ethereum network. Remember to double-check all addresses and transaction details during the process to avoid any errors.
+
+---
 title: 'Tutorials'
 
 order: -99994
@@ -25278,9 +25666,14 @@ General tutorials to help feed your curiosity.
         <td>Link</td>
     </tr>
     <tr>
-        <td>How to create Ultra Pro Wallet</td>
-        <td>Create an Ultra Pro Wallet using Wallet Extension</td>
+        <td>How to create Ultra Pro Wallet using Ultra Wallet Extension</td>
+        <td>Create an Ultra Pro Wallet for developers on Mainnet using Ultra Wallet Extension</td>
         <td><a href="../guides/how-to-create-ultra-pro-wallet">Link</a></td>
+    </tr>
+    <tr>
+        <td>How to create Ultra Pro Wallet using Ultra Toolkit</td>
+        <td>Create an Ultra Pro Wallet for developers on Mainnet using Ultra Toolkit</td>
+        <td><a href="../guides/how-to-create-ultra-pro-wallet-using-toolkit">Link</a></td>
     </tr>
     <tr>
         <td>How to get Tokens</td>
@@ -25302,7 +25695,36 @@ General tutorials to help feed your curiosity.
         <td>Learn how to use various Ultra API endpoints to consume data for your application</td>
         <td><a href="../guides/how-to-make-a-rest-request">Link</a></td>
     </tr>
+    <tr>
+        <td>How to purchase UOS tokens on Ultra Mainnet</td>
+        <td>How to purchase native UOS token on Ultra Mainnet using Ultra Wallet Extension</td>
+        <td><a href="../guides/how-to-buy-uos">Link</a></td>
+    </tr>
+    <tr>
+        <td>How to swap UOS from Ultra Mainnet to Ethereum</td>
+        <td>How to swap UOS from Ultra Mainnet to Ethereum by using Ultra Client</td>
+        <td><a href="../guides/how-to-swap-tokens">Link</a></td>
+    </tr>
+</table>
 
+## Advanced Guides
+
+<table>
+    <tr>
+        <td>Guide Name</td>
+        <td>Summary</td>
+        <td>Link</td>
+    </tr>
+    <tr>
+        <td>How to log in to the Ultra Toolkit using Anchor Wallet</td>
+        <td>Learn how to setup your keys with Anchor wallet and log in to the toolkit using Anchor wallet.</td>
+        <td><a href="../advanced-guides/how-to-login-to-toolkit-using-anchor-wallet">Link</a></td>
+    </tr>
+    <tr>
+        <td>How to log in to the Ultra Toolkit using Ledger</td>
+        <td>Learn how to create your account and log in to the toolkit using a Ledger device.</td>
+        <td><a href="../advanced-guides/how-to-login-to-toolkit-using-ledger">Link</a></td>
+    </tr>
 </table>
 
 ## Projects
@@ -25349,18 +25771,49 @@ General tutorials to help feed your curiosity.
         <td>Link</td>
     </tr>
     <tr>
-        <td>Build a Uniq Factory</td>
-        <td>Learn how to build a uniq factory using Ultra's NFT smart contract</td>
-        <td><a href="../uniq-factories/building-uniq-factories/index">Link</a></td>
+        <td>How to create Uniq Metadata</td>
+        <td>Learn how to create metadata for Uniq factories and Uniqs.</td>
+        <td><a href="../uniq-factories/creating-uniq-factories/how-to-create-uniq-metadata">Link</a></td>
+    </tr>
+    <tr>
+        <td>How to validate uniq metadata using Ultra Toolkit's Schema Validator</td>
+        <td>Learn how to validate uniq metadata files using Ultra Toolkit's schema validation feature</td>
+        <td><a href="../uniq-factories/creating-uniq-factories/how-to-validate-uniq-metadata-using-schema-validator-toolkit">Link</a></td>
+    </tr>
+    <tr>
+        <td>How to create a Uniq Factory using Ultra Toolkit</td>
+        <td>Learn how to create your first uniq factory using Ultra Toolkit</td>
+        <td><a href="../uniq-factories/creating-uniq-factories/how-to-create-uniq-factory-using-toolkit">Link</a></td>
+    </tr>
+    <tr>
+        <td>How to mint a Uniq using the Ultra Toolkit</td>
+        <td>Learn how to mint your first uniq using Ultra Toolkit</td>
+        <td><a href="../uniq-factories/creating-uniq-factories/how-to-mint-uniq-using-toolkit">Link</a></td>
+    </tr>
+    <tr>
+        <td>How to update metadata using the Ultra Toolkit</td>
+        <td>Learn how to update the metadata for uniq factory, default uniq and uniq tokens.</td>
+        <td><a href="../uniq-factories/creating-uniq-factories/how-to-update-uniq-metadata-using-toolkit">Link</a></td>
+    </tr>
+    <tr>
+        <td>How to perform advanced actions with Uniqs and Factories using Ultra Toolkit</td>
+        <td>Learn how to transfer Uniqs, burn Uniqs add authorized minters to your factory using Ultra Toolkit</td>
+        <td><a href="../uniq-factories/factory-management/how-to-perform-advanced-actions-with-uniqs-and-factories">Link</a></td>
+    </tr>
+    <tr>
+        <td>How to add first-hand purchase options using Toolkit</td>
+        <td>Learn how to use Ultra Toolkit to add or remove a direct purchase option from your Factory</td>
+        <td><a href="../uniq-factories/factory-management/how-to-add-first-hand-purchase-using-toolkit">Link</a></td>
     </tr>
     <tr>
         <td>Uniq Avatars</td>
         <td>Learn how to manage your uniq avatar as a user</td>
         <td><a href="../uniq-factories/uniq-avatar/index">Link</a></td>
     </tr>
+
 </table>
 
-## Other
+## Others
 
 <table>
     <tr>
@@ -25388,6 +25841,13 @@ General tutorials to help feed your curiosity.
         <td>Learn how to obtain test network tokens</td>
         <td><a href="../general/faucet/index">Link</a></td>
     </tr>
+    <Experimental>
+        <tr>
+            <td>Connecting to Pinax Substreams endpoints</td>
+            <td>Learn how to connect to Pinax Substreams endpoints</td>
+            <td><a href="../substreams/connecting-to-pinax-substreams-endpoints">Link</a></td>
+        f</tr>
+    </Experimental>
 </table>
 
 ---
@@ -26105,7 +26565,7 @@ This should be the first place you will want to deploy your smart contract for o
 -   Begin writing frontend for your decentralized application.
 -   Need a way for others to easily interact and test your smart contract.
 
-Go to the [faucet documentation page]() to start working with testnet.
+Go to the [faucet tutorial page](../fundamentals/tutorial-generate-key-and-create-testnet-account.md) to start working with testnet.
 
 ## Main Network
 
@@ -26382,6 +26842,115 @@ If you get `docker unavailable` error message make sure you have disconnected fr
 
 \
 For any further assistance don't hesitate to contract the team on [discord](https://discord.com/invite/U7raPf6qZu).
+
+---
+title: 'Connecting to Pinax Substreams endpoints'
+
+order: 3
+outline: [0,4]
+---
+
+# Connecting to Pinax Substreams endpoints
+
+Pinax provides firehose/SubStreams endpoints for several blockchains, including EOS based ones.  
+To connect to thier endpoints, you can have an account on Pinax App Platform and get an API key.  
+See [Introducing the New Pinax App, a Better Way to Manage Your Firehose and Substreams Services - The Official Pinax Blog](https://blog.pinax.network/pinax/introducing-the-new-pinax-app-a-better-way-to-manage-your-firehose-and-substreams-services/) for the details.  
+
+## Create an account on Pinax App Platform and create a project
+
+1. Visit https://app.pinax.network. The first time you visit the site, you will be directed to `Authorize Pinax` page to create an account using GitHub login.  
+2. Create a new project, where you will get your API key and JWT.  
+3. Enter the project and select `Substreams` tab, and push `View configurations` button.   
+4. Select `ENDPOINT URL`. For the purpose of this tutorial, select the endpoint for EOS mainnet, ` https://eos.substreams.pinax.network:443`  
+
+## Running Substreams CLI
+
+1. Select `cURL` tab.
+2. You may install [the Substreams CLI](https://substreams.streamingfast.io/getting-started/installing-the-cli) to continue.  
+3. Follow the below instructions and execute somme commands in the terminal.  
+```sh
+# Set your API Key
+export SUBSTREAMS_API_KEY=(your API key)
+# Run Substreams CLI
+substreams run -e eos.substreams.pinax.network:443 https://github.com/pinax-network/substreams/releases/download/blocks-v0.1.0/blocks-v0.1.0.spkg map_blocks -s -10
+```
+
+## Running a JavaScript example
+
+You can see the sample code, `substreams.js`, in `JavaScript` tab.  
+To run `substreams.js`:
+1. Create a folder and store `.env` and `substreams.js` in it.
+2. Prepare `package.json` and execute `npm install`.
+
+Below is a working example of files.  
+- `.env`  
+```
+MANIFEST=https://github.com/pinax-network/substreams/releases/download/blocks-v0.1.0/blocks-v0.1.0.spkg
+SUBSTREAMS_URL=https://eos.substreams.pinax.network:443
+JWT=(your JWT)
+```
+
+- `package.json`
+```json
+{
+  "name": "substreams-tutorial",
+  "version": "1.0.0",
+  "description": "",
+  "main": "substreams.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@substreams/core": "^0.1.19",
+    "@substreams/manifest": "^0.0.9",
+    "@substreams/node": "^0.2.2",
+    "dotenv": "^16.4.5"
+  },
+  "type": "module"
+}
+```
+
+- `substreams.js`
+```js
+import { createRegistry, createRequest } from "@substreams/core";
+import { readPackage } from "@substreams/manifest";
+import { BlockEmitter, createDefaultTransport } from "@substreams/node";
+import dotenv from "dotenv"
+dotenv.config();
+const { MANIFEST, SUBSTREAMS_URL, JWT } = process.env;
+
+// Read Substream
+const substreamPackage = await readPackage(MANIFEST);
+
+// Connect Transport
+const headers = new Headers({ "User-Agent": "@substreams/node" });
+const registry = createRegistry(substreamPackage);
+const transport = createDefaultTransport(SUBSTREAMS_URL, JWT, registry, headers);
+const request = createRequest({substreamPackage, outputModule: "map_blocks", startBlockNum: -1});
+
+// NodeJS Events
+const emitter = new BlockEmitter(transport, request, registry);
+
+// Session Trace ID
+emitter.on("session", (session) => {
+  console.dir(session);
+});
+
+// Stream Blocks
+emitter.on("anyMessage", (message, cursor, clock) => {
+  console.dir(message);
+  console.dir(cursor);
+  console.dir(clock);
+});
+
+// Start Emitter
+await emitter.start();
+console.log("✅ Done")
+```
+
+
 
 ---
 title: 'Getting Started'
@@ -26817,6 +27386,8 @@ This section highlights the tools to set up and run your own `Substreams` stacks
 
 - [Getting Started](./getting-started.md)
 - [Substreams Application Example](./substreams-app-example.md)
+- [Connecting to Pinax Substreams endpoints](./connecting-to-pinax-substreams-endpoints.md)
+
 ---
 title: 'Substreams application example'
 
@@ -27202,38 +27773,161 @@ Upon sending UOS token to `ultra.swap`, an inline action will be triggered to co
                 
             *   memo will be memo (ETH address) from transfer action
 ---
-title: 'Creating Metadata'
-
+title: 'How to create a Uniq Factory using the Ultra Toolkit'
 order: 4
 outline: [0, 4]
 ---
 
-# Creating Metadata
+# How to create a Uniq Factory using the Ultra Toolkit
 
-## What is Metadata?
+![](/images/token-factories/new-token-factory.png)
+
+## Prerequisites
+
+-   You must have created and uploaded the uniq metadata files. See [How to create Uniq Metadata](./how-to-create-uniq-metadata.md) for more information.
+-   Your account must have sufficient UOS tokens for transactions and fees. Refer to [Tutorial - Using the Faucet and Buying RAM on Ultra Testnet](../../fundamentals/tutorial-obtain-token-and-purchase-ram.md#obtaining-uos-tokens-using-the-faucet) for more information.
+
+## Goal
+
+The goal of this guide is to help you create your first Uniq Factory on the Ultra Testnet network.
+
+## Accessing the Toolkit
+
+To access the Ultra Toolkit, please visit: https://toolkit.ultra.io
+
+Once you're on the Toolkit homepage, click on the network selection component on the top right of your screen.
+
+![](../../fundamentals/images/toolkit-network-selection.png)
+
+Clicking on the network selection component will open up a list of available networks that you can use the toolkit on. For the sake of this tutorial, we will be using the Ultra Testnet. From the list of available networks, click on `Testnet`.
+
+![](../../fundamentals/images/toolkit-network-selection-modal.png)
+
+Login to the Ultra Toolkit using Ultra Wallet. Refer to [Tutorial - Log in to the Ultra Toolkit](../../fundamentals/tutorial-login-to-toolkit.md) for more information.
+
+## Creating Uniq Factory
+
+### 1. Accessing Factory Management Page
+
+Once you've logged in to the toolkit, from the toolkit home page, click on the `Uniq Actions` from the sidebar, and then click on `Factory` to open the factory management page.
+
+![](./images/toolkit-factory-actions-tab.png)
+
+On the factory page, search for `create` action in the search box, and click on the `Create token factory (eosio.nft.ft::create.b)` action to open up the transaction modal.
+
+### 2. Configure `create.b` Action
+
+We are going to use the `create.b` action to create the uniq factory. For more information on the action, refer to [create.b action documentation](../../../blockchain/contracts/nft-contract/nft-actions/create.b.md).
+
+For the sake of this guide, we will create a uniq factory with the simplest possible configuration.
+
+Once you have opened the transaction modal, fill the required fields for the `create.b` action:
+
+-   **Memo**: Required, enter a text memo for your transaction. For example, `Creating first uniq factory`.
+-   **Asset manager**: Required, the account name for uniq factory manager. We will use our account as the asset manager.
+-   **Asset creator**: Required, the account name for uniq factory creator. We will use our account as the asset creator.
+-   **Minimum resell price**: Optional, the minimum resale price for the uniqs of this factory. Leave blank to use `null`.
+-   **Mintable window start**: Optional, the starting date for minting window. Leave blank to use `null`.
+-   **Mintable window end**: Optional, the ending date for minting window. Leave blank to use `null`.
+    -   Using `null` as `Mintable window start` and `Mintable window end` means that the factory will always be mintable. If you want to restrict the minting windows, you can provide a datetime in the format of `2021-05-31T00:00:00`.
+-   **Trading window start**: Optional, the starting date for trading window. Leave blank to use `null`.
+-   **Trading window end**: Optional, the ending date for trading window. Leave blank to use `null`.
+    -   Using `null` as `Trading window start` and `Trading window end` means that the factory will always be tradable. If you want to restrict the trading windows, you can provide a datetime in the format of `2021-05-31T00:00:00`.
+-   **Recall window start**: Deprecated, leave blank to use `null`.
+-   **Recall window end**: Deprecated, leave blank to use `null`.
+-   **Max mintable tokens**: Optional, max number of uniqs in this factory. `null` means an unlimited number of uniqs. Leave blank to use `null`.
+-   **Lockup time**: Deprecated, leave blank to use `null`.
+-   **stat**: Optional, factory status. Input `0` to set factory status to `ACTIVE`.
+-   **Metadata URL**: Required, factory metadata URI.
+    -   We are using `https://developers.ultra.io/uniq-collections/AngryBananas/90e382c9212e4e44a6958ec6f9add375c93efa8c731fb495cd6f551594df7756.json`, based on the metadata that was generated in the previous guide. You should use the metadata that you generated in the previous guides. See [How to create Uniq Metadata](./how-to-create-uniq-metadata.md) for more information.
+-   **Metadata hash**: Optional, factory metadata hash.
+    -   We are using `90e382c9212e4e44a6958ec6f9add375c93efa8c731fb495cd6f551594df7756`, based on the metadata that was generated in the previous guide.
+-   **Account minting limit**: Optional, max number of tokens an account can mint. Leave blank to use `null` to allow for unlimited tokens per account.
+-   **Transfer window start**: Optional, the starting date for transfer window. Leave blank to use `null`.
+-   **Transfer window end**: Optional, the ending date for transfer window. Leave blank to use `null`.
+    -   Using `null` as `Transfer window start` and `Transfer window end` means that the factory will always be transferable. If you want to restrict the transfer windows, you can provide a datetime in the format of `2021-05-31T00:00:00`.
+-   **Maximum UOS payment**: Maximum amount of UOS that is allowed to be used for the purposes of contract RAM usage. For simplicity's sake, we will Leave blank to use `null`.
+-   **Default token URI**: Required, URI pointing to the token metadata if there is no token-specific metadata.
+    -   We are using `https://developers.ultra.io/uniq-collections/AngryBananas/{serial_number}.json`, based on the metadata that was generated in the previous guide.
+-   **Default token hash**: Optional, hash of static default token metadata.
+    -   We will leave blank to use `null` because in the previous guide, we used the `{serial_number}` as default uniq metadata URI template. If you have used `{hash}` as the default uniq metadata URI template, then you will need to input the actual SHA256 hash of the default metadata JSON file.
+-   **Lock hash**: Optional, whether to prevent changes to the hashes provided during the factory creation. Defaults to `false`.
+
+![](./images/toolkit-create-b-tx-form.png)
+
+Once you have inputted all the values, click on the `Send 1 Action` button and it will open up the transaction confirmation modal. You can click on the `Details` button to view the transaction in JSON form. Click on the `Confirm` button to submit your transaction.
+
+![](./images/toolkit-create-b-tx-confirmation.png)
+
+Confirm and sign the transaction using the Ultra Wallet extension. This step is crucial as it authorizes the blockchain to execute the transfer under your account.
+
+![](./images/ultra-wallet-sign-create-b-tx.png)
+
+After signing the transaction, you will see a confirmation screen indicating that the transaction was successfully completed. To check the transaction on the block explorer, click on the `View in Explorer` text.
+
+![](./images/toolkit-tx-success-modal.png)
+
+You'll find an actions list on the block explorer transaction page. Look for the text that says `RAM purchase for creating token factory <FACTORY_ID>`. This text will display the ID for your newly created Uniq factory. For instance, in our example, the text showed `RAM purchase for creating token factory 4356`, meaning our Uniq factory ID was `4356`. Identify the Uniq factory ID for your factory in the same manner. **You'll need this ID for the upcoming guides.**
+
+![](./images/block-exp-create-b-tx-actions.png)
+
+### 3. Verifying Factory Creation
+
+1. To verify the successful creation of your Uniq Factory, go to the `Factory Explorer` page on the toolkit (https://toolkit.ultra.io/uniqFactory).
+2. Make sure you are using the Ultra Testnet environment.
+3. Use the factory ID you obtained in the previous step to search for your Uniq Factory. Simply enter the ID and click the search button. You should then be able to view the details of your Uniq Factory.
+
+![](./images/toolkit-factory-explorer-page.png)
+
+You have now successfully created your first uniq factory using the Ultra Toolkit.
+
+## What's next?
+
+Once you have created your first uniq factory, the next step is to mint your first uniq. Refer [How to mint a Uniq using the Ultra Toolkit](./how-to-mint-uniq-using-toolkit.md).
+
+---
+title: 'How to create Uniq Metadata'
+order: 2
+outline: [0, 4]
+---
+
+# How to create Uniq Metadata
 
 Uniqs are tokens that can be associated with anything; games, assets, keys, items, and much more. The data that represents those things _is the metadata_. The title, the descriptions, and the images are all metadata.
 
 Ultra has a specific format for how we expect metadata to be organized.
 
-## Using the Metadata Tool
+## Prerequisites
 
-The metadata tool simplifies the process for creating complicated uniq factories and associating tokens with those factories. This tool allows the user to specify token factory specifications and corresponding token(s) specifications in an easy to use CSV template.
+-   A basic understanding of [Factory Metadata](../uniq-variants/factory-metadata.md), [Default Uniq Metadata](../uniq-variants/uniq-default-metadata.md) and [Uniq Metadata](../uniq-variants/uniq-metadata.md).
+-   You will need a Google account to make a copy of the [Metadata Template Google Sheet](https://docs.google.com/spreadsheets/d/1Gi0iuJis-riKkyhYgMRYVnhGD6PbjvBv8U7lhRwdhNk/edit?usp=sharing).
+-   A Windows, Linux or MacOS machine to run the metadata tool on.
 
-This tool takes CSVs and media files (Uniq images, videos and other supported media files) as input, converts to files to JSON objects, validates the JSON data, generates sha256 hashes of the JSON objects and outputs the generated JSON files.
+## Goal
+
+The goal of this guide is to help you create JSON metadata files for your first Uniq Factory.
+
+## What is Metadata Tool?
+
+The metadata tool simplifies the process for creating metadata for complicated uniq factories and associated uniqs by allowing the user to specify uniq factory specifications and corresponding uniq(s) specifications in an easy to use CSV template.
+
+Metadata tool takes CSVs and media files (Uniq images, videos and other supported media files) as inputs, converts to files to JSON objects, validates the JSON data, generates SHA256 hashes of the JSON objects and outputs the generated metadata JSON files.
 
 ![Metadata Tool](/images/token-factories/metadatatool.png)
 
-**Note that the tool itself does not interact with the blockchain; rather, it simplifies the process of creating complicated uniq factories and the associated tokens.**
+_It is important to highlight that the metadata tool itself does not interact with the blockchain; instead, it streamlines the creation of metadata for complex uniq factories and their associated uniqs._
 
-## Obtaining the Metadata tool
+## Obtaining Metadata Tool
 
-1. You can download the latest release of the tool from [here](https://github.com/ultraio/metadata-tool/releases).
-2. **[Optional]** Create a `config.json` file in the same directory as your binary/executable. Refer to [Configuration file](#configuration-file) section for more info on the config file.
+1. Download the binary/executable for the latest version of the tool from [here](https://github.com/ultraio/metadata-tool/releases).
 
-## Configuration file
+## Setup Metadata Tool
 
-The configuration file (`config.json`) is a JSON object that allows user to map environment names to their corresponding base URIs. Each environment corresponds to a specific environment in which the metadata and media file for token factory and associated token(s) are to be be hosted/uploaded.
+1. Create a `config.json` file in the same directory as your binary/executable.
+
+![](./images/metadata-tool-config-placement.png)
+
+The configuration file (`config.json`) is a JSON object that allows user to map environment names to their corresponding base URIs. Each environment corresponds to a specific environment in which the metadata and media file for a Uniq factory and associated uniq(s) are to be be hosted/uploaded.
 
 Here's an example of what the config file _might_ look like:
 
@@ -27246,266 +27940,711 @@ Here's an example of what the config file _might_ look like:
 }
 ```
 
-In the example above, the `production`, `staging`, `mys3bucket` and `custom` environments are mapped to their corresponding base URIs. When the tool is run, it will read the config file and will prompt the user to select either one of the provided environments. The corresponding URI for the selected environment will be used as base URI for the generated factory and token(s).
+In the example above, the `production`, `staging`, `mys3bucket` and `custom` environments are mapped to their corresponding base URIs. When the tool is run, it will read the config file and will prompt the user to select either one of the provided environments. The corresponding URI for the selected environment will be used as _base URI_ for the generated factory and uniq(s).
 
 Note that the environments and base URIs in the config file shown above are just examples, and you should replace them with the actual environment(s) for your use-case.
 
-For our example, we'll be creating a `config.json` that looks like this:
+### What qualifies as a valid environment URL?
+
+In theory, any service capable of serving JSON and media content over **predictable URLs** should work. A predictable URL is one where the URL structure follows a consistent and recognizable pattern, making it easy to infer the URL for different files based on their location and names. The general structure of the predictable URLs is:
+
+`Base URI + Collection Name + File Name`
+
+For example:
+
+-   Base URI: `www.my-uniq.com`
+-   Collection Name: `Angry Bananas`
+-   File Name: `factory.json`, `1.json`, `product.png` etc
+
+Predictable URLs:
+
+-   `www.my-uniq.com/AngryBananas/factory.json`
+-   `www.my-uniq.com/AngryBananas/1.json`
+-   `www.my-uniq.com/AngryBananas/product.png`
+
+#### ✔️ Example of a valid environment URL:
+
+An AWS S3 bucket is a good example of a valid environment to host your metadata files since the URLs are predictable and follow this pattern:
+
+-   `https://s3.us-east-1.amazonaws.com/AngryBananas/factory.json`
+-   `https://s3.us-east-1.amazonaws.com/AngryBananas/1.json`
+
+In this case, if you know the bucket name and the file name, you can easily predict the URL. Example of a config file using an AWS S3 bucket is:
 
 ```json
 {
-    "custom": "https://developers.ultra.io/images/token-factories/example"
+    "production": "https://s3.us-east-1.amazonaws.com/",
+    "staging": "https://s3.ap-southeast-2.amazonaws.com/"
+}
+```
+
+#### ❌ Example of an invalid environment URL:
+
+On the other hand, Dropbox does not provide predictable URLs. When uploading files to the same folder in Dropbox, the URL prefixes are different and not easily predictable. For example:
+
+-   `https://dl.dropbox.com/scl/fi/o0mlbvyjroktfj6r0g3gn/factory.json?rlkey=f70l90yj01d61c0m8j43yt2pm&st=ss8gx8vj&dl=0`
+-   `https://dl.dropbox.com/scl/fi/u2s3b2u5mahefssuzyut7/1.json?rlkey=td31270rsy6sfzwgi3sq2rqyr&st=8dqgyg1b&dl=0`
+
+In this case, even though the files are in the same folder, the URL structure is not consistent and cannot be easily inferred.
+
+For our needs, we require a service that allows us to predict the URL prefix. This is important so that we can use these URLs in our configuration file without having to manually update each one.
+
+---
+
+For the sake of this guide, we'll be creating a `config.json` that looks like this:
+
+```json
+{
+    "developerDocs": "https://developers.ultra.io/uniq-collections/",
+    "myS3Bucket": "https://s3.us-east-1.amazonaws.com/"
 }
 ```
 
 **Note**: If you do not provide a config file, the tool will prompt you to enter a base URI manually.
 
-## How to use
+Once you have obtained the tool and created your config file, the next step is to setup the folder structure along with the media files, followed by adding data to the CSV template.
 
-Once you have obtained the tool, the next step is to setup the folder structure along with the media files, followed by adding data to the CSV template.
+## Setup Folder Structure
 
-There are a few things to note.
-
--   A report is always generated during runtime.
--   Reports are not generated until you close the program.
--   Reports will help you debug your CSV files, any missing information will be posted to the report and sometimes in the terminal / console window.
-
-### Setup Folder Structure:
-
-To make it compliant with the token id card you must provide images:
-
--   product: the principal image used when you expand the token id card
--   square: used to represent your asset when the token id card is collapsed
--   hero: used as the background when you expand the token id card
--   gallery: a list of images and videos available in the carousel
-
-To let the system identify those different elements you must provide a `manifest.json` where you describe your images by giving a textual descriptions and a path to them in the `uniq_factory` folder.
-
-Aside the requirement above, you can put anything else in your `uniq_factory` folder. Those files will be part of the NFT owned by the user and will be the asset(s) the user bought.
-
-It is recommended to use the following folder setup for ease of use.
+Create a directory for your Uniq collection and its associated metadata. For simplicity's sake, we're going to create a flat structure and use a single directory that contains all the relevant media files and the metadata.
 
 ```
-example/ 📁 (This is your Root Folder)
+AngryBananas/ 📁 (This is your Root Folder)
 |- factory.csv
 |- tokens.csv
-|- manifest.json
-|
-|- factory/ 📁
-|   |- square.png
-|   |- uniq.png
-|   |- gallery/ 📁
-|       |- media-01.png
-|
-|- tokens/ 📁
-    |- 1 📁
-    |   |- uniq.png
-    |   |- gallery/ 📁
-    |       |- media-01.png
-    |
-    |- 2 📁
-    |   |- uniq.png
-    |   |- gallery/ 📁
-    |       |- media-01.png
+|- square.png
+|- product.png
+|- hero.png
+|- gallery.png
 ```
-
-However, the folder structure can be modified and replaced with a single folder that contains CSV files and relevant images/media files.
 
 We provide a template example for you to use in the context of this guide.
 
-[![Download](/images/token-factories/download.png)](/zip/example.zip)
+[![Download](/images/token-factories/download.png)](/zip/AngryBananas.zip)
 
-### Setup CSV Template:
+## Setup CSV Template
 
-1.  Use the following CSV template: [Google Sheets Metadata Tool Template](https://docs.google.com/spreadsheets/d/1Gi0iuJis-riKkyhYgMRYVnhGD6PbjvBv8U7lhRwdhNk/edit?usp=sharing) (Visit the link and go to `File -> Make a Copy` to make a copy in your own Google Drive).
-2.  Open your copied CSV template in your Google Drive and begin modifications of individual fields. (Read the first sheet for information regarding the template).
-3.  Export both `factory` and `tokens` sheets as CSV files. `File -> Download -> csv`
-4.  Rename factory file to `factory.csv` and place in your root folder. (See [Setup Folder Structure](#setup-folder-structure) Above)
-5.  Rename token file to `tokens.csv` and place in your root folder.
+Before we start using the CSV template, it is important to understand how the media file paths work in the CSV template, as well as which media types are supported.
 
-### Image/Media Pathing:
+### Image/Media Paths
 
-There are two ways to link to an image/media file in your CSV file. One is relative path, and the other is an external HTTP or HTTPS address.
+There are two ways to link to an image/media file in your CSV file. One is _relative path_, and the other is an _external HTTP or HTTPS address_.
 
--   Relative Path: `./tokens/1/image.png` (Relative to your root folder)
--   External: `https://some-external-website.com/tokens/1/image.png`
+-   Relative Path: `./product.png` (Relative to your root folder)
+-   External: `https://some-external-website.com/product.png`
 
-For example, in the above structure, your CSV file should have referenced the images like this:
+### Supported Media Types
 
-![CSV example](/images/token-factories/csv_example.png)
+Metadata tool currently only supports the follow media types:
 
-If the paths in your CSV are incorrect, then when you try to run the metadata tool against the files which are online, you will get errors and your images in your `uploads.json` will show `undefined`. This must be fixed before you move on to the next step.
+-   `jpg` / `jpeg`
+-   `png`
+-   `bmp`
+-   `gif`
+-   `webp`
+-   `mp4`
+-   `webm`
 
-### Supported Media Types:
+### Supported Token URI Template
 
-The tool currently only supports the follow media types:
+The CSV template supports two pre defined URI templates for the default Uniq and all other the Uniqs in the factory.
+There are two options available: `{hash}` and `{serial_number}`.
 
--   jpg / jpeg
--   png
--   bmp
--   gif
--   webp
--   mp4
--   webm
--   json
+-   If `{hash}` is selected, the URI structure for Uniqs will be: `https://{baseUri}/{collectionName}/{hash}.json`.
 
-### Running the tool:
+    For example:
 
-Once the CSV files and all related images/media files are present in the folder, you can process the folder for JSON creation.
+    -   Default Uniq: `https://www.my-uniq.com/AngryBananas/6a42bd...b39974687c2.json`
+    -   Uniqs: `https://www.my-uniq.com/AngryBananas/983750...6a3ef645d0eafe.json`
 
-1. In Windows you can drag and drop the folder onto the executable. For Mac and Linux you'll have to run the executable from the command line with the folder as the parameter.
+-   If `{serial_number}` is selected, the URI structure for Uniqs will be: `https://{baseUri}/{collectionName}/{serial_number}.json`.
 
-    a. Watch the console window for errors.
-    b. If errors have occurred, you can check the report generated after closing the application
+    For example:
 
-2. If there are no errors, an `upload.json` file will be generated in your root folder.
+    -   Default Uniq: `https://www.my-uniq.com/AngryBananas/{serial_number}.json`
+    -   Uniqs: `https://www.my-uniq.com/AngryBananas/1.json`, `https://www.my-uniq.com/AngryBananas/2.json` etc
 
-### Output file structure:
+### Adding Data to the CSV Template
 
-The `upload.json` file contains all metadata (collection name, factory/token hashes & URLs, media URLs) for your Uniq collection. A sample output file _might_ look like this:
+The next step is to add data to the CSV template.
 
-(This example is based on the sample folder structure provided above.)
+1.  Open [Google Sheets Metadata Tool Template](https://docs.google.com/spreadsheets/d/1Gi0iuJis-riKkyhYgMRYVnhGD6PbjvBv8U7lhRwdhNk/edit?usp=sharing) and go to `File -> Make a Copy` to make a copy in your own Google Drive.
+2.  Open the copied CSV template in your Google Drive and begin modifications of individual fields.
+
+    The first sheet, called `Notes`, includes information regarding the template. This is important to read as this will help you understand the structure, rules, and limitations of the CSV template.
+
+    All columns on the CSV template are color coded to help you understand the template better.
+
+    -   <span style="color:red">**Red**</span> indicates that the column value is required and must be provided.
+    -   <span style="color:blue">**Blue**</span> indicates that the column value is optional and can be skipped.
+    -   <span style="color:yellow">**Yellow**</span> indicates the column value is pre-defined, and will be filled out automatically. You do not need to provide any input to such columns.
+    -   <span style="color:orange">**Orange**</span> indicates that user should either provide values for both columns, or, should leave both columns blank. Such columns will always be in pair of two.
+
+        ![](./images/metadata-tool-csv-template-notes.png)
+
+    There are two more sheets in the CSV template, called `Factory` and `Tokens`.
+
+#### Adding Factory Data
+
+1. To add factory data, go to the factory sheet by clicking on `Factory` from the sheets list.
+2. Add the data to the following columns:
+    - `specVersion`: Auto-filled, this column will be automatically filled once you provide a collection name.
+    - `name`: Required, the name of your collection.
+    - `Token URI Template`: Required, select either `{serial_number}` or `{hash}`. Refer to [Supported Token URI Template](#supported-token-uri-template) for more information.
+    - `subName`: Optional, a sub name for the collection.
+    - `description`: Optional, a description for the collection.
+    - `author`: Optional, name of the author.
+    - `defaultLocale`: Auto-filled, this column will be automatically filled once you provide a collection name.
+    - `product`: Required, the relative path, or external URL to the product media file for the factory.
+    - `square`: Required, the relative path, or external URL to the square media file for the factory.
+    - `hero`: Optional, the relative path, or external URL to the hero media file for the factory.
+    - `gallery 1`: Optional, the relative path, or external URL to the first gallery media file for the factory. You can include up to 12 gallery images by using the columns labeled `gallery 1`, `gallery 2`, `gallery 3`, and so on.
+    - `Att Type 1`: Optional, the data type of the first attribute of this collection. You can double click on this column to choose from a list of pre-defined data types.
+        - `Att Name 1`: Required if `Att Type 1` was provided. The name of the attribute.
+        - `Att Desc 1`: Optional, a description for the attribute.
+        - You can include up to 12 attributes by using the columns labeled `Att Type 1` `Att Name 1` `Att Desc 1`, `Att Type 2` `Att Name 2` `Att Desc 2`, and so on.
+
+![](./images/metadata-tool-csv-template-factory-data-added.png)
+![](./images/metadata-tool-csv-template-factory-attrbs.png)
+
+3.  Once you're done filling out data in the `Factory` sheet, export the `Factory` sheet as a CSV file by clicking on `File -> Download -> Comma Separated Values (.csv)`
+    ![](./images/metadata-tool-csv-template-export-as-csv.png)
+4.  Rename the downloaded CSV file to `factory.csv` and place in your root folder. (Refer to [Setup Folder Structure](#setup-folder-structure) step)
+
+#### Adding Uniq Data
+
+1. To add data for uniqs, go to the uniqs sheet by clicking on `Tokens` from the sheets list. You can add the desired number of uniqs to your factory by adding a new row for each uniq that you want to create.
+2. Add the data to the following columns:
+    - `serialNumber`: For the first uniq, you can select `default` if you want to create a [default uniq](../uniq-variants/uniq-default-metadata.md), or you can select `1`, if you do not want to create a default uniq. If you select the `default` option, the next uniq that you add will be assigned serial number `1`. It is important to highlight that <ins>serial numbers are automatically generated</ins> for each uniq that you add to the collection.
+    - `specVersion`: Auto-filled, this column will be automatically filled once you provide a uniq name.
+    - `name`: Required, the name of your uniq.
+    - `subName`: Optional, a sub name for the uniq.
+    - `description`: Optional, a description for the uniq.
+    - `author`: Auto-filled using the `author` column value provided in `Factory` sheet.
+    - `defaultLocale`: Auto-filled, this column will be automatically filled once you provide a uniq name.
+    - `product`: Required, the relative path, or external URL to the product media file for the Uniq.
+    - `square`: Required, the relative path, or external URL to the square media file for the Uniq.
+    - `hero`: Optional, the relative path, or external URL to the hero media file for the Uniq.
+    - `gallery 1`: Optional, the relative path, or external URL to the first gallery media file for the Uniq. You can include up to 12 gallery images by using the columns labeled `gallery 1`, `gallery 2`, `gallery 3`, and so on.
+    - `Att Name 1`: Optional, the data type of the first attribute of this collection. You can double click on this column to choose from a list of pre-defined data types.
+        - `Att Name 1`: Auto-filled using the data provided in the `Factory` sheet.
+        - `Att Val 1`: Required if the data for `Att Name 1` exists. This column represents the attribute value for the specific attribute defined in `Factory` sheet.
+        - If you have included additional attributes in the `Factory` sheet, you must provide a value for each attribute.
+
+![](./images/metadata-tool-csv-template-tokens-data-added.png)
+![](./images/metadata-tool-csv-template-tokens-attrbs.png)
+
+3.  Once you're done filling out data in the `Tokens` sheet, export the `Tokens` sheet as a CSV file by clicking on `File -> Download -> Comma Separated Values (.csv)`
+4.  Rename the downloaded CSV file to `tokens.csv` and place in your root folder.
+
+<!-- ### Running the tool: -->
+
+## Running the Metadata Tool
+
+Once you have set up your folder structure and created the CSVs for factory and uniqs, the next step is to run the metadata tool. Before we begin, please note the following:
+
+-   A report is always generated during runtime, but it is only saved to a file once you close the tool.
+-   Reports will help you debug your CSV files; any missing information will be noted in the report and sometimes in the terminal/console window.
+
+### Starting the Tool
+
+Starting the tool is different for each operating system. Follow the steps for your operating system:
+
+#### Windows
+
+On Windows you can drag and drop your collection root folder onto the executable. Or, you can open the metadata tool by simply double clicking the executable.
+
+#### Linux
+
+Follow these steps to run the linux binary:
+
+1.  `cd` to the directory where metadata tool binary is present.
+
+2.  Make it executable by running this command in your terminal:
+
+    `sudo chmod +x metadata-tool-v1-4-8-linux`
+
+3.  Start the tool by running this command in your terminal:
+
+    `./metadata-tool-v1-4-8-linux`
+
+#### MacOS
+
+Follow these steps to run the MacOS binary:
+
+1.  `cd` to the directory where metadata tool binary is present.
+
+2.  Make it executable by running this command in your terminal:
+
+    `sudo chmod +x metadata-tool-v1-4-8-macos`
+
+3.  `Ctrl` + `Right Click` on the binary/executable and then click `Open`. It will ask you if you want to open it. Click on `Open` again.
+    ![](./images/metadata-tool-macos-warning.png)
+
+### Working Directory Input
+
+Once you have started the metadata tool, it will prompt you to enter the path to your root folder. Enter the relative, or absolute path to your collection root folder, and press `Enter` key to submit.
+
+![](./images/metadata-tool-path-prompt.png)
+
+We have used the relative path `../AngryBananas` here because on our system the `AngryBananas` directory exists at `../`, relative to the metadata tool executable. You should use the relative path depending on where your collection root directory exists. Or, you can also use the full absolute path to your collection root directory.
+
+On Windows if your metadata tool executable is next to the root directory then you can just enter the root directory name like `AngryBananas` and it will also work.
+
+### Environment Selection
+
+You will now be prompted to select betweens the environments that you have specified in the config file. Use arrow keys to select the desired environment, and press `Enter` key to proceed.
+
+![](./images/metadata-tool-env-prompt.png)
+
+### File Validation and Processing
+
+Metadata tool will now process and validate the CSV files to generate the JSON metadata. If successful, you will see the success message. If there are some errors, they will be printed on the screen.
+
+![](./images/metadata-tool-finished.png)
+
+Press the `Enter` key to exit and close the metadata tool. Once closed, a report will be generated in the folder where your metadata tool binary/executable is located. A sample report looks like this:
+
+```
+[02:29:34] Started Metadata Tool v1.4.8
+[02:29:34] Initialized Exit Handlers
+[02:29:34] Reading specified folder path.
+[02:29:34] Processing folder path: ../AngryBananas/
+[02:29:34] Validating file list.
+[02:29:34] tokens.csv file was also found in the provided directory.
+[02:29:34] Prompting user for URL selection.
+[02:29:36] Parsing file types for csv
+[02:29:36] Collection name: Angry Bananas, env: developerDocs, url: https://developers.ultra.io/uniq-collections
+[02:29:36] Validating schema files.
+[02:29:36] Attempting to validate factory.
+[02:29:36] factory passed
+[02:29:36] Attempting to validate defaultToken.
+[02:29:36] defaultToken passed
+[02:29:36] Attempting to validate tokens.
+[02:29:36] All Schemas Passed
+[02:29:36] Building Hashes
+[02:29:36] Replacing URLs with Hashed Content
+[02:29:36] Writing default token to file.
+[02:29:36] Writing factory to file.
+[02:29:36] Writing token 1 to file.
+[02:29:36] Writing token 2 to file.
+[02:29:36] Writing final file: ../AngryBananas/upload.json
+[02:29:36] Finished Processing. Press [Enter] to Exits
+```
+
+### Generated Metadata Files
+
+If there were no errors, the metadata tool will create the following files in the collection's root directory, and your root directory should be similar to:
+
+```
+AngryBananas/ 📁 (This is your Root Folder)
+ |-generated_media/ 📁
+ | |-51aa8699ebc19560234ce8db808e13f88069784c925838157a4d33da486742d9.png
+ | |-9a4a2560f581f3982ce9c6daf58d0da673432868cd16b2191ce279d8a8ae4c01.png
+ | |-d602c91d1a14a8e91ac6033f56fcdcaacf99d60de8c73ebc79d5dcb6fd56d6d0.png
+ | |-ffc3121613cc7d52a3525bb68c0948edc469f6f2c16bcb7b6b7fa38f7eaed3cf.png
+ |-90e382c9212e4e44a6958ec6f9add375c93efa8c731fb495cd6f551594df7756.json
+ |-{serial_number}.json
+ |-1.json
+ |-2.json
+ |-factory.csv
+ |-gallery.png
+ |-hero.png
+ |-product.png
+ |-square.png
+ |-tokens.csv
+ |-upload.json
+```
+
+-   `factory.json`: The JSON metadata file for the uniq factory.
+-   `defaultToken.json`: The JSON metadata file for the default uniq, if a default uniq was specified in the CSV template. In this guide the `defaultToken.json` will be unused because the `default_token_uri` of the factory will later be replaced with the template URI of individual Uniqs using `{serial_number}`. The same would apply to `{hash}` template value.
+-   `1.json`: The JSON metadata file for uniq with serial number 1, and so on, for each uniq specified in the CSV template.
+    -   If you specified `{hash}` as the `Token URI Template`, then your uniq metadata files will be named as the SHA256 hash of their file contents.
+-   `generated_media`: This directory contains all the media files. Each file is renamed as the SHA256 hash of its content.
+-   `upload.json`: The `upload.json` file contains the details regarding the uniq collection. Such as the collection name, factory/uniq hashes & URLs, and media URLs.
+
+### Output File Explained
+
+It is important to understand that the `upload.json` file <ins>is not part of the actual metadata</ins>, rather it is generated as a help for you to understand where you _should_ upload/host the generated metadata files.
+
+For our example collection, the `upload.json` file should look like this:
 
 ```json
 {
-    "collectionName": "MyFirstUniq",
+    "collectionName": "Angry Bananas",
     "factory": {
-        "hash": "<sha256-of-factory.json>",
-        "url": "https://www.my-nft-website.com/MyFirstUniq/<sha256-of-factory.json>.json"
+        "hash": "90e382c9212e4e44a6958ec6f9add375c93efa8c731fb495cd6f551594df7756",
+        "url": "https://developers.ultra.io/uniq-collections/AngryBananas/90e382c9212e4e44a6958ec6f9add375c93efa8c731fb495cd6f551594df7756.json"
     },
     "defaultToken": {
-        "hash": "<sha256-of-defaultToken.json>",
-        "url": "https://www.my-nft-website.com/MyFirstUniq/{serial_number}.json"
+        "hash": "255cb93b1f53ff9ec1d4c5b5d8bff1fc2c6661c847cd2fd3b3376640483d510a",
+        "url": "https://developers.ultra.io/uniq-collections/AngryBananas/{serial_number}.json"
     },
     "tokens": [
         {
             "serialNumber": "1",
-            "hash": "<sha256-of-1.token.json>",
-            "url": "https://www.my-nft-website.com/MyFirstUniq/1.json"
+            "hash": "2da6b5b4d8ecf25ac3b472c16264b02c48d35833196a262db562ea988e34417f",
+            "url": "https://developers.ultra.io/uniq-collections/AngryBananas/1.json"
         },
         {
             "serialNumber": "2",
-            "hash": "<sha256-of-2.token.json>",
-            "url": "https://www.my-nft-website.com/MyFirstUniq/2.json"
+            "hash": "bc34facf773a7162eb1aa51a38c901e9e1cd23c9a66c8f0f0e5adb6746b55e98",
+            "url": "https://developers.ultra.io/uniq-collections/AngryBananas/2.json"
         }
     ],
     "media": {
-        "factory/sq.png": "https://www.my-nft-website.com/MyFirstUniq/<hash-of-file>.png",
-        "factory/product.png": "https://www.my-nft-website.com/MyFirstUniq/<hash-of-file>.png",
-        "factory/gallery/1.png": "https://www.my-nft-website.com/MyFirstUniq/<hash-of-file>.png",
-        "tokens/1/image.png": "https://www.my-nft-website.com/MyFirstUniq/<hash-of-file>.png",
-        "tokens/1/gallery/1.png": "https://www.my-nft-website.com/MyFirstUniq/<hash-of-file>.png",
-        "tokens/2/image.png": "https://www.my-nft-website.com/MyFirstUniq/<hash-of-file>.png",
-        "tokens/2/gallery/1.png": "https://www.my-nft-website.com/MyFirstUniq/<hash-of-file>.png"
+        "generated_media/51aa8699ebc19560234ce8db808e13f88069784c925838157a4d33da486742d9.png": "https://developers.ultra.io/uniq-collections/AngryBananas/51aa8699ebc19560234ce8db808e13f88069784c925838157a4d33da486742d9.png",
+        "generated_media/9a4a2560f581f3982ce9c6daf58d0da673432868cd16b2191ce279d8a8ae4c01.png": "https://developers.ultra.io/uniq-collections/AngryBananas/9a4a2560f581f3982ce9c6daf58d0da673432868cd16b2191ce279d8a8ae4c01.png",
+        "generated_media/d602c91d1a14a8e91ac6033f56fcdcaacf99d60de8c73ebc79d5dcb6fd56d6d0.png": "https://developers.ultra.io/uniq-collections/AngryBananas/d602c91d1a14a8e91ac6033f56fcdcaacf99d60de8c73ebc79d5dcb6fd56d6d0.png",
+        "generated_media/ffc3121613cc7d52a3525bb68c0948edc469f6f2c16bcb7b6b7fa38f7eaed3cf.png": "https://developers.ultra.io/uniq-collections/AngryBananas/ffc3121613cc7d52a3525bb68c0948edc469f6f2c16bcb7b6b7fa38f7eaed3cf.png"
     },
     "environment": {
-        "env": "production",
+        "env": "developerDocs",
         "tokenUriTemplate": "{serial_number}",
-        "url": "https://www.my-nft-website.com",
-        "toolVersion": "1.4.0"
+        "url": "https://developers.ultra.io/uniq-collections",
+        "toolVersion": "1.4.8"
     }
 }
 ```
 
-Note that the URLs provided in the output file are based on the environment URIs that were provided to the program. These URLs are where your Uniq metadata files _should_ be hosted/uploaded.
+Based on above details, we have uploaded the metadata and media files to the specified URLs:
+
+-   Factory metadata: https://developers.ultra.io/uniq-collections/AngryBananas/90e382c9212e4e44a6958ec6f9add375c93efa8c731fb495cd6f551594df7756.json
+-   Default uniq metadata: not uploaded because it will not be used. It would be required if we didn't use the `{serial_number}` template.
+-   Uniq #1 metadata: https://developers.ultra.io/uniq-collections/AngryBananas/1.json
+-   Uniq #2 metadata: https://developers.ultra.io/uniq-collections/AngryBananas/2.json
+-   Generated medias:
+    -   https://developers.ultra.io/uniq-collections/AngryBananas/51aa8699ebc19560234ce8db808e13f88069784c925838157a4d33da486742d9.png
+    -   https://developers.ultra.io/uniq-collections/AngryBananas/9a4a2560f581f3982ce9c6daf58d0da673432868cd16b2191ce279d8a8ae4c01.png
+    -   https://developers.ultra.io/uniq-collections/AngryBananas/d602c91d1a14a8e91ac6033f56fcdcaacf99d60de8c73ebc79d5dcb6fd56d6d0.png
+    -   https://developers.ultra.io/uniq-collections/AngryBananas/ffc3121613cc7d52a3525bb68c0948edc469f6f2c16bcb7b6b7fa38f7eaed3cf.png
+
+You have now successfully generated the metadata for your uniq collection.
+
+## What's next?
+
+Once you have generated the metadata for your uniq collection, the next steps are to:
+
+-   [How to validate metadata using Ultra Toolkit's Schema Validator](./how-to-validate-uniq-metadata-using-schema-validator-toolkit.md)
+-   [How to create a Uniq Factory using the Ultra Toolkit](./how-to-create-uniq-factory-using-toolkit.md)
 
 ---
-title: 'Your First Uniq Factory'
-
+title: 'How to mint a Uniq using the Ultra Toolkit'
 order: 5
 outline: [0, 4]
 ---
 
-# Your First Uniq Factory
+# How to mint a Uniq using the Ultra Toolkit
 
-## Make sure you're ready
+## Prerequisites
 
-Once you have your [metadata set up](./creatingmetadata.md), you'll be ready to create your first token factory.
+-   You must have already created a uniq factory. Refer to [How to create a Uniq Factory using the Ultra Toolkit](./how-to-create-uniq-factory-using-toolkit.md) for more information.
+-   Your account must have sufficient UOS tokens for transactions and fees. Refer to [Tutorial - Using the Faucet and Buying RAM on Ultra Testnet](../../fundamentals/tutorial-obtain-token-and-purchase-ram.md#obtaining-uos-tokens-using-the-faucet) for more information.
 
-Just to be absolutely clear, the expected flow for building a Token Factory is:
+## Goal
 
-1. Upload images
-2. Generate metadata
-3. Calculate hashes
-4. Push on-chain
+This guide will help you mint your first Uniq.
 
-Without the images already uploaded to the correct location, the metadata tool can not verify that they exist, nor can it create the unique hashes that identify them.
+## Accessing the Toolkit
 
-::: warning
+To access the Ultra Toolkit, please visit: https://toolkit.ultra.io
 
-**It is up to you to manage the Token Factory images and ensure that they are permanently available for the network to access.**
+Once you're on the Toolkit homepage, click on the network selection component on the top right of your screen.
 
-:::
+![](../../fundamentals/images/toolkit-network-selection.png)
 
-If you'd prefer to focus just on this section and learn how to push the on-chain transaction that generates the Token Factory, we have prepared a simple example zip file for you that already has been generated based on files that are located in this developer guide. You're welcome to upload this to anywhere semi-permanent for your learning purposes. We suggest Github, and you can access it as a RAW file from there.
+Clicking on the network selection component will open up a list of available networks that you can use the toolkit on. For the sake of this tutorial, we will be using the Ultra Testnet. From the list of available networks, click on `Testnet`.
 
-[![Download](/images/token-factories/download.png)](/zip/example_token_factory.zip)
+![](../../fundamentals/images/toolkit-network-selection-modal.png)
 
-To create a Token Factory on Testnet, you'll be using the Ultra Developer Tools. If you haven't set up your developer environment, we've [set up a quick checklist](./yourdevelopmentenv.md) for you to be able to hit the ground running.
+Login to the Ultra Toolkit using Ultra Wallet. Refer to [Tutorial - Log in to the Ultra Toolkit](../../fundamentals/tutorial-login-to-toolkit.md) for more information.
 
-Once you're inside your docker image, have your wallet set up, and have your Testnet account ready, you're good to go for the next step.
+## Minting a Uniq
 
-## Creating your first Token Factory
+### 1. Accessing Factory Management Page
 
-![](/images/token-factories/new-token-factory.png)
+Once you've logged in to the toolkit, from the toolkit home page, click on the `Uniq Actions` from the sidebar, and then click on `Factory` to open the uniq factory actions page.
 
-Once you have everything set up, you'll be ready to create this Token Factory on the Testnet.
+![](./images/toolkit-factory-actions-tab-issue.png)
 
-The following is an example transaction. You will have to fill in the missing details:
+On the factory page, search for `issue` action in the search box, and click on the `Issue tokens (eosio.nft.ft::issue.b)` action to open up the transaction modal.
 
--   `<YOUR ACCOUNT>` - Your Testnet account
--   `<MINT WINDOW START>` - A datetime in the format `2021-05-31T00:00:00`
--   `<TRADING WINDOW START>` - A datetime in the format `2021-05-31T00:00:00`
--   `<YOUR UNIQ FACTORY URI>` - The URI of the metadata either as a zip file, or targeting the `factory.json` file with a full path, values cannot be an empty string
--   `<YOUR UNIQ FACTORY HASH>` - The hash of the filename, you can find this in `upload.json` in the `factory` block at the top
--   `<YOUR DEFAULT UNIQ URI>` - The URI pointing to the token metadata if there is no token-specific metadata. Must not be empty and can be either static or dynamic
--   `<YOUR DEFAULT UNIQ HASH>` - The Hash of static default token URI. It is optional to provide this and it should be a SHA256 of the content of default token URI. If default token URI is dynamic - specify the hash per token instead
+### 2. Configure `issue.b` Action
 
-```sh
-cleos -u http://ultratest.api.eosnation.io push action eosio.nft.ft create.b \
-   '[
-      {
-         "memo": "CREATE UNIQ FACTORY",
-         "asset_creator": "<YOUR ACCOUNT>",
-         "asset_manager": "<YOUR ACCOUNT>",
-         "minimum_resell_price": null,
-         "resale_shares": null,
-         "mintable_window_start": "<MINT WINDOW START>",
-         "mintable_window_end": null,
-         "trading_window_start": "<TRADING WINDOW START>",
-         "trading_window_end": null,
-         "recall_window_start": null,
-         "recall_window_end": null,
-         "max_mintable_tokens": 10,
-         "lockup_time": null,
-         "conditionless_receivers": null,
-         "stat": 0,
-         "factory_uri": "<YOUR UNIQ FACTORY URI>",
-         "factory_hash": "<YOUR UNIQ FACTORY HASH>",
-         "authorized_minters": [],
-         "account_minting_limit": 1,
-         "transfer_window_start": null,
-         "transfer_window_end": null,
-         "maximum_uos_payment": null,
-         "default_token_uri": "<YOUR DEFAULT UNIQ URI>",
-         "default_token_hash": "<YOUR DEFAULT UNIQ URI>",
-         "lock_hash": null
-      }
-   ]' \
--p <YOUR ACCOUNT>
-```
+We are going to use the `issue.b` action to mint a uniq. For more information on the action, refer to [issue.b action documentation](../../../blockchain/contracts/nft-contract/nft-actions/issue.b.md).
 
-Once you've run this command, you should get a message confirming that your transaction has been executed locally.
+Once you have opened the transaction modal, fill the required fields for the `issue.b` action:
 
-To see it in action on the Testnet, hop on over to the [Testnet block explorer](https://explorer.testnet.ultra.io/) and input your account name into the search box at the top.
+-   **To**: Required, the recipient of the minted token. Input your account if you want to receive the minted uniq in your wallet.
+-   **Token configs**: Click `Add` to input the `Token factory ID`, `Amount`, and `Custom data`.
+    -   **Token factory ID**: Required, the ID of the factory from which the uniqs will be minted. Use the ID of the uniq factory created in the previous guide. Refer to [How to create a Uniq Factory using the Ultra Toolkit](./how-to-create-uniq-factory-using-toolkit.md) for more information.
+    -   **Amount**: Required, the number of uniqs to be minted. For the sake of this guide, we will mint `1` uniq.
+    -   **Custom data**: Deprecated, leave blank.
+-   **Memo**: Required, enter a text memo for your transaction. For example, `Minting my first uniq`.
+-   **Authorizer**: Optional, the authorizer of the mint. Must be one of authorized minters of the factory. Leave blank to use `null`.
+-   **Maximum UOS payment**: Maximum amount of UOS that is allowed to be used for the purposes of contract RAM usage. For simplicity's sake, we will Leave blank to use `null`.
+-   **Token metadata**: Click `Add` to input the `Metadata URI` and `Metadata hash`.
+    -   **Metadata URI**: Required, the URI of the token metadata. We are using `https://developers.ultra.io/uniq-collections/AngryBananas/1.json`, based on the metadata we created during the [How to create Uniq metadata](./how-to-create-uniq-metadata.md) guide.
+    -   **Metadata hash**: Optional, hash of the token metadata. We are using `2da6b5b4d8ecf25ac3b472c16264b02c48d35833196a262db562ea988e34417f`, based on the metadata we created during previous guides.
 
-You should see a new transaction that shows that your new Token Factory has been successfully created.
+![](./images/toolkit-issue-b-tx-form.png)
 
-![](/images/token-factories/create_success.png)
+Once you have inputted all the values, click on the `Send 1 Action` button and it will open up the transaction confirmation modal. You can click on the `Details` button to view the transaction in JSON form. Click on the `Confirm` button to submit your transaction.
 
-We are glossing over a lot of functionality here, in the interest of getting you up and running quickly. Later guides will cover some of the more advanced features that our NFT standard supports, including variants, authorized minters, and much more.
+![](./images/toolkit-issue-b-tx-confirmation.png)
 
-In the meantime, congratulations on creating your first Token Factory. **Now, let's go mint your first Uniq!**
+Confirm and sign the transaction using the Ultra Wallet extension. This step is crucial as it authorizes the blockchain to execute the transfer under your account.
+
+![](./images/ultra-wallet-sign-issue-b-tx.png)
+
+After signing the transaction, you will see a confirmation screen indicating that the transaction was successfully completed. To check the transaction on the block explorer, click on the `View in Explorer` text.
+
+![](./images/toolkit-tx-success-modal.png)
+
+### 3. Verifying Minted Uniq
+
+1. To verify the successful creation of your Uniq Factory, go to the `User Uniq Explorer` page on the toolkit (https://toolkit.ultra.io/user).
+2. Make sure you are using the Ultra Testnet environment.
+3. Input your account name and click on the search button. You should be able to view the details of your newly minted uniq under the `Uniqs` section. It may take a few seconds to sync the data, so if your uniq is not shown, please wait a few seconds and reload the page.
+
+    ![](./images/toolkit-user-uniq-explorer-page.png)
+
+You have now successfully minted your first uniq using the Ultra Toolkit.
+
+## What's next?
+
+Once you have practiced minting Uniqs from your factory, the next steps are to:
+
+-   [How to update metadata using the Ultra Toolkit](./how-to-update-uniq-metadata-using-toolkit.md)
+-   [How to perform advanced actions with Uniqs and Factories](../factory-management/how-to-perform-advanced-actions-with-uniqs-and-factories.md)
+---
+title: 'How to update metadata using the Ultra Toolkit'
+order: 6
+outline: [0, 4]
+---
+
+# How to update metadata using the Ultra Toolkit
+
+An important aspect of the Ultra NFT standard is the ability to update metadata. Game publishers may want to modify a uniq's traits based on in-game events.
+
+For this guide, we will use the uniq factory and uniq token created in the previous steps, utilizing the Ultra Testnet network.
+
+## Prerequisites
+
+-   You must have already created and uploaded the metadata files. Refer to [How to create Uniq Metadata](./how-to-create-uniq-metadata.md) for more information.
+-   You must have already created a uniq factory. Refer to [How to create a Uniq Factory using the Ultra Toolkit](./how-to-create-uniq-factory-using-toolkit.md) for more information.
+-   Your account must have sufficient UOS tokens for transactions and fees. Refer to [Tutorial - Using the Faucet and Buying RAM on Ultra Testnet](../../fundamentals/tutorial-obtain-token-and-purchase-ram.md#obtaining-uos-tokens-using-the-faucet) for more information.
+-   Ensure your account is the uniq factory manager for the uniq factory whose metadata you intend to update, as only the uniq factory manager is authorized to perform metadata related updates.
+
+## Goal
+
+The goal of this guide is to help you understand how you can update the metadata using Ultra Toolkit. This guide is divided into three sections:
+
+1. **Updating Uniq Factory Metadata**: Will walk you through the process of updating metadata for a uniq factory.
+2. **Updating Default Uniq Metadata**: Will walk you through the process of updating metadata for the default uniq.
+3. **Updating Uniq Metadata**: Will walk you through the process of updating metadata for a specific uniq.
+
+## Updating Uniq Factory Metadata
+
+If a content creator re-uploads a new uniq factory metadata, they can use the `setmeta.b` action to update the metadata for the uniq factory. To do so, follow these steps:
+
+1. Login to ultra toolkit using your account.
+2. Navigate to the factory management page by clicking on the `Uniq Actions` from the sidebar, and then clicking on `Factory`.
+3. On the factory page, search for `setmeta` action in the search box, and click on the `Set factory metadata (eosio.nft.ft::setmeta.b)` action to open up the transaction modal.
+
+![](./images/toolkit-factory-actions-tab-setmeta.png)
+
+### Configure `setmeta.b` Action
+
+We will use the `setmeta.b` action to update the metadata for a uniq factory. For more information on the action, refer to [setmeta.b action documentation](../../../blockchain/contracts/nft-contract/nft-actions/setmeta.b.md).
+
+Once you have opened the transaction modal, fill the required fields for the `setmeta.b` action:
+
+1. **Token factory ID**: Required, the ID of the uniq factory for which you want to update the metadata.
+2. **Memo**: Required, enter a text memo for your transaction. For example, `updating uniq factory metadata`.
+3. **Metadata URI**: Required, URI of the new/updated factory metadata JSON file.
+4. **Metadata hash**: Required, SHA256 hash of the new/updated metadata JSON file.
+
+![](./images/toolkit-setmeta-b-tx-form.png)
+
+Once you have inputted all the values, click on the `Send 1 Action` button and it will open up the transaction confirmation modal. You can click on the `Details` button to view the transaction in JSON form. Click on the `Confirm` button to submit your transaction.
+
+![](./images/toolkit-setmeta-b-tx-confirmation.png)
+
+Confirm and sign the transaction using the Ultra Wallet extension.
+
+![](./images/ultra-wallet-sign-setmeta-b-tx.png)
+
+After signing the transaction, you will see a confirmation screen indicating that the transaction was successfully completed.
+
+![](./images/toolkit-tx-success-modal.png)
+
+You have now successfully updated the metadata for a uniq factory.
+
+## Updating Default Uniq Metadata
+
+Default uniq metadata is used as a fallback mechanism whenever there's no metadata available for a uniq. To update the default uniq metadata, follow these steps:
+
+1. Login to ultra toolkit using your account.
+2. Navigate to the factory management page by clicking on the `Uniq Actions` from the sidebar, and then clicking on `Factory`.
+3. On the factory page, search for `setdflttkn` action in the search box, and click on the `Set default token metadata (eosio.nft.ft::setdflttkn)` action to open up the transaction modal.
+
+![](./images/toolkit-factory-actions-tab-setdflttkn.png)
+
+### Configure `setdflttkn` Action
+
+We will use the `setdflttkn` action to update the metadata for a uniq factory. For more information on the action, refer to [setdflttkn action documentation](../../../blockchain/contracts/nft-contract/nft-actions/setdflttkn.md).
+
+Once you have opened the transaction modal, fill the required fields for the `setdflttkn` action:
+
+1. **Token factory ID**: Required, the ID of the uniq factory for which you want to update the default uniq metadata.
+2. **Memo**: Required, enter a text memo for your transaction. For example, `updating default uniq metadata`.
+3. **Metadata URI**: Required, URI of the new/updated default uniq metadata JSON file.
+4. **Metadata hash**: SHA256 hash of the new/updated default uniq metadata JSON file.
+    - If you are using a dynamic metadata URI (e.g., https://developers.ultra.io/uniq-collections/AngryBananas/{serial_number}.json), you should leave this field blank.
+    - If you are using a static metadata URI (e.g., https://developers.ultra.io/uniq-collections/AngryBananas/ffc3121613cc7d52a3525bb68c0948edc469f6f2c16bcb7b6b7fa38f7eaed3cf.json), this field is required.
+
+![](./images/toolkit-setdflttkn-tx-form.png)
+
+Once you have inputted all the values, click on the `Send 1 Action` button and it will open up the transaction confirmation modal. You can click on the `Details` button to view the transaction in JSON form. Click on the `Confirm` button to submit your transaction.
+
+![](./images/toolkit-setdflttkn-tx-confirmation.png)
+
+Confirm and sign the transaction using the Ultra Wallet extension.
+
+![](./images/ultra-wallet-sign-setdflttkn-tx.png)
+
+After signing the transaction, you will see a confirmation screen indicating that the transaction was successfully completed.
+
+![](./images/toolkit-tx-success-modal.png)
+
+You have now successfully updated the default uniq metadata.
+
+## Updating Uniq Metadata
+
+To update the uniq metadata, follow these steps:
+
+1. Login to ultra toolkit using your account.
+2. Navigate to the uniq manager page by clicking on the `Uniq Actions` from the sidebar, and then clicking on `Uniq`.
+3. On the uniq page, search for `settknmeta` action in the search box, and click on the `Set token metadata (eosio.nft.ft::settknmeta)` action to open up the transaction modal.
+
+![](./images/toolkit-uniq-actions-tab-settknmeta.png)
+
+### Configure `settknmeta` Action
+
+We will use the `settknmeta` action to update the metadata for a uniq. For more information on the action, refer to [settknmeta action documentation](../../../blockchain/contracts/nft-contract/nft-actions/settknmeta.md).
+
+Once you have opened the transaction modal, fill the required fields for the `settknmeta` action:
+
+1. **Token ID**: Required, the ID of the uniq for which you want to update the metadata.
+2. **Owner**: Required, the account that owns this uniq.
+3. **Memo**: Required, enter a text memo for your transaction. For example, `updating default uniq metadata`.
+4. **Metadata URI**: Optional, URI of the new/updated uniq metadata JSON file.
+5. **Metadata hash**: Optional, SHA256 hash of the new/updated uniq metadata JSON file.
+
+![](./images/toolkit-settknmeta-tx-form.png)
+
+Once you have inputted all the values, click on the `Send 1 Action` button and it will open up the transaction confirmation modal. You can click on the `Details` button to view the transaction in JSON form. Click on the `Confirm` button to submit your transaction.
+
+![](./images/toolkit-settknmeta-tx-confirmation.png)
+
+Confirm and sign the transaction using the Ultra Wallet extension.
+
+![](./images/ultra-wallet-sign-settknmeta-tx.png)
+
+After signing the transaction, you will see a confirmation screen indicating that the transaction was successfully completed.
+
+![](./images/toolkit-tx-success-modal.png)
+
+You have now successfully updated the metadata for a uniq.
+
+## Disabling Metadata Changes
+
+For certain use cases, it might make sense to make the uniq factory immutable. For such cases, we can use the `lckfactory` action to enable a manager to disable any metadata updates. This can be particularly useful for an NFT art gallery, as it assures users that their artwork will never change.
+
+**Before we proceed, it is important to note that this change is irreversible**.
+
+To disable metadata updates for a uniq factory, follow these steps:
+
+1. Login to ultra toolkit using your account.
+2. Navigate to the factory management page by clicking on the `Uniq Actions` from the sidebar, and then clicking on `Factory`.
+3. On the factory page, search for `lckfactory` action in the search box, and click on the `Lock factory (eosio.nft.ft::lckfactory)` action to open up the transaction modal.
+
+![](./images/toolkit-factory-actions-tab-lckfactory.png)
+
+### Configure `lckfactory` Action
+
+We will use the `lckfactory` action to update the metadata for a uniq factory. For more information on the action, refer to [lckfactory action documentation](../../../blockchain/contracts/nft-contract/nft-actions/lckfactory.md).
+
+Once you have opened the transaction modal, fill the required fields for the `lckfactory` action:
+
+1. **Token factory ID**: Required, the ID of the uniq factory for which you want to disable metadata updates.
+
+![](./images/toolkit-lckfactory-tx-form.png)
+
+Click on the `Send 1 Action` button and it will open up the transaction confirmation modal. You can click on the `Details` button to view the transaction in JSON form. Click on the `Confirm` button to submit your transaction.
+
+![](./images/toolkit-lckfactory-tx-confirmation.png)
+
+Confirm and sign the transaction using the Ultra Wallet extension.
+
+![](./images/ultra-wallet-sign-lckfactory-tx.png)
+
+After signing the transaction, you will see a confirmation screen indicating that the transaction was successfully completed.
+
+![](./images/toolkit-tx-success-modal.png)
+
+You have now successfully disabled metadata updates for the uniq factory. To verify that the uniq factory is locked for metadata changes, attempt to update the factory, default uniq, or uniq metadata for this factory using the aforementioned actions, and the transaction should fail.
+
+## What's next?
+
+After practicing the basic metadata actions, you can move on to advanced actions with Uniqs and Factories:
+
+-   [How to perform advanced actions with Uniqs and Factories](../factory-management/how-to-perform-advanced-actions-with-uniqs-and-factories.md)
+
+---
+title: "How to validate uniq metadata using Ultra Toolkit's Schema Validator"
+order: 3
+outline: [0, 4]
+---
+
+# How to validate uniq metadata using Ultra Toolkit's Schema Validator
+
+Schema validator is a feature of the Ultra Toolkit that helps you to validate your uniq metadata files.
+
+## Prerequisites
+
+-   You must have created uniq metadata files. See [How to create Uniq Metadata](./how-to-create-uniq-metadata.md) for more information.
+
+## Goal
+
+The goal of this tutorial is to help validate your metadata files using Ultra Toolkit's schema validator.
+
+## Accessing the Toolkit
+
+To access the Ultra Toolkit, please visit: https://toolkit.ultra.io
+
+## Schema Validator
+
+Once on the toolkit home page, click on the `Schema Validator` from the sidebar to open the schema validator page.
+
+![](./images/schema-validator-default.png)
+
+Schema validator allows you to validate the metadata files for both; uniq factories and uniqs.
+
+1. To use the validator, simply select the metadata file of your choice.
+2. Specify the schema type; either `Factory` (for uniq factories), or `Uniq` (for default uniq and all other uniqs).
+3. Click on the `Validate` button to validate the metadata file.
+
+If the selected metadata file adheres to the specified metadata schema, you will see a `Valid Schema ✔️` message.
+![](./images/schema-validator-valid-factory.png)
+
+If your metadata file does not comply with the specified schema, you will see an `Invalid Schema ❌` message. This will be followed by a list of errors detailing what is wrong with your metadata file. Review these errors to identify and correct the issues.
+![](./images/schema-validator-invalid-factory.png)
+
+## What's next?
+
+Once you have validated the metadata files for your collection, you can now proceed to create your first uniq factory. Refer to [How to create a Uniq Factory using the Ultra Toolkit](./how-to-create-uniq-factory-using-toolkit.md).
 
 ---
 title: 'Introduction'
@@ -27514,126 +28653,35 @@ order: 1
 outline: [0, 4]
 ---
 
-# Building Uniq Factories
+# Creating Uniq Factories
 
-## Introduction
+We will be walking you through the step by step process of creating your own Uniq Factory on Ultra's blockchain using our very own [Uniq NFT Standard](../../../blockchain/contracts/nft-contract/index.md). For the sake of these guides, we'll be using the Ultra Testnet network.
 
 ![](/images/token-factories/intro.png)
 
-In this guide, we will be walking you through how you can build your own Token Factory on Ultra's networks using our very own [Uniq NFT Standard](../../../blockchain/contracts/nft-contract/index.md). For your first go at it, we'll be using the Testnet.
+## Prerequisites
 
-There are a few discrete steps to get things up and running, and we will walk you through each of them. At the end of the guide, you'll have published your very own Token Factory, and issued your first Uniqs on the Testnet.
+-   A basic understanding of [Uniq Factories and Uniqs](../../uniq-factories/index.md).
+-   You must have created your Ultra Pro Wallet on testnet.. If you need help creating your Ultra Pro Wallet, please refer to [How to create an Ultra Pro Wallet using Ultra Wallet Extension](../../guides/how-to-create-ultra-pro-wallet-using-toolkit.md) tutorial. Once you have created your account, make sure to [get some UOS tokens for use on Testnet](../../fundamentals/tutorial-obtain-token-and-purchase-ram.md#step-3-request-uos-tokens-from-the-faucet). You'll need these to create Uniq Factories and to mint Uniqs.
+
+## Goal
+
+The goal of these guides is to help you create your first Uniq factory and mint your first Uniq.
 
 ## Get Started
 
-1. [Development Environment](./yourdevelopmentenv.md)
-2. [Creating Metadata](./creatingmetadata.md)
-3. [Your First Token Factory](./firsttokenfactory.md)
-4. [Minting Your First Uniq](./mintingyourfirstuniq.md)
----
-title: 'Minting Your First Uniq'
+Here are the steps to get started, and we will guide you through each one. By the end of these guides, you'll have successfully set up your Uniq Factory and issued your first Uniqs on the Testnet network.
 
-order: 6
-outline: [0, 4]
----
-
-# Minting your first Uniq
-
-## Let's Gooooo!
-
-Now that you have your Token Factory up and running, you are free to mint some Uniqs. Exciting times are ahead!
-
-### Token Factory Information
-
-As with the Token Factory, there is some specific data that you must include in the command.
-
--   `<YOUR UNIQ URL>` - The URL of the metadata either as a zip file, or targeting the `X.json` file with a full path
--   `<YOUR META HASH>` - The hash of the uniq, you can find this in `upload.json` in the `factory` block at the top
-
-You can find these in the `upload.json` file and they will look something like this:
-
-![](/images/token-factories/tokens_data.png)
-
-You will also need your `<FACTORY ID>`.
-
-The easiest way to get this information is to:
-
-1. Go to your account on the [Block Explorer](https://explorer.testnet.ultra.io)
-2. Scroll down to the transactions and open the `create` action
-3. On the left, you can see DB Operations
-
-In the DB Operations section you'll see some information. Most pertinent to you is the `UPDATE ROW` which actually holds your Token Factory id.
-
-![](/images/token-factories/db_operation.png)
-
-### Accounts
-
-You'll also, of course, need to input `<YOUR ACCOUNT>` and the `<TARGET ACCOUNT>` which will receive the new Uniq.
-
-### The Issue Action
-
-Once you have the required information, minting is a simple, straightforward transaction via cleos.
-
-```sh
-cleos --url http://ultratest.api.eosnation.io push action eosio.nft.ft issue.b '[
-  {
-    "to": "<TARGET ACCOUNT>",
-    "token_configs": [
-      {
-        "token_factory_id": <FACTORY ID>,
-        "amount": 1,
-        "custom_data": ""
-      }
-    ],
-    "memo": "Your first Uniq!",
-    "authorizer": null,
-    "maximum_uos_payment": null,
-    "token_metadata": [
-      {
-        "meta_uri": "<YOUR UNIQ URI>",
-        "meta_hash":"<YOUR META HASH>"
-      }
-    ]
-  }
-]' -p <YOUR ACCOUNT>
-
-```
-
-Congratulations! You've now minted your first Uniq on Ultra's Testnet!
-
----
-title: 'Development Environment'
-
-order: 2
-outline: [0, 4]
----
-
-# Development Environment
-
-Ultra provides a development enviroment that runs inside of a docker image.
-
-This means that you do not have to compile any software to get your system into a state which you can run the required commands to achieve your goal. Instead, you'll be using our image to run the special software that Ultra uses to process transactions on our networks.
-
-## 1. Docker
-
-You'll be using docker to run the necessary commands. We already have a great guide for how to set this up [that you can refer to](../../../tutorials/docker/getting-started.md).
-
-Once you have Docker installed, the Ultra image downloaded, and you've run the script to enter it, you can continue.
-
-## 2. Setting up your Wallet
-
-Next you will need to set up your local wallet, which will house your private key and allow you to sign transactions on any network. You will have to generate keys locally. These will be used in the next step where you associate those keys with the Testnet account that you will be creating. [A quick guide on how to do this is located here](../../../tutorials/general/basics/creating-a-wallet.md).
-
-## 3. Testnet Account
-
-Lastly, you will need a [Testnet account](https://faucet.testnet.app.ultra.io/) which will be the authorizing account that creates the Token Factory and mints the transactions. While you are creating your account, make sure to get tokens for use on Testnet. You'll need these to create Uniq Factories and Mint tokens.
-
-To set up your account, you can follow [this easy to understand guide](../../../tutorials/general/basics/create-a-testnet-account.md). You will need docker set up to create your keys, so make sure that you've completed the previous step.
+1. [How to create Uniq metadata](./how-to-create-uniq-metadata.md)
+2. [How to validate metadata using Schema Validator](./how-to-validate-uniq-metadata-using-schema-validator-toolkit.md)
+3. [How to create token factory using Ultra Toolkit](./how-to-create-uniq-factory-using-toolkit.md)
+4. [How to mint a Uniq using the Ultra Toolkit](./how-to-mint-uniq-using-toolkit.md)
+5. [How to update Uniq Factory metadata and Uniq metadata using the Ultra Toolkit](./how-to-update-uniq-metadata-using-toolkit.md)
 
 ---
 title: 'Exchange a Uniq Using Smart Contract'
 
-order: 3
+order: 5
 ---
 
 # Exchange a Uniq Using Smart Contract
@@ -27821,7 +28869,7 @@ void ultra_avatar_contract::on_burn(const burn_wrap& param) {
 ---
 title: 'Factory Purchase Options Examples'
 
-order: 2
+order: 4
 ---
 
 
@@ -27829,716 +28877,6 @@ order: 2
 
 Here, we provide some example `cleos` commands to set purchase options and to purchase using created options. JSON data from provided `cleos` commands can be copied and utilized as a payload for the transaction for your API library of choice.
 
--   [setprchsreq.a - set purchase requirement](../../../blockchain/contracts/nft-contract/nft-actions/setprchsreq.a.md)
--   [setprchsreq.b - set purchase requirement](../../../blockchain/contracts/nft-contract/nft-actions/setprchsreq.b.md)
--   [purchase.a - purchase a token](../../../blockchain/contracts/nft-contract/nft-actions/purchase.a.md)
-
-::: info
-Please keep in mind that the factory IDs, token IDs, user group IDs, and account names used throughout this page are not real and must be replaced with the actual data you are interested in.
-:::
-
-::: warning
-Since `setprchsreq.a` action is deprecated, we will use `setprchsreq.b` action in the following examples.
-:::
-
-## Simple UOS/USD pricing
-
-This example utilizes the `price` field to set the price to 50 UOS
-
-::: details setprchsreq.b
-```sh
-cleos push action eosio.nft.ft setprchsreq.b '[
-  {
-    "token_factory_id": 100,
-    "index": 0,
-    "price": "50.00000000 UOS",
-    "purchase_limit": null,
-    "promoter_basis_point": 100,
-    "purchase_option_with_uniqs": null,
-    "sale_shares": [],
-    "maximum_uos_payment": null,
-    "group_restriction": null,
-    "purchase_window_start": null,
-    "purchase_window_end": null,
-    "memo": ""
-  }
-]' -p factory.manager
-```
-:::
-
-To be able to purchase from such factory you utilize `purchase.a` action
-
-::: details purchase.a
-```sh
-cleos push action eosio.nft.ft purchase.a '[
-  {
-    "token_factory_id": 100,
-    "index": 0,
-    "max_price": "100.00000000 UOS",
-    "buyer": "alice",
-    "receiver": "alice",
-    "promoter_id": null,
-    "user_uniqs": null,
-    "memo": ""
-  }
-]' -p alice
-```
-:::
-
-This example utilizes the `price` field to set the price to 5 USD
-
-::: details setprchsreq.b
-```sh
-cleos push action eosio.nft.ft setprchsreq.b '[
-  {
-    "token_factory_id": 100,
-    "index": 1,
-    "price": "5.00000000 USD",
-    "purchase_limit": null,
-    "promoter_basis_point": 100,
-    "purchase_option_with_uniqs": null,
-    "sale_shares": [],
-    "maximum_uos_payment": null,
-    "group_restriction": null,
-    "purchase_window_start": null,
-    "purchase_window_end": null,
-    "memo": ""
-  }
-]' -p factory.manager
-```
-:::
-
-When purchasing using the option that has USD pricing you still provide `max_price` in UOS. The conversion from the USD price into appropriate UOS price will be done automatically.
-
-::: details purchase.a
-```sh
-cleos push action eosio.nft.ft purchase.a '[
-  {
-    "token_factory_id": 100,
-    "index": 1,
-    "max_price": "100.00000000 UOS",
-    "buyer": "alice",
-    "receiver": "alice",
-    "promoter_id": null,
-    "user_uniqs": null,
-    "memo": ""
-  }
-]' -p alice
-```
-:::
-
-## Limited purchase quantity
-
-Setting `purchase_limit` is optional, and it allows to restrict the total number of tokens that can be purchased using this option. The limit applies to the single option itself and not the accounts that purchase from your factory. So if you set the `purchase_limit` to 10 it means that one account can purchase 10 tokens or five accounts can purchase 2 tokens or ten accounts can purchase 1 token and anything in between.
-
-After exceeding the `purchase_limit`, no one will be able to use this specific purchase option and you either need to create a new purchase option or update an existing one to increase the `purchase_limit` (history for the number of Uniqs purchased is preserved).
-
-::: details setprchsreq.b
-```sh
-cleos push action eosio.nft.ft setprchsreq.b '[
-  {
-    "token_factory_id": 100,
-    "index": 0,
-    "price": "50.00000000 UOS",
-    "purchase_limit": 10,
-    "promoter_basis_point": 100,
-    "purchase_option_with_uniqs": null,
-    "sale_shares": [],
-    "maximum_uos_payment": null,
-    "group_restriction": null,
-    "purchase_window_start": null,
-    "purchase_window_end": null,
-    "memo": ""
-  }
-]' -p factory.manager
-```
-:::
-
-## Exclusive access to purchase option via Uniq ownership
-
-`purchase_option_with_uniqs` is a more advanced use case where you are able to link the purchase option to other factories. The example below requires the user to own 1 Uniq from factory with ID 42. If the user owns it then he will be able to use this purchase option, the token from factory 42 will be left untouched. Note how `strategy` is set to 0 ([0 means "check"](../../../blockchain/contracts/nft-contract/nft-actions/purchase.a.md#supplying-uniqs-for-purchases)).
-
-::: details setprchsreq.b
-```sh
-cleos push action eosio.nft.ft setprchsreq.b '[
-  {
-    "token_factory_id": 100,
-    "index": 0,
-    "price": "50.00000000 UOS",
-    "purchase_limit": null,
-    "promoter_basis_point": 100,
-    "purchase_option_with_uniqs": {
-        "transfer_tokens_receiver_account": null,
-        "factories": [{
-            "token_factory_id": 42,
-            "count": 1,
-            "strategy": 0
-        }]
-    },
-    "sale_shares": [],
-    "maximum_uos_payment": null,
-    "group_restriction": null,
-    "purchase_window_start": null,
-    "purchase_window_end": null,
-    "memo": ""
-  }
-]' -p factory.manager
-```
-:::
-
-When purchasing, the transaction needs to specify which token exactly the user shows as a proof of satisfying condition of ownership for the token from factory 42. In this case, assume token 77 was minted from factory 42.
-
-::: details purchase.a
-```sh
-cleos push action eosio.nft.ft purchase.a '[
-  {
-    "token_factory_id": 100,
-    "index": 0,
-    "max_price": "100.00000000 UOS",
-    "buyer": "alice",
-    "receiver": "alice",
-    "promoter_id": null,
-    "user_uniqs": {
-      "tokens": [{
-        "token_id": 77,
-        "strategy": 0
-      }]
-    },
-    "memo": ""
-  }
-]' -p alice
-```
-:::
-
-## Exclusive access to purchase option via user groups
-
-Alternative condition for allowing direct purchases from the factory can be the usage of user groups ([covered here](../../../blockchain/contracts/user-group-contract/index.md)). In this case user must belong to certain group(s) or not be a part of a specific group(s).
-
-Example below covers the simplest case where a user must belong to the user groups with IDs 11 and 12 at the same time. For more advanced usage, reference the action documentation: [setprchsreq.b user groups support](../../../blockchain/contracts/nft-contract/nft-actions/setprchsreq.b.md#example-usage-of-the-parameter-group-restriction)
-
-::: details setprchsreq.b
-```sh
-cleos push action eosio.nft.ft setprchsreq.b '[
-  {
-    "token_factory_id": 100,
-    "index": 0,
-    "price": "50.00000000 UOS",
-    "purchase_limit": null,
-    "promoter_basis_point": 100,
-    "purchase_option_with_uniqs": null,
-    "sale_shares": [],
-    "maximum_uos_payment": null,
-    "group_restriction": "11&12",
-    "purchase_window_start": null,
-    "purchase_window_end": null,
-    "memo": ""
-  }
-]' -p factory.manager
-```
-:::
-
-When purchasing no extra input is required from the user, the verification of group's membership will be verified by the smart contract automatically
-
-::: details purchase.a
-```sh
-cleos push action eosio.nft.ft purchase.a '[
-  {
-    "token_factory_id": 100,
-    "index": 0,
-    "max_price": "100.00000000 UOS",
-    "buyer": "alice",
-    "receiver": "alice",
-    "promoter_id": null,
-    "user_uniqs": null,
-    "memo": ""
-  }
-]' -p alice
-```
-:::
-
-## Using purchase option for swapping
-
-"Swapping" in this case implies the process where the user loses ownership of his Uniq, the Uniq gets destroyed in the process and the user gets a new Uniq from the factory instead. The example below requires the user to give up two Uniqs: one from factory 43 and one from factory 44, no additional UOS payment needed. Note how `strategy` is set to 1 ([1 means "burn"](../../../blockchain/contracts/nft-contract/nft-actions/purchase.a.md#supplying-uniqs-for-purchases)).
-
-::: details setprchsreq.b
-```sh
-cleos push action eosio.nft.ft setprchsreq.b '[
-  {
-    "token_factory_id": 100,
-    "index": 0,
-    "price": "0.00000000 UOS",
-    "purchase_limit": null,
-    "promoter_basis_point": 100,
-    "purchase_option_with_uniqs": {
-        "transfer_tokens_receiver_account": null,
-        "factories": [{
-            "token_factory_id": 43,
-            "count": 1,
-            "strategy": 1
-        },{
-            "token_factory_id": 44,
-            "count": 1,
-            "strategy": 1
-        }]
-    },
-    "sale_shares": [],
-    "maximum_uos_payment": null,
-    "group_restriction": null,
-    "purchase_window_start": null,
-    "purchase_window_end": null,
-    "memo": ""
-  }
-]' -p factory.manager
-```
-:::
-
-Purchasing from such a purchase option requires the user to specify which Uniqs the user is willing to be given up. Here, assumes token 123 is from factory 43 and token 124 is from factory 44. Note how the `strategy` matches the value of the purchase option.
-
-::: details purchase.a
-```sh
-cleos push action eosio.nft.ft purchase.a '[
-  {
-    "token_factory_id": 100,
-    "index": 0,
-    "max_price": "0.00000000 UOS",
-    "buyer": "alice",
-    "receiver": "alice",
-    "promoter_id": null,
-    "user_uniqs": {
-      "tokens": [{
-        "token_id": 123,
-        "strategy": 1
-      },{
-        "token_id": 124,
-        "strategy": 1
-      }]
-    },
-    "memo": ""
-  }
-]' -p alice
-```
-:::
-
-## Using purchase option for exchange
-
-Exchanging a Uniq is similar to swapping it but this time instead of a user losing access to his Uniq and burning a Uniq it will simply be transferred to a dedicated account. This may be useful in case Uniqs have valuable metadata attached to them, and you will later utilize those Uniqs in some other scenario. The example below configures the receiver of transferred Uniqs as `1aa2aa3aa4aa` account, and it also must be a Uniq from factory 45 to be able to use this purchase option. Specifying `transfer_tokens_receiver_account` is mandatory in such scenario. Note how `strategy` is set to 2 ([2 means "transfer"](../../../blockchain/contracts/nft-contract/nft-actions/purchase.a.md#supplying-uniqs-for-purchases)).
-
-::: details setprchsreq.b
-```sh
-cleos push action eosio.nft.ft setprchsreq.b '[
-  {
-    "token_factory_id": 100,
-    "index": 0,
-    "price": "0.00000000 UOS",
-    "purchase_limit": null,
-    "promoter_basis_point": 100,
-    "purchase_option_with_uniqs": {
-        "transfer_tokens_receiver_account": "1aa2aa3aa4aa",
-        "factories": [{
-            "token_factory_id": 45,
-            "count": 1,
-            "strategy": 2
-        }]
-    },
-    "sale_shares": [],
-    "maximum_uos_payment": null,
-    "group_restriction": null,
-    "purchase_window_start": null,
-    "purchase_window_end": null,
-    "memo": ""
-  }
-]' -p factory.manager
-```
-:::
-
-Purchasing using the above option is similar to previous examples. User needs to specify which Uniq will be used during the purchase and this Uniq will be transferred to `1aa2aa3aa4aa` at the end. The `strategy`, again, should match the `strategy` specified in the purchase option itself.
-
-::: details purchase.a
-```sh
-cleos push action eosio.nft.ft purchase.a '[
-  {
-    "token_factory_id": 100,
-    "index": 0,
-    "max_price": "0.00000000 UOS",
-    "buyer": "alice",
-    "receiver": "alice",
-    "promoter_id": null,
-    "user_uniqs": {
-      "tokens": [{
-        "token_id": 125,
-        "strategy": 2
-      }]
-    },
-    "memo": ""
-  }
-]' -p alice
-```
-:::
-
----
-title: 'Factory Purchase Options Examples'
-
-order: 2
----
-
-
-# Factory Purchase Options Examples
-
-Here, we provide some example `cleos` commands to set purchase options and to purchase using created options. JSON data from provided `cleos` commands can be copied and utilized as a payload for the transaction for your API library of choice.
-
--   [setprchsreq.a - set purchase requirement](../../../blockchain/contracts/nft-contract/nft-actions/setprchsreq.a.md)
--   [purchase.a - purchase a token](../../../blockchain/contracts/nft-contract/nft-actions/purchase.a.md)
-
-::: info
-Please keep in mind that the factory IDs, token IDs, user group IDs, and account names used throughout this page are not real and must be replaced with the actual data you are interested in.
-:::
-
-## Simple UOS/USD pricing
-
-This example utilizes the `price` field to set the price to 50 UOS
-
-::: details setprchsreq.a
-```sh
-cleos push action eosio.nft.ft setprchsreq.a '[
-  {
-    "token_factory_id": 100,
-    "index": 0,
-    "price": "50.00000000 UOS",
-    "purchase_limit": null,
-    "promoter_basis_point": 100,
-    "purchase_option_with_uniqs": null,
-    "sale_shares": [],
-    "maximum_uos_payment": null,
-    "group_restriction": null,
-    "purchase_window_start": null,
-    "purchase_window_end": null,
-    "memo": ""
-  }
-]' -p factory.manager
-```
-:::
-
-To be able to purchase from such factory you utilize `purchase.a` action
-
-::: details purchase.a
-```sh
-cleos push action eosio.nft.ft purchase.a '[
-  {
-    "token_factory_id": 100,
-    "index": 0,
-    "max_price": "100.00000000 UOS",
-    "buyer": "alice",
-    "receiver": "alice",
-    "promoter_id": null,
-    "user_uniqs": null,
-    "memo": ""
-  }
-]' -p alice
-```
-:::
-
-This example utilizes the `price` field to set the price to 5 USD
-
-::: details setprchsreq.a
-```sh
-cleos push action eosio.nft.ft setprchsreq.a '[
-  {
-    "token_factory_id": 100,
-    "index": 1,
-    "price": "5.00000000 USD",
-    "purchase_limit": null,
-    "promoter_basis_point": 100,
-    "purchase_option_with_uniqs": null,
-    "sale_shares": [],
-    "maximum_uos_payment": null,
-    "group_restriction": null,
-    "purchase_window_start": null,
-    "purchase_window_end": null,
-    "memo": ""
-  }
-]' -p factory.manager
-```
-:::
-
-When purchasing using the option that has USD pricing you still provide `max_price` in UOS. The conversion from the USD price into appropriate UOS price will be done automatically.
-
-::: details purchase.a
-```sh
-cleos push action eosio.nft.ft purchase.a '[
-  {
-    "token_factory_id": 100,
-    "index": 1,
-    "max_price": "100.00000000 UOS",
-    "buyer": "alice",
-    "receiver": "alice",
-    "promoter_id": null,
-    "user_uniqs": null,
-    "memo": ""
-  }
-]' -p alice
-```
-:::
-
-## Limited purchase quantity
-
-Setting `purchase_limit` is optional, and it allows to restrict the total number of tokens that can be purchased using this option. The limit applies to the single option itself and not the accounts that purchase from your factory. So if you set the `purchase_limit` to 10 it means that one account can purchase 10 tokens or five accounts can purchase 2 tokens or ten accounts can purchase 1 token and anything in between.
-
-After exceeding the `purchase_limit`, no one will be able to use this specific purchase option and you either need to create a new purchase option or update an existing one to increase the `purchase_limit` (history for the number of Uniqs purchased is preserved).
-
-::: details setprchsreq.a
-```sh
-cleos push action eosio.nft.ft setprchsreq.a '[
-  {
-    "token_factory_id": 100,
-    "index": 0,
-    "price": "50.00000000 UOS",
-    "purchase_limit": 10,
-    "promoter_basis_point": 100,
-    "purchase_option_with_uniqs": null,
-    "sale_shares": [],
-    "maximum_uos_payment": null,
-    "group_restriction": null,
-    "purchase_window_start": null,
-    "purchase_window_end": null,
-    "memo": ""
-  }
-]' -p factory.manager
-```
-:::
-
-## Exclusive access to purchase option via Uniq ownership
-
-`purchase_option_with_uniqs` is a more advanced use case where you are able to link the purchase option to other factories. The example below requires the user to own 1 Uniq from factory with ID 42. If the user owns it then he will be able to use this purchase option, the token from factory 42 will be left untouched. Note how `strategy` is set to 0 ([0 means "check"](../../../blockchain/contracts/nft-contract/nft-actions/purchase.a.md#supplying-uniqs-for-purchases)).
-
-::: details setprchsreq.a
-```sh
-cleos push action eosio.nft.ft setprchsreq.a '[
-  {
-    "token_factory_id": 100,
-    "index": 0,
-    "price": "50.00000000 UOS",
-    "purchase_limit": null,
-    "promoter_basis_point": 100,
-    "purchase_option_with_uniqs": {
-        "transfer_tokens_receiver_account": null,
-        "factories": [{
-            "token_factory_id": 42,
-            "count": 1,
-            "strategy": 0
-        }]
-    },
-    "sale_shares": [],
-    "maximum_uos_payment": null,
-    "group_restriction": null,
-    "purchase_window_start": null,
-    "purchase_window_end": null,
-    "memo": ""
-  }
-]' -p factory.manager
-```
-:::
-
-When purchasing, the transaction needs to specify which token exactly the user shows as a proof of satisfying condition of ownership for the token from factory 42. In this case, assume token 77 was minted from factory 42.
-
-::: details purchase.a
-```sh
-cleos push action eosio.nft.ft purchase.a '[
-  {
-    "token_factory_id": 100,
-    "index": 0,
-    "max_price": "100.00000000 UOS",
-    "buyer": "alice",
-    "receiver": "alice",
-    "promoter_id": null,
-    "user_uniqs": {
-      "tokens": [{
-        "token_id": 77,
-        "strategy": 0
-      }]
-    },
-    "memo": ""
-  }
-]' -p alice
-```
-:::
-
-## Exclusive access to purchase option via user groups
-
-Alternative condition for allowing direct purchases from the factory can be the usage of user groups ([covered here](../../../blockchain/contracts/user-group-contract/index.md)). In this case user must belong to certain group(s) or not be a part of a specific group(s).
-
-Example below covers the simplest case where a user must belong to the user groups with IDs 11 and 12 at the same time. For more advanced usage, reference the action documentation: [setprchsreq.a user groups support](../../../blockchain/contracts/nft-contract/nft-actions/setprchsreq.a.md#example-usage-of-the-parameter-group-restriction)
-
-::: details setprchsreq.a
-```sh
-cleos push action eosio.nft.ft setprchsreq.a '[
-  {
-    "token_factory_id": 100,
-    "index": 0,
-    "price": "50.00000000 UOS",
-    "purchase_limit": null,
-    "promoter_basis_point": 100,
-    "purchase_option_with_uniqs": null,
-    "sale_shares": [],
-    "maximum_uos_payment": null,
-    "group_restriction": [11, 12],
-    "purchase_window_start": null,
-    "purchase_window_end": null,
-    "memo": ""
-  }
-]' -p factory.manager
-```
-:::
-
-When purchasing no extra input is required from the user, the verification of group's membership will be verified by the smart contract automatically
-
-::: details purchase.a
-```sh
-cleos push action eosio.nft.ft purchase.a '[
-  {
-    "token_factory_id": 100,
-    "index": 0,
-    "max_price": "100.00000000 UOS",
-    "buyer": "alice",
-    "receiver": "alice",
-    "promoter_id": null,
-    "user_uniqs": null,
-    "memo": ""
-  }
-]' -p alice
-```
-:::
-
-## Using purchase option for swapping
-
-"Swapping" in this case implies the process where the user loses ownership of his Uniq, the Uniq gets destroyed in the process and the user gets a new Uniq from the factory instead. The example below requires the user to give up two Uniqs: one from factory 43 and one from factory 44, no additional UOS payment needed. Note how `strategy` is set to 1 ([1 means "burn"](../../../blockchain/contracts/nft-contract/nft-actions/purchase.a.md#supplying-uniqs-for-purchases)).
-
-::: details setprchsreq.a
-```sh
-cleos push action eosio.nft.ft setprchsreq.a '[
-  {
-    "token_factory_id": 100,
-    "index": 0,
-    "price": "0.00000000 UOS",
-    "purchase_limit": null,
-    "promoter_basis_point": 100,
-    "purchase_option_with_uniqs": {
-        "transfer_tokens_receiver_account": null,
-        "factories": [{
-            "token_factory_id": 43,
-            "count": 1,
-            "strategy": 1
-        },{
-            "token_factory_id": 44,
-            "count": 1,
-            "strategy": 1
-        }]
-    },
-    "sale_shares": [],
-    "maximum_uos_payment": null,
-    "group_restriction": null,
-    "purchase_window_start": null,
-    "purchase_window_end": null,
-    "memo": ""
-  }
-]' -p factory.manager
-```
-:::
-
-Purchasing from such a purchase option requires the user to specify which Uniqs the user is willing to be given up. Here, assumes token 123 is from factory 43 and token 124 is from factory 44. Note how the `strategy` matches the value of the purchase option.
-
-::: details purchase.a
-```sh
-cleos push action eosio.nft.ft purchase.a '[
-  {
-    "token_factory_id": 100,
-    "index": 0,
-    "max_price": "0.00000000 UOS",
-    "buyer": "alice",
-    "receiver": "alice",
-    "promoter_id": null,
-    "user_uniqs": {
-      "tokens": [{
-        "token_id": 123,
-        "strategy": 1
-      },{
-        "token_id": 124,
-        "strategy": 1
-      }]
-    },
-    "memo": ""
-  }
-]' -p alice
-```
-:::
-
-## Using purchase option for exchange
-
-Exchanging a Uniq is similar to swapping it but this time instead of a user losing access to his Uniq and burning a Uniq it will simply be transferred to a dedicated account. This may be useful in case Uniqs have valuable metadata attached to them, and you will later utilize those Uniqs in some other scenario. The example below configures the receiver of transferred Uniqs as `1aa2aa3aa4aa` account, and it also must be a Uniq from factory 45 to be able to use this purchase option. Specifying `transfer_tokens_receiver_account` is mandatory in such scenario. Note how `strategy` is set to 2 ([2 means "transfer"](../../../blockchain/contracts/nft-contract/nft-actions/purchase.a.md#supplying-uniqs-for-purchases)).
-
-::: details setprchsreq.a
-```sh
-cleos push action eosio.nft.ft setprchsreq.a '[
-  {
-    "token_factory_id": 100,
-    "index": 0,
-    "price": "0.00000000 UOS",
-    "purchase_limit": null,
-    "promoter_basis_point": 100,
-    "purchase_option_with_uniqs": {
-        "transfer_tokens_receiver_account": "1aa2aa3aa4aa",
-        "factories": [{
-            "token_factory_id": 45,
-            "count": 1,
-            "strategy": 2
-        }]
-    },
-    "sale_shares": [],
-    "maximum_uos_payment": null,
-    "group_restriction": null,
-    "purchase_window_start": null,
-    "purchase_window_end": null,
-    "memo": ""
-  }
-]' -p factory.manager
-```
-:::
-
-Purchasing using the above option is similar to previous examples. User needs to specify which Uniq will be used during the purchase and this Uniq will be transferred to `1aa2aa3aa4aa` at the end. The `strategy`, again, should match the `strategy` specified in the purchase option itself.
-
-::: details purchase.a
-```sh
-cleos push action eosio.nft.ft purchase.a '[
-  {
-    "token_factory_id": 100,
-    "index": 0,
-    "max_price": "0.00000000 UOS",
-    "buyer": "alice",
-    "receiver": "alice",
-    "promoter_id": null,
-    "user_uniqs": {
-      "tokens": [{
-        "token_id": 125,
-        "strategy": 2
-      }]
-    },
-    "memo": ""
-  }
-]' -p alice
-```
-:::
-
----
-title: 'Factory Purchase Options Examples'
-
-order: 2
----
-
-
-# Factory Purchase Options Examples
-
-Here, we provide some example `cleos` commands to set purchase options and to purchase using created options. JSON data from provided `cleos` commands can be copied and utilized as a payload for the transaction for your API library of choice.
-
--   [setprchsreq.a - set purchase requirement](../../../blockchain/contracts/nft-contract/nft-actions/setprchsreq.a.md)
 -   [setprchsreq.b - set purchase requirement](../../../blockchain/contracts/nft-contract/nft-actions/setprchsreq.b.md)
 -   [purchase.a - purchase a token](../../../blockchain/contracts/nft-contract/nft-actions/purchase.a.md)
 
@@ -28887,7 +29225,7 @@ cleos push action eosio.nft.ft purchase.a '[
 ---
 title: 'Factory Purchase Options'
 
-order: 1
+order: 3
 ---
 
 
@@ -28897,7 +29235,6 @@ order: 1
 
 First-hand factory purchase options allow users to receive Uniqs from the factory directly without requiring you to manually issue Uniqs to the users. Various configuration options can be set when creating the purchase option for your factory, and in addition to that each factory can have multiple purchase options available. The usage of the actions to create and utilize purchase options is provided below.
 
--   [setprchsreq.a - set purchase requirement](../../../blockchain/contracts/nft-contract/nft-actions/setprchsreq.a.md)
 -   [setprchsreq.b - set purchase requirement](../../../blockchain/contracts/nft-contract/nft-actions/setprchsreq.b.md)
 -   [purchase.a - purchase a token](../../../blockchain/contracts/nft-contract/nft-actions/purchase.a.md)
 
@@ -28926,117 +29263,284 @@ There are various use cases that are covered by the first-hand purchase feature.
 
 ### First-hand purchase directly from Uniq factory
 
-All use cases above are accessible using the `setprchsreq.a`/`setprchsreq.b` action and examples are provided in the following page: [factory purchase option examples](./factory-purchase-options-examples.md)
+All use cases above are accessible using the `setprchsreq.b` action and examples are provided in the following page: [factory purchase option examples](./factory-purchase-options-examples.md)
 
 ### Swap Uniqs
 
 In certain situations you may need a more granular condition set which is not provided by the first-hand purchase feature. Since the range of possible conditions you may desire is vast we only limited the feature to the most common ones. For any more advanced usage you should consider utilizing a smart contract instead.
 
-Refer to [this page](./exchange-a-uniq-using-smart-contract.md) for more in-depth explanation of the smart contract usage
+The example of a swap that uses `setprchsreq.b` action is provided [here](./factory-purchase-options-examples.md#using-purchase-option-for-swapping)
+
+Refer to [this page](./exchange-a-uniq-using-smart-contract.md) for more in-depth explanation of the smart contract usage.
 
 ---
-title: 'Factory Purchase Options'
+title: 'How to add a first-hand purchase options using Ultra Toolkit'
+order: 2
+outline: [0, 4]
+---
 
+# How to add a first-hand purchase options using Ultra Toolkit
+
+Besides directly minting Uniqs or assigning authorized minters, it may be desired to allow users to directly purchase Uniqs from your factory. This can be achieved using the first-hand purchase feature which will be covered in this guide.
+
+## Prerequisites
+
+-   Created a Uniq Factory. Follow the [Factory creation guide](../creating-uniq-factories/how-to-create-uniq-metadata.md) for details.
+-   Your account must have sufficient UOS tokens for transactions and fees. If you don't have tokens, see [how to use Faucet](../../fundamentals/tutorial-obtain-token-and-purchase-ram.md) for Testnet or [how to buy UOS](../../guides/how-to-buy-uos.md) for Mainnet.
+- A developer account on the Ultra Testnet or Mainnet and to be logged into the Ultra Toolkit. If you don't have it, please follow our previous tutorial: [Tutorial - Log in to the Ultra Toolkit](../../fundamentals/tutorial-login-to-toolkit.md).
+
+## Goal
+
+The goal of this guide is to demonstrate the the process of adding and removing direct purchase options for your Factory.
+
+## How to add first-hand purchase to your factory
+
+First-hand purchase is a feature of NFT contract that allows factory managers to add a purchase option so that users can directly mint Uniqs themselves while paying some UOS or USD fee, or by potentially burning or transferring Uniqs. You can also require user to own some specific Uniq in order to use the purchase option.
+
+You can see the list of potential use cases of this feature on the dedicated [Factory Purchase Options](../factory-management/factory-purchase-options.md) page.
+
+To create a simple purchase option first navigate to [Factory management actions](https://toolkit.ultra.io/factoryManagement) and search for `setprchsreq`.
+
+![](./images/first-hand-purchase-search-setprchsreq.png)
+
+After finding it, select `Set first-hand purchase requirement (eosio.nft.ft::setprchsreq.b)` action.
+
+There are multiple fields, here we will provide a short breakdown for each of them. For more details, refer to [action documentation](../../../blockchain/contracts/nft-contract/nft-actions/setprchsreq.b.md).
+
+- **Token factory ID** - The ID of the token factory you manage and want to modify. You must be a manager of that factory
+- **Purchase option index** - A number that will let you identify the purchase option, in case there are multiple options per factory. It can be any positive number you want, we advise you to start from 0 and increase it by one for any new purchase option you add. Note that if you set the purchase requirement with an existing index then it will overwrite it.
+- **Purchase price** - Required payment in UOS or USD (will be converted to UOS at the time of purchase) to be able to purchase a Uniq. It can also be set to 0 but only if the `Purchase option with Uniqs` is set.
+- **Purchase limit** - Dictates the maximum number of Uniqs that can be bought using this option specifically. The limit is not shared between the options. If you need to have a total cap then you better manage it though the minting limit of the factory. Optional, can leave it empty.
+- **Promoter basis point** - A share of UOS that a promoter will get at the time of purchase, specified in basis points. Must be at least 200 (which is equal to 2%).
+- **Purchase option with Uniqs** - Allows you to specify the price for this purchase option using Uniqs from other factories or to require the buyer to own Uniqs from specific factories. This field is covered in more detail in the later example in this guide.
+- **Sale shares** - Specifies the list of accounts who will get a share of UOS from the purchase done using this purchase option. The `Basis points` field determines how much the account will get, specified in basis points (1 point = 0.01%). Optional, can leave it empty.
+- **Maximum UOS payment** - The maximum amount of UOS you are ok to pay to create the purchase option. The payment is only used to cover RAM costs and is predictable. Optional, can leave it empty.
+- **Group restriction** - Allows you to specify user groups who are able or not able to use this purchase option. Refer to [action documentation](../../../blockchain/contracts/nft-contract/nft-actions/setprchsreq.b.md) for a deeper explanation on how to use the user group restriction. Optional, can leave it empty.
+- **Purchase window start** - Makes it so the purchase option is only available starting at some point in time in the format of `2021-05-01T00:00:00`. Optional, can leave it empty.
+- **Purchase window end** - Makes it so the purchase option is only available until some point in time in the format of `2021-05-01T00:00:00`. Optional, can leave it empty.
+- **Memo** - Simple text message that can be used for various purposes. Does not affect the result of the transaction. Optional, can leave it empty.
+
+![](./images/first-hand-purchase-simple-UOS-price.png)
+
+Click on `Send 1 Action`, review the details, and confirm your transaction.
+
+You can now navigate to [Factory explorer](https://toolkit.ultra.io/uniqFactory), enter your Factory ID. After scrolling down, you will see the newly added purchase option.
+
+![](./images/first-hand-purchase-simple-UOS-price-result.png)
+
+## How to buy a Uniq using a first-hand purchase option
+
+To purchase a Uniq directly using the new purchase option navigate to [Factory management actions](https://toolkit.ultra.io/factoryManagement).
+
+Search for `purchase` and select `Purchase Uniqs directly (eosio.nft.ft::purchase.a)`.
+
+![](./images/first-hand-purchase-search-purchase.png)
+
+Now you need to fill the action form. There are multiple fields that you need to fill and here we will provide a short breakdown for each one of them.
+
+- **Token factory ID** - The ID of the factory from which you want to purchase a Uniq.
+- **Index** - Purchase option index that was specified in `setprchsreq.b` action.
+- **Maximum UOS payment** - Maximum amount of UOS that you are willing to use for this purchase. It must be at least equal to the current price of the purchase option converted to UOS (in case it is originally specified in USD). You can put a larger value here but you will not be charged more than the current price at the time the transaction is executed. If the price of the purchase option is already in UOS then you can use the same value here.
+- **Buyer** - The account that signs a transaction and who will pay the required amount of UOS and, if required, the Uniqs needed for this purchase option.
+- **Receiver** - The account that will get the Uniq after the purchase is done. It can be the same as the `Buyer` in most cases.
+- **Promoter** - The account that will get a share of UOS from this purchase. If you are building a marketplace you would want to specify your account as a promoter to receive a share of UOS from each purchase. If not specified then Ultra will be used as a promoter.
+- **Provided Uniqs** - The list of Uniqs that you want to check, burn, or transfer. This is required if the purchase option specifies `Purchase option with Uniqs`. The example on how to fill this field will be provided later in this guide.
+- **Memo** - Simple text message that can be used for various purposes. Does not affect the result of the transaction. Optional, can leave it empty.
+
+For more details see the [action documentation](../../../blockchain/contracts/nft-contract/nft-actions/purchase.a.md).
+
+![](./images/first-hand-purchase-purchase-simple-UOS-price.png)
+
+After you have filled the form, click on `Send 1 Action`, review the details, and confirm the transaction.
+
+Now you should be able to navigate to your inventory (either click on the `Inventory` on the home page of the Toolkit https://toolkit.ultra.io/ or go to https://toolkit.ultra.io/user and enter desired account name manually).
+
+You should be able to scroll down and see the list of Uniqs the account has. Note that it may take a minute for Ultra API to update and show your Uniq.
+
+![](./images/first-hand-purchase-Uniq-in-inventory.png)
+
+## How to set first-hand purchase requirement with a price in Uniqs
+
+We will now cover the usage of `Purchase option with Uniqs` when creating a purchase option. This option allows you to require a payment to be done using Uniqs from other factories or to simply require a user to own a Uniq from a specific factory.
+
+First, navigate to [Factory management actions](https://toolkit.ultra.io/factoryManagement), search again for `setprchsreq`, and select the `Set first-hand purchase requirement (eosio.nft.ft::setprchsreq.b)` action.
+
+To specify the price in Uniqs you use the `Purchase option with Uniqs` field. You can add multiple entries to this field, each field corresponds to a single factory. Here is a breakdown for each of the fields:
+
+- **Transfer tokens receiver account** - The account that will receive the Uniqs from the factories that use the strategy of 2 (transfer). This field is mandatory to specify if any of the factories use the strategy of 2 (transfer).
+- **Required factories** - The list of factories required for this purchase option. Each one of them has the following fields:
+    - **Token factory ID** - The ID of the factory that is required for this purchase option.
+    - **Count** - How many Uniqs are required from the specified factory. Note that there is no way to specify any properties of the required Uniq, as long as it is from required factory it will work.
+    - **Strategy** - There are 3 ways you can require Uniqs within your purchase option:
+        - Check if account owns a Uniq from a specific factory (strategy 0)
+        - Burn required Uniqs (strategy 1)
+        - Transfer a Uniq from the owner to the account specified in `Transfer tokens receiver account` (strategy 2)
+
+For more details see the [action documentation](../../../blockchain/contracts/nft-contract/nft-actions/setprchsreq.b.md).
+
+In the following example we will configure a purchase option to burn a single Uniq in order to mint another one. This effectively swaps user's Uniq from one to another. The price will be set to 0 UOS so the only requirement is to have a Uniq from the specified factory.
+
+This effectively achieves a swap mechanism where you "swap" one Uniq which you have for another one from the same or different factory and, potentially, a different metadata.
+
+If you want to try and do the same you need to have a second factory or use the same one you already have. Note that if you reuse the same factory which does not have variants then it is effectively a useless operation as you will get a Uniq identical to the one you have burned.
+
+![](./images/first-hand-purchase-price-in-Uniqs.png)
+
+After filling out the form, click on `Send 1 Action`, review the details, and confirm the transaction.
+
+You can now navigate to [Factory explorer](https://toolkit.ultra.io/uniqFactory), enter your Factory ID, and scroll down to see the new purchase option created.
+
+![](./images/first-hand-purchase-price-in-Uniqs-result.png)
+
+## How to buy a Uniq using a first-hand purchase option with price in Uniqs
+
+The process of purchasing Uniq using the purchase option with Uniqs requirement is similar, but requires you to fill the `Provided Uniqs field`.
+
+To do so, first navigate to [Factory management actions](https://toolkit.ultra.io/factoryManagement), and search again for `purchase` and select `Purchase Uniqs directly (eosio.nft.ft::purchase.a)`.
+
+If the purchase option requires Uniqs from other factories then the account must have those Uniqs in its inventory. If you need to mint this Uniq then either refer to a [How to mint a Uniq using the Ultra Toolkit](../creating-uniq-factories/how-to-mint-uniq-using-toolkit.md) guide or add add a simple first-hand purchase option with UOS price to this factory and purchase it, as was described in this guide.
+
+Here we minted a Uniq from factory 4030, which was specified in the previous step as a requirement for the purchase option with index 1.
+
+![](./images/first-hand-purchase-required-Uniq-to-burn.png)
+
+Once you have the Uniq from the factory you specified in the purchase requirement, you will need to fill the `Provided user Uniqs` field.
+
+- **Uniqs** - The list of Uniqs you provide to satisfy the purchase requirement. Note that the number of Uniqs should match the sum of all counts specified in purchase requirement. Providing more Uniqs will result in error.
+    - **Uniq ID** - The ID of the Uniq you provide. It must be a Uniq the `Buyer` account owns.
+    - **Strategy** - Determines what will happen to the Uniq and it must be identical to the one specified in the purchase requirement. This ensures the fact that you agree that this Uniq will be checked, burned, or transferred.
+
+In this example we only need to provide a single Uniq and specify the strategy 1 (burn).
+
+![](./images/first-hand-purchase-purchase-with-burn.png)
+
+After clicking on `Send 1 Action`, reviewing the details, and confirming the transaction, you should be able to see your new Uniq in your [inventory](https://toolkit.ultra.io/user), as expected.
+
+![](./images/first-hand-purchase-Uniq-purchased-after-burn.png)
+
+## How to delete a first-hand purchase option
+
+If the purchase option you created is no longer needed, you can decide to remove it and get a UOS refund for the RAM payment made during the option creation.
+
+To delete a purchase option, navigate to [Factory management actions](https://toolkit.ultra.io/factoryManagement), and search again for `delprchsreq.a` and select `Delete first-hand purchase requirement (eosio.nft.ft::delprchsreq.a)`.
+
+![](./images/first-hand-purchase-delete-search.png)
+
+There are only a couple of fields you need to fill. For more details, refer to [action documentation](../../../blockchain/contracts/nft-contract/nft-actions/delprchsreq.a.md).
+
+- **Token factory ID** - The ID of the Uniq factory where the purchase option was first added.
+- **Purchase option index** - The index of the existing purchase option.
+- **Memo** - Simple text message that can be used for various purposes. Does not affect the result of the transaction. Optional, can leave it empty.
+
+![](./images/first-hand-purchase-delete-form.png)
+
+Click on `Send 1 Action`, review the details, and confirm your transaction.
+
+You can now navigate to [Factory explorer](https://toolkit.ultra.io/uniqFactory), enter your Factory ID. After scrolling down, you will see that the option has been deleted. In this example we have deleted the purchase option with index 1.
+
+![](./images/first-hand-purchase-delete-result.png)
+
+
+---
+title: 'How to perform advanced actions with Uniqs and Factories using Ultra Toolkit'
 order: 1
+outline: [0, 4]
 ---
 
+# How to perform advanced actions with Uniqs and Factories
 
-# Factory Purchase Options
+After you have successfully created a factory and minted some Uniqs, you may now want to check what else you can do potentially.
 
-## Overview of factory purchase options feature
+This guide will cover some advanced actions that apply to Uniqs and Factories using the Ultra Toolkit.
 
-First-hand factory purchase options allow users to receive Uniqs from the factory directly without requiring you to manually issue Uniqs to the users. Various configuration options can be set when creating the purchase option for your factory, and in addition to that each factory can have multiple purchase options available. The usage of the actions to create and utilize purchase options is provided below.
+## Prerequisites
 
--   [setprchsreq.a - set purchase requirement](../../../blockchain/contracts/nft-contract/nft-actions/setprchsreq.a.md)
--   [purchase.a - purchase a token](../../../blockchain/contracts/nft-contract/nft-actions/purchase.a.md)
+-   Created a Uniq Factory and minted some Uniqs. Follow the [Factory creation guide](../creating-uniq-factories/how-to-create-uniq-metadata.md) and the [Uniq minting guide](../creating-uniq-factories/how-to-mint-uniq-using-toolkit.md) for details.
+-   Your account must have sufficient UOS tokens for transactions and fees. If you don't have tokens, see [how to use Faucet](../../fundamentals/tutorial-obtain-token-and-purchase-ram.md) for Testnet or [how to buy UOS](../../guides/how-to-buy-uos.md) for Mainnet.
+- A developer account on the Ultra Testnet or Mainnet and to be logged into the Ultra Toolkit. If you don't have it, please follow our previous tutorial: [Tutorial - Log in to the Ultra Toolkit](../../fundamentals/tutorial-login-to-toolkit.md).
 
-The first-hand purchase options provide following benefits to you
-- No need for factory manager input to issue a token to the user
-- Flexible pricing and conditions: can utilize other factories as a condition and can interact with [user groups contract](../../../blockchain/contracts/user-group-contract/index.md)
-- Configurable accessibility time window which does not require you to manually disable ability to purchase Uniqs
+## Goal
 
-## Purchase option use cases
+The goal of this guide is to demonstrate the usage of some of the actions you can perform with your Uniqs and Factories using Ultra Toolkit. This includes the transferring and burning Uniqs; adding authorized minters to a factory.
 
-There are various use cases that are covered by the first-hand purchase feature. The list below covers the most common ones that are supported:
-- Specifying fixed UOS or USD price to purchase from factory
-    - To have both prices available simultaneously, you can simply create two purchase options
-- Restricting the number of Uniqs that can be bought from the specific purchase option
-    - To globally limit the number that can be purchased (minted in this case) you have to specify it during the token factory creation
-- Splitting the purchase revenue between multiple recipients
-    - Note that protocol fee still applies and the split only occurs for UOS or USD amounts
-- Limiting the availability window when Uniqs can be purchased
-    - You can set a campaign to open at a later date and have a fixed date when it will end (or no end date at all)
-- Specifying the price using Uniqs from other factories
-    - Allows user to exchange or swap Uniqs
-- Verify eligibility using Uniqs from other factories or user groups
-    - Those are read-only operations, so user does not lose Uniqs or membership of the user group
-- Migrating Uniqs of the factory to a new one which has desired alternative values set
-    - Since some of the values inside the factory cannot be changed after creation that can be an alternative solution to effectively provide the option to users to migrate to a new factory with alternative values
+## How to transfer a Uniq to another account
 
-### First-hand purchase directly from Uniq factory
+For testing it may be necessary to transfer Uniqs manually and in greater quantities. You can use the toolkit to quickly assemble a transfer transaction and run it. For more details see the [action documentation](../../../blockchain/contracts/nft-contract/nft-actions/transfer.md).
 
-All use cases above are accessible using the `setprchsreq.a` action and examples are provided in the following page: [factory purchase option examples](./factory-purchase-options-examples.md)
+First, navigate to [Uniq management actions](https://toolkit.ultra.io/uniqManagement), search `transfer`, and select the `Transfer token (eosio.nft.ft::transfer)` action.
 
-### Swap Uniqs
+![](./images/transfer-Uniq-search-transfer.png)
 
-In certain situations you may need a more granular condition set which is not provided by the first-hand purchase feature. Since the range of possible conditions you may desire is vast we only limited the feature to the most common ones. For any more advanced usage you should consider utilizing a smart contract instead.
+You need to fill the following fields:
 
-Refer to [this page](./exchange-a-uniq-using-smart-contract.md) for more in-depth explanation of the smart contract usage
+- **From** - The account that currently owns the Uniq, you have logged in with, and want to transfer the Uniq from.
+- **To** - The receiver of the Uniq.
+- **Token IDs** - A list of Uniqs that will be transferred, you can add multiple and send them all at once. To know the Uniq ID you can use the user [inventory page](https://toolkit.ultra.io/user).
+- **Memo** - Simple text message that can be used for various purposes. Does not affect the result of the transaction. Optional, can leave it empty.
 
----
-title: 'Factory Purchase Options'
+![](./images/transfer-Uniq-form.png)
 
-order: 1
----
+After clicking on `Send 1 Action`, reviewing the details, and confirming the transaction, you should be able to see the Uniq on the receiver account [inventory](https://toolkit.ultra.io/user).
 
+## How to burn a Uniq manually
 
-# Factory Purchase Options
+Burn action allows you to delete a token and get a UOS refund based on the portion of UOS that was spent to mint it. This effectively lets you get rid of Uniqs that are no longer needed. For more details see the [action documentation](../../../blockchain/contracts/nft-contract/nft-actions/burn.md).
 
-## Overview of factory purchase options feature
+First, navigate to [Uniq management actions](https://toolkit.ultra.io/uniqManagement), search `burn`, and select the `Burn a token (eosio.nft.ft::burn)` action.
 
-First-hand factory purchase options allow users to receive Uniqs from the factory directly without requiring you to manually issue Uniqs to the users. Various configuration options can be set when creating the purchase option for your factory, and in addition to that each factory can have multiple purchase options available. The usage of the actions to create and utilize purchase options is provided below.
+![](./images/burn-Uniq-search-burn.png)
 
--   [setprchsreq.a - set purchase requirement](../../../blockchain/contracts/nft-contract/nft-actions/setprchsreq.a.md)
--   [setprchsreq.b - set purchase requirement](../../../blockchain/contracts/nft-contract/nft-actions/setprchsreq.b.md)
--   [purchase.a - purchase a token](../../../blockchain/contracts/nft-contract/nft-actions/purchase.a.md)
+You need to fill the following fields:
 
-The first-hand purchase options provide following benefits to you
-- No need for factory manager input to issue a token to the user
-- Flexible pricing and conditions: can utilize other factories as a condition and can interact with [user groups contract](../../../blockchain/contracts/user-group-contract/index.md)
-- Configurable accessibility time window which does not require you to manually disable ability to purchase Uniqs
+- **Owner** - The account that owns a Uniq and that you have logged in with.
+- **Token IDs** - A list of Uniqs that will be burned. You can burn multiple Uniqs at a time.
+- **Memo** - Simple text message that can be used for various purposes. Does not affect the result of the transaction. Optional, can leave it empty.
 
-## Purchase option use cases
+![](./images/burn-Uniq-form.png)
 
-There are various use cases that are covered by the first-hand purchase feature. The list below covers the most common ones that are supported:
-- Specifying fixed UOS or USD price to purchase from factory
-    - To have both prices available simultaneously, you can simply create two purchase options
-- Restricting the number of Uniqs that can be bought from the specific purchase option
-    - To globally limit the number that can be purchased (minted in this case) you have to specify it during the token factory creation
-- Splitting the purchase revenue between multiple recipients
-    - Note that protocol fee still applies and the split only occurs for UOS or USD amounts
-- Limiting the availability window when Uniqs can be purchased
-    - You can set a campaign to open at a later date and have a fixed date when it will end (or no end date at all)
-- Specifying the price using Uniqs from other factories
-    - Allows user to exchange or swap Uniqs
-- Verify eligibility using Uniqs from other factories or user groups
-    - Those are read-only operations, so user does not lose Uniqs or membership of the user group
-- Migrating Uniqs of the factory to a new one which has desired alternative values set
-    - Since some of the values inside the factory cannot be changed after creation that can be an alternative solution to effectively provide the option to users to migrate to a new factory with alternative values
+After clicking on `Send 1 Action`, reviewing the details, and confirming the transaction, you should no longer see the Uniq on the owner account [inventory](https://toolkit.ultra.io/user).
 
-### First-hand purchase directly from Uniq factory
+## How to add authorized minters to a factory
 
-All use cases above are accessible using the `setprchsreq.a`/`setprchsreq.b` action and examples are provided in the following page: [factory purchase option examples](./factory-purchase-options-examples.md)
+Sometimes it may be desired to allow accounts other than the factory manager to mint Uniqs from the factory. For this purpose the authorized minter feature is used. For more details see the [action documentation](../../../blockchain/contracts/nft-contract/nft-actions/authmint.b.md).
 
-### Swap Uniqs
+To do so, first navigate to [Factory management actions](https://toolkit.ultra.io/factoryManagement), and search again for `authmint` and select `Authorize minter (eosio.nft.ft::authmint.b)`.
 
-In certain situations you may need a more granular condition set which is not provided by the first-hand purchase feature. Since the range of possible conditions you may desire is vast we only limited the feature to the most common ones. For any more advanced usage you should consider utilizing a smart contract instead.
+![](./images/authorized-minter-search-authmint.png)
 
-Refer to [this page](./exchange-a-uniq-using-smart-contract.md) for more in-depth explanation of the smart contract usage
+You need to fill the following fields:
+
+- **Authorizer** - The account that manages the factory or was previously authorized using authorized minter action.
+- **Authorized minter** - The account that will be authorized to mint Uniqs from the factory or to delegate the minting authorization to other accounts.
+- **Token factory ID** - The ID of the factory that the authorized minter will be allowed to mint from.
+- **Quantity** - The maximum number of Uniqs that authorized minter will be allowed to mint. Mandatory to specify even if the factory has no limit on the number of Uniqs that can be minted.
+- **Maximum UOS payment** - The maximum amount of UOS you are ok to pay to assign the authorized minter. The payment is only used to cover RAM costs and is predictable. Optional, can leave it empty.
+- **Memo** - Simple text message that can be used for various purposes. Does not affect the result of the transaction. Optional, can leave it empty.
+
+![](./images/authorized-minter-form.png)
+
+After clicking on `Send 1 Action`, reviewing the details, and confirming the transaction, the `Authorized minter` account will be allowed to mint the specific number of Uniqs from the factory.
+
+To actually mint the Uniqs as authorized minter you need to utilize the `Authorizer` field of `issue` action. Navigate to [Factory management actions](https://toolkit.ultra.io/factoryManagement), and search for `issue` and select `Issue tokens (eosio.nft.ft::issue.b)`.
+
+![](./images/authorized-minter-search-issue.png)
+
+Similar to [How to mint a Uniq using the Ultra Toolkit](../creating-uniq-factories/how-to-mint-uniq-using-toolkit.md) guide you need to fill `To`, `Token factory ID` and `Amount`. But now you also need to additionally specify the `Authorizer`. The `Authorizer` must be an authorized minter assigned using the authorized minter action.
+
+![](./images/authorized-minter-issue-form.png)
+
+After clicking on `Send 1 Action`, reviewing the details, and confirming the transaction, you should be able to see the Uniq in the receiver account [inventory](https://toolkit.ultra.io/user).
+
+![](./images/authorized-minter-result.png)
+
+## What's next?
+
+-   [How to add a first-hand purchase options using Ultra Toolkit](../factory-management/how-to-add-first-hand-purchase-using-toolkit.md)
 
 ---
 title: 'Uniq First-Hand Purchase Example Project'
 
-order: 4
+order: 6
 ---
 
 
@@ -29090,17 +29594,18 @@ Since this example project works as a static website with no backend you should 
 ---
 title: 'Uniq Factories'
 
-outline: [0,4]
+outline: [0, 4]
 order: -99
 ---
 
 # Uniq Factories
 
-A uniq factory also known as a uniq factory is our non-fungible token system that is built on top of Ultra's blockchain.
+A uniq factory also known as a token factory is our non-fungible token system that is built on top of Ultra's blockchain.
 
 ## Uniqs
 
 A Uniq is a unique digital asset representing ownership or authenticity proof using blockchain. Stored on a decentralized ledger, each uniq has a verifiable and tamper-proof transaction history, ensuring transparency. Uniqs can represent digital or physical items, and their ownership is facilitated through smart contracts, enabling secure and automated transactions.
+
 ---
 title: 'The `clearavatar` action'
 
